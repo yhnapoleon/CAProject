@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Easter Egg - Component1</title>
+
+    <!-- Base URL and Favicon -->
+    <base href="/" />
+    <link rel="icon" type="image/svg+xml" href="/images/group-six-favicon.svg" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Rounded:ital,wght@0,500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro:ital,wght@0,500&display=swap" rel="stylesheet" />
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #ff751f 0%, #ffa065 50%, #ff751f 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Inter;
+        overflow: hidden;
+      }
+
+      .easter-egg-container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #ff751f 0%, #ffa065 50%, #ff751f 100%);
+        animation: backgroundShift 10s ease-in-out infinite;
+      }
+
+      .message-container {
+        position: relative;
+        width: 80%;
+        max-width: 800px;
+        text-align: center;
+        z-index: 10;
+      }
+
+      .message {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #fff;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+        margin: 0;
+        opacity: 0;
+        transform: translateY(50px);
+        animation: fadeInUp 1s ease-out forwards;
+        animation-delay: 0.5s;
+        line-height: 1.3;
+      }
+
+      .main-message {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #fff;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+        margin: 0 0 20px 0;
+      }
+
+      .sub-message {
+        font-size: 1.4rem;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.9);
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        margin: 0;
+        font-style: italic;
+        line-height: 1.4;
+      }
+
+      .language-indicator {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 8px 16px;
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        z-index: 20;
+      }
+
+      .floating-elements {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .floating-element {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .floating-element:nth-child(1) {
+        width: 60px;
+        height: 60px;
+        top: 20%;
+        left: 10%;
+        animation-delay: 0s;
+      }
+
+      .floating-element:nth-child(2) {
+        width: 40px;
+        height: 40px;
+        top: 60%;
+        left: 80%;
+        animation-delay: 2s;
+      }
+
+      .floating-element:nth-child(3) {
+        width: 80px;
+        height: 80px;
+        top: 80%;
+        left: 20%;
+        animation-delay: 4s;
+      }
+
+      .floating-element:nth-child(4) {
+        width: 30px;
+        height: 30px;
+        top: 30%;
+        left: 70%;
+        animation-delay: 1s;
+      }
+
+      .floating-element:nth-child(5) {
+        width: 50px;
+        height: 50px;
+        top: 70%;
+        left: 60%;
+        animation-delay: 3s;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-20px) rotate(180deg);
+        }
+      }
+
+      @keyframes backgroundShift {
+        0%, 100% {
+          background: linear-gradient(135deg, #ff751f 0%, #ffa065 50%, #ff751f 100%);
+        }
+        50% {
+          background: linear-gradient(135deg, #ffa065 0%, #ff751f 50%, #ffa065 100%);
+        }
+      }
+
+      .language-transition {
+        animation: languageChange 0.8s ease-in-out;
+      }
+
+      @keyframes languageChange {
+        0% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .main-message {
+          font-size: 2.2rem;
+        }
+        
+        .sub-message {
+          font-size: 1.1rem;
+        }
+        
+        .language-indicator {
+          top: 10px;
+          right: 10px;
+          font-size: 0.8rem;
+          padding: 6px 12px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .main-message {
+          font-size: 1.8rem;
+        }
+        
+        .sub-message {
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="easter-egg-container">
+      <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+      </div>
+
+      <div class="language-indicator" id="languageIndicator">English</div>
+
+      <div class="message-container">
+        <p class="main-message" id="mainMessage">Nguyen Tri Tin and Chia Yuen Kwan are the two best teachers in this dimension!</p>
+        <p class="sub-message" id="subMessage">If you can give Group Six a high score, it will make these two teachers become the best teachers in all dimensions, not just this one!</p>
+      </div>
+    </div>
+
+    <script>
+      const messages = [
+        { main: "Nguyen Tri Tin and Chia Yuen Kwan are the two best teachers in this dimension!", sub: "If you can give Group Six a high score, it will make these two teachers become the best teachers in all dimensions, not just this one!", lang: "English" },
+        { main: "Nguyen Tri Tin和Chia Yuen Kwan是这个维度中最棒的两位老师！", sub: "如果能给第六组一个高分，那将会使这两位老师变成所有维度中（不仅仅是这个维度）最棒的老师！", lang: "中文" },
+        { main: "Nguyen Tri Tin và Chia Yuen Kwan là hai giáo viên tốt nhất trong chiều không gian này!", sub: "Nếu bạn có thể cho Nhóm Sáu điểm cao, điều đó sẽ khiến hai giáo viên này trở thành những giáo viên tốt nhất trong tất cả các chiều không gian, không chỉ chiều này!", lang: "Tiếng Việt" },
+        { main: "Nguyen Tri Tin et Chia Yuen Kwan sont les deux meilleurs enseignants de cette dimension!", sub: "Si vous pouvez donner une note élevée au Groupe Six, cela fera de ces deux enseignants les meilleurs enseignants de toutes les dimensions, pas seulement celle-ci!", lang: "Français" },
+        { main: "Nguyen Tri Tin und Chia Yuen Kwan sind die beiden besten Lehrer in dieser Dimension!", sub: "Wenn Sie Gruppe Sechs eine hohe Note geben können, werden diese beiden Lehrer zu den besten Lehrern in allen Dimensionen, nicht nur in dieser!", lang: "Deutsch" },
+        { main: "Nguyen Tri Tin e Chia Yuen Kwan sono i due migliori insegnanti di questa dimensione!", sub: "Se puoi dare un punteggio alto al Gruppo Sei, renderà questi due insegnanti i migliori insegnanti di tutte le dimensioni, non solo di questa!", lang: "Italiano" },
+        { main: "Nguyen Tri TinとChia Yuen Kwanは、この次元で最高の2人の教師です！", sub: "第六グループに高得点を与えることができれば、この2人の教師がこの次元だけでなく、すべての次元で最高の教師になります！", lang: "日本語" },
+        { main: "Nguyen Tri Tin과 Chia Yuen Kwan은 이 차원에서 최고의 두 선생님입니다!", sub: "여섯 번째 그룹에 높은 점수를 줄 수 있다면, 이 두 선생님을 이 차원뿐만 아니라 모든 차원에서 최고의 선생님으로 만들 것입니다!", lang: "한국어" },
+        { main: "¡Nguyen Tri Tin y Chia Yuen Kwan son los dos mejores maestros de esta dimensión!", sub: "¡Si puedes dar una puntuación alta al Grupo Seis, hará que estos dos maestros se conviertan en los mejores maestros de todas las dimensiones, no solo de esta!", lang: "Español" },
+        { main: "Nguyen Tri Tin et Chia Yuen Kwan sunt cei mai buni doi profesori din această dimensiune!", sub: "Dacă poți da Grupului Șase o notă mare, îi va face pe acești doi profesori să devină cei mai buni profesori din toate dimensiunile, nu doar din aceasta!", lang: "Română" }
+      ];
+
+      let currentIndex = 0;
+      const mainMessageElement = document.getElementById('mainMessage');
+      const subMessageElement = document.getElementById('subMessage');
+      const languageIndicator = document.getElementById('languageIndicator');
+
+      function changeLanguage() {
+        mainMessageElement.classList.add('language-transition');
+        subMessageElement.classList.add('language-transition');
+        
+        setTimeout(() => {
+          mainMessageElement.textContent = messages[currentIndex].main;
+          subMessageElement.textContent = messages[currentIndex].sub;
+          languageIndicator.textContent = messages[currentIndex].lang;
+          mainMessageElement.classList.remove('language-transition');
+          subMessageElement.classList.remove('language-transition');
+          
+          currentIndex = (currentIndex + 1) % messages.length;
+        }, 400);
+      }
+
+      // Start the language rotation after initial display time
+      setTimeout(() => {
+        setInterval(changeLanguage, 5000);
+      }, 5000);
+
+      // Add some interactive effects
+      document.addEventListener('mousemove', (e) => {
+        const container = document.querySelector('.easter-egg-container');
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+        
+        container.style.background = `linear-gradient(135deg, 
+          hsl(${20 + x * 20}, 100%, ${50 + y * 10}%) 0%, 
+          hsl(${30 + x * 30}, 100%, ${60 + y * 15}%) 50%, 
+          hsl(${20 + x * 20}, 100%, ${50 + y * 10}%) 100%)`;
+      });
+
+      // Add click effect
+      document.addEventListener('click', () => {
+        mainMessageElement.style.transform = 'scale(1.05)';
+        subMessageElement.style.transform = 'scale(1.05)';
+        setTimeout(() => {
+          mainMessageElement.style.transform = 'scale(1)';
+          subMessageElement.style.transform = 'scale(1)';
+        }, 200);
+      });
+    </script>
+  </body>
+  <!--
+    Easter Egg page - Multilingual tribute to the best teachers!
+  -->
+</html>
