@@ -7,6 +7,6 @@ public class fuck {
     }
 
     public static void main(String[] args) {
-        fuck("Tin","YK");
+        fuck("Tin","wx");
     }
 }
