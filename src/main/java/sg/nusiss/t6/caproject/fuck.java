@@ -5,4 +5,8 @@ public class fuck {
         System.out.println("Fuck you:"+name);
 
     }
+
+    public static void main(String[] args) {
+        fuck("YK");
+    }
 }
