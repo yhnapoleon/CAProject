@@ -40,7 +40,4 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews; //
 
-    // (可选) 一个用户可以有多张优惠券
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserCoupon> userCoupons; //
 }
