@@ -22,8 +22,15 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email; //
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role; //
+    private Role role; // 这里的 Role 是内部枚举
+
+    // 假设的角色枚举
+    public enum Role {
+        USER,
+        ADMIN
+    }
 
     @Column(length = 1000)
     private String personalDetails; //
@@ -40,4 +47,75 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews; //
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public String getPersonalDetails() {
+        return personalDetails;
+    }
+
+    public void setPersonalDetails(String personalDetails) {
+        this.personalDetails = personalDetails;
+    }
+
+    public ShoppingCart getShoppingCart() {
+        return shoppingCart;
+    }
+
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
 }
