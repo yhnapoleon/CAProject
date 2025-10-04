@@ -1,4 +1,4 @@
 package sg.nusiss.t6.caproject.repository;
 
-public class OrderRepository {
+public interface OrderRepository {
 }
