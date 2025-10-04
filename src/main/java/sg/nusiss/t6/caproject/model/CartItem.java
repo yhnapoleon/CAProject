@@ -3,33 +3,29 @@ package sg.nusiss.t6.caproject.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import java.math.BigDecimal;
 
 @Data
 @Entity
-@Table(name = "order_items")
-public class OrderItem {
+@Table(name = "cart_items")
+public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // [cite: 176]
+    private Long id;
 
     @Column(nullable = false)
-    private Integer quantity; // [cite: 177]
+    private Integer quantity;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal unitPrice; // [cite: 178]
-
-    // 一个订单项属于一个订单 (多对一)
+    // 一个购物车项属于一个购物车 (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "shopping_cart_id", nullable = false)
     @JsonIgnore
-    private Order order; // [cite: 179]
+    private ShoppingCart shoppingCart;
 
-    // 一个订单项对应一个商品 (多对一)
+    // 一个购物车项对应一个商品 (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-    private Product product; // [cite: 180]
+    private Product product;
 
     public Long getId() {
         return id;
@@ -47,20 +43,12 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
+    public ShoppingCart getShoppingCart() {
+        return shoppingCart;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
     }
 
     public Product getProduct() {
