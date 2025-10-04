@@ -2,7 +2,8 @@ package sg.nusiss.t6.caproject.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +26,11 @@ public class JwtTokenUtil implements Serializable {
     // 从配置文件加载 JWT 密钥。实际项目中需配置在 application.properties
     @Value("${jwt.secret:defaultSecretKeyForDevelopment}")
     private String secret;
+    
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = secret.getBytes();
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
     // --- 1. 生成 Token ---
     /**
@@ -46,12 +52,12 @@ public class JwtTokenUtil implements Serializable {
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject) // Token 的主题，通常是用户名
-                .setIssuedAt(new Date(System.currentTimeMillis())) // 签发时间
+                .claims(claims)
+                .subject(subject) // Token 的主题，通常是用户名
+                .issuedAt(new Date(System.currentTimeMillis())) // 签发时间
                 // 设置过期时间
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-                .signWith(SignatureAlgorithm.HS512, secret) // 使用 HS512 算法和密钥签名
+                .expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
+                .signWith(getSigningKey()) // 使用密钥签名
                 .compact(); // 压缩成字符串
     }
 
@@ -91,6 +97,6 @@ public class JwtTokenUtil implements Serializable {
     // 获取 token 中的所有 Claims
     private Claims getAllClaimsFromToken(String token) {
         // 使用密钥解析 Token
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
     }
 }

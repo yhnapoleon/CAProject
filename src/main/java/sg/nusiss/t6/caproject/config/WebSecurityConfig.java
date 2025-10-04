@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 // 导入新的类：用于获取 AuthenticationManager 的配置
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -46,8 +47,8 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(jwtUserDetailsService); // 指定自定义用户服务
-        authProvider.setPasswordEncoder(passwordEncoder);          // 指定密码加密方式
+        authProvider.setUserDetailsService(jwtUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 
@@ -79,7 +80,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/products/**").permitAll()
 
                         // 管理后台接口仅允许 ADMIN 角色访问
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
 
                         // 其他所有接口都需要认证后才能访问
                         .anyRequest().authenticated()
