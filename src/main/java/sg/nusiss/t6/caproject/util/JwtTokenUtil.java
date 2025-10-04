@@ -4,14 +4,17 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenUtil implements Serializable {
@@ -29,8 +32,15 @@ public class JwtTokenUtil implements Serializable {
      */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        // 可以在 Claims 中添加额外的用户信息，例如角色
-        claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
+
+        // 1. 获取用户权限列表，并转换为字符串列表 (ROLE_ADMIN, ROLE_USER 等)
+        final List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        // 2. 将权限列表以 "roles" 为键名添加到 Claims 中
+        claims.put("roles", roles);
+
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
