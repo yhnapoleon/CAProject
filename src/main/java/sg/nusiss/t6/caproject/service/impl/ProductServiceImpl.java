@@ -9,6 +9,8 @@ import sg.nusiss.t6.caproject.repository.ProductRepository;
 import sg.nusiss.t6.caproject.repository.ReviewRepository;
 import sg.nusiss.t6.caproject.service.ProductService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -30,6 +32,12 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> getAllVisibleProducts() {
         // 默认返回全部可见商品；如需分页可在 Controller 上层处理或拓展
         return productRepository.findByIsVisible(1, org.springframework.data.domain.Pageable.unpaged()).getContent();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Product> getAllVisibleProducts(Pageable pageable) {
+        return productRepository.findByIsVisible(1, pageable);
     }
 
     @Override
@@ -63,6 +71,12 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
         return productRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     @Override
