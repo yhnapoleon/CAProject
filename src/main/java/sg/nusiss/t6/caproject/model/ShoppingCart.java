@@ -1,50 +1,34 @@
 package sg.nusiss.t6.caproject.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
+@Getter
+@Setter
 @Entity
-@Table(name = "shopping_carts")
+@Table(name = "shopping_cart")
 public class ShoppingCart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // [cite: 220]
+    @Column(name = "shopping_cart_id")
+    private Integer shoppingCartId;
 
-    // 一个购物车属于一个用户 (一对一)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    @JsonIgnore
-    private User user; // [cite: 221]
+    // 一个购物车项属于一个用户 (多对一)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    // 一个购物车包含多个购物车项 (一对多)
-    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> cartItems; // [cite: 222, 225]
+    // 一个购物车项对应一个商品 (多对一)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<CartItem> getCartItems() {
-        return cartItems;
-    }
-
-    public void setCartItems(List<CartItem> cartItems) {
-        this.cartItems = cartItems;
-    }
+    
 }
