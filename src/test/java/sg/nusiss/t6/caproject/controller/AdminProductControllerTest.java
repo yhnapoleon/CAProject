@@ -18,8 +18,8 @@ import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.service.ProductService;
 import sg.nusiss.t6.caproject.config.JwtRequestFilter;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 
@@ -57,7 +57,7 @@ class AdminProductControllerTest {
     p.setProductId(id);
     p.setProductName("AdminSample");
     p.setProductDescription("Desc");
-    p.setProductPrice(BigDecimal.valueOf(10.0f));
+    p.setProductPrice(new BigDecimal("10.0"));
     p.setProductStockQuantity(5);
     p.setProductCategory("Cat");
     p.setIsVisible(1);
