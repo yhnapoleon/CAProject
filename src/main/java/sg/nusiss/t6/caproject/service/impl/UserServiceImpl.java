@@ -39,7 +39,11 @@ public class UserServiceImpl implements UserService {
         newUser.setUsername(username);
         // 2. 关键步骤：存储密码前必须进行加密
         newUser.setPassword(passwordEncoder.encode(password));
-        // 3. 默认注册为普通用户
+        // 3. 设置默认邮箱（用户名@example.com）
+        newUser.setEmail(username + "@example.com");
+        // 4. 设置默认个人详情
+        newUser.setPersonalDetails("User account created via registration");
+        // 5. 默认注册为普通用户
         newUser.setRole(Role.USER);
 
         return userRepository.save(newUser);
