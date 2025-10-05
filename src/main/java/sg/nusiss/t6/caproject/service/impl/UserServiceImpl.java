@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     // 假设：User registerUser(String username, String password);
     public User registerUser(String username, String password) {
         // 1. 检查用户名是否已存在
-        if (userRepository.existsByUsername(username)) {
+        if (userRepository.existsByUserName(username)) {
             // 在实际项目中，应抛出自定义异常
             throw new RuntimeException("Username already taken: " + username);
         }
@@ -54,6 +54,6 @@ public class UserServiceImpl implements UserService {
     // (如果您的接口还需要 loadUserByUsername, 也要实现)
     // 示例：
     public java.util.Optional<User> loadUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUserName(username);
     }
 }

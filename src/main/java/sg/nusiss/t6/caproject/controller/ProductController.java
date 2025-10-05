@@ -11,6 +11,7 @@ import sg.nusiss.t6.caproject.model.Review;
 import sg.nusiss.t6.caproject.service.ProductService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
@@ -40,7 +41,7 @@ public class ProductController {
 
     // 获取单个商品详情
     @GetMapping("/getProductById/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Integer id) {
+    public ResponseEntity<Optional<Product>> getProductById(@PathVariable Integer id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 

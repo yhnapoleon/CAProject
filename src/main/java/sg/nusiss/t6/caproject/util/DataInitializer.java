@@ -33,7 +33,7 @@ public class DataInitializer implements CommandLineRunner {
 
         try {
             // userRepository.findByUsername 返回 Optional<User>
-            existingUserOptional = userRepository.findByUsername(ADMIN_USERNAME);
+            existingUserOptional = userRepository.findByUserName(ADMIN_USERNAME);
         } catch (Exception e) {
             // 如果查询本身失败，打印错误并退出
             System.err.println("!!! 数据库查询失败，请检查数据库连接和表结构配置 !!!");
@@ -55,6 +55,7 @@ public class DataInitializer implements CommandLineRunner {
                 adminUser.setUserLastLoginTime(LocalDateTime.now());
                 adminUser.setUserGender("Unknown"); // 确保非空字段有值
                 adminUser.setUserIntroduce("System Administrator Account"); // 确保非空字段有值
+                adminUser.setUserPhone("0000000000"); // 占位手机号，满足非空与唯一约束
 
                 userRepository.save(adminUser);
 

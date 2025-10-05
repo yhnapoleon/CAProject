@@ -11,6 +11,7 @@ import sg.nusiss.t6.caproject.service.ProductService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 // 实际项目中，这个 Controller 应受 Spring Security 保护，只允许管理员访问
 @RestController
@@ -48,7 +49,7 @@ public class AdminProductController {
 
     // 更新商品信息
     @PutMapping("/updateProduct/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product productDetails) {
+    public ResponseEntity<Optional<Product>> updateProduct(@PathVariable Integer id, @RequestBody Product productDetails) {
         return ResponseEntity.ok(productService.updateProduct(id, productDetails));
     }
 
@@ -61,8 +62,8 @@ public class AdminProductController {
 
     // 修改库存
     @PatchMapping("/updateStock/{id}")
-    public ResponseEntity<Product> updateStock(@PathVariable Integer id,
-            @RequestBody Map<String, Integer> stockUpdate) {
+    public ResponseEntity<Optional<Product>> updateStock(@PathVariable Integer id,
+                                                         @RequestBody Map<String, Integer> stockUpdate) {
         // 兼容两种字段名
         Integer newStock = stockUpdate.get("stock");
         if (newStock == null) {
@@ -76,8 +77,8 @@ public class AdminProductController {
 
     // 上架/下架商品
     @PatchMapping("/setVisibility/{id}")
-    public ResponseEntity<Product> setVisibility(@PathVariable Integer id,
-            @RequestBody Map<String, Boolean> visibilityUpdate) {
+    public ResponseEntity<Optional<Product>> setVisibility(@PathVariable Integer id,
+                                                           @RequestBody Map<String, Boolean> visibilityUpdate) {
         Boolean isVisible = visibilityUpdate.get("isVisible");
         if (isVisible == null) {
             return ResponseEntity.badRequest().build();

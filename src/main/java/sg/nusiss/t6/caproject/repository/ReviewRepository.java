@@ -7,13 +7,10 @@ import sg.nusiss.t6.caproject.model.Review;
 import java.util.List;
 
 @Repository
-public interface ReviewRepository extends JpaRepository<Review, Integer> {
+public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     /**
-     * 根据商品ID查找所有评论
-     * 
-     * @param productId 商品ID
-     * @return 评论列表
+     * 根据商品ID查找所有评论（关联字段为 product.productId）
      */
-    List<Review> findByProductId(Integer productId);
+    List<Review> findByProductProductId(Long productId);
 }

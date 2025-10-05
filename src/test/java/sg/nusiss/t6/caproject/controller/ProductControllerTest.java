@@ -19,8 +19,10 @@ import sg.nusiss.t6.caproject.model.Review;
 import sg.nusiss.t6.caproject.service.ProductService;
 import sg.nusiss.t6.caproject.config.JwtRequestFilter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,7 +58,7 @@ class ProductControllerTest {
     p.setProductId(id);
     p.setProductName("Sample");
     p.setProductDescription("Desc");
-    p.setProductPrice(99.0f);
+    p.setProductPrice(BigDecimal.valueOf(99.0f));
     p.setProductStockQuantity(10);
     p.setProductCategory("Cat");
     p.setIsVisible(1);
@@ -88,7 +90,7 @@ class ProductControllerTest {
 
   @Test
   void getProductById_returnsProduct() throws Exception {
-    Mockito.when(productService.getProductById(1)).thenReturn(sampleProduct(1));
+    Mockito.when(productService.getProductById(1)).thenReturn(Optional.of(sampleProduct(1)));
 
     mockMvc.perform(get("/api/products/getProductById/1"))
         .andExpect(status().isOk())

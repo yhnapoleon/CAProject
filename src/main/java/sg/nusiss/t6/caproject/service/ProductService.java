@@ -2,10 +2,12 @@ package sg.nusiss.t6.caproject.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.model.Review;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductService {
 
@@ -14,9 +16,12 @@ public interface ProductService {
 
     Page<Product> getAllVisibleProducts(Pageable pageable);
 
-    Product getProductById(Integer id);
+    Optional<Product> getProductById(Integer id);
 
     List<Review> getReviewsByProductId(Integer productId);
+
+    @Transactional(readOnly = true)
+    List<Review> getReviewsByProductId(Long productId);
 
     Review addReviewToProduct(Integer productId, Review review);
 
@@ -27,11 +32,11 @@ public interface ProductService {
 
     Product createProduct(Product product);
 
-    Product updateProduct(Integer id, Product productDetails);
+    Optional<Product> updateProduct(Integer id, Product productDetails);
 
     void deleteProduct(Integer id);
 
-    Product updateStock(Integer id, Integer newStock);
+    Optional<Product> updateStock(Integer id, Integer newStock);
 
-    Product setProductVisibility(Integer id, boolean isVisible);
+    Optional<Product> setProductVisibility(Integer id, boolean isVisible);
 }

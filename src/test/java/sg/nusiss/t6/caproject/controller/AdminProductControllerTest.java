@@ -18,8 +18,10 @@ import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.service.ProductService;
 import sg.nusiss.t6.caproject.config.JwtRequestFilter;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,7 +57,7 @@ class AdminProductControllerTest {
     p.setProductId(id);
     p.setProductName("AdminSample");
     p.setProductDescription("Desc");
-    p.setProductPrice(10.0f);
+    p.setProductPrice(BigDecimal.valueOf(10.0f));
     p.setProductStockQuantity(5);
     p.setProductCategory("Cat");
     p.setIsVisible(1);
@@ -101,7 +103,7 @@ class AdminProductControllerTest {
     Product req = sampleProduct(null);
     Product updated = sampleProduct(1);
 
-    Mockito.when(productService.updateProduct(eq(1), any(Product.class))).thenReturn(updated);
+    Mockito.when(productService.updateProduct(eq(1), any(Product.class))).thenReturn(Optional.of(updated));
 
     mockMvc.perform(put("/api/admin/products/updateProduct/1")
         .contentType(MediaType.APPLICATION_JSON)
@@ -114,7 +116,7 @@ class AdminProductControllerTest {
   void updateStock_acceptsBothKeys() throws Exception {
     Product updated = sampleProduct(1);
     updated.setProductStockQuantity(99);
-    Mockito.when(productService.updateStock(eq(1), eq(99))).thenReturn(updated);
+    Mockito.when(productService.updateStock(eq(1), eq(99))).thenReturn(Optional.of(updated));
 
     // stock
     mockMvc.perform(patch("/api/admin/products/updateStock/1")
@@ -124,7 +126,7 @@ class AdminProductControllerTest {
         .andExpect(jsonPath("$.productStockQuantity", is(99)));
 
     // stockQuantity
-    Mockito.when(productService.updateStock(eq(1), eq(99))).thenReturn(updated);
+    Mockito.when(productService.updateStock(eq(1), eq(99))).thenReturn(Optional.of(updated));
     mockMvc.perform(patch("/api/admin/products/updateStock/1")
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(Map.of("stockQuantity", 99))))
@@ -136,7 +138,7 @@ class AdminProductControllerTest {
   void setVisibility_returnsOk() throws Exception {
     Product updated = sampleProduct(1);
     updated.setIsVisible(0);
-    Mockito.when(productService.setProductVisibility(1, false)).thenReturn(updated);
+    Mockito.when(productService.setProductVisibility(1, false)).thenReturn(Optional.of(updated));
 
     mockMvc.perform(patch("/api/admin/products/setVisibility/1")
         .contentType(MediaType.APPLICATION_JSON)
