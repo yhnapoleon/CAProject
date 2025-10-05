@@ -2,120 +2,85 @@ package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@Getter
+@Setter
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; //
+    @Column(name = "user_id")
+    private Integer userId;
 
-    @Column(unique = true, nullable = false)
-    private String username; //
+    @Column(name = "user_phone", length = 20, nullable = false, unique = true)
+    private String userPhone;
 
-    @Column(nullable = false)
-    private String password; //
+    @Column(name = "user_email", length = 50, nullable = false, unique = true)
+    private String userEmail;
 
-    @Column(unique = true, nullable = false)
-    private String email; //
+    @Column(name = "user_password", length = 20, nullable = false)
+    private String userPassword;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role; // 这里的 Role 是内部枚举
+    @Column(name = "user_type", nullable = false)
+    private Integer userType; // 0=管理员, 1=用户
 
-    // 假设的角色枚举
-    public enum Role {
-        USER,
-        ADMIN
-    }
+    @Column(name = "user_register_time", nullable = false)
+    private LocalDateTime userRegisterTime;
 
-    @Column(length = 1000)
-    private String personalDetails; //
+    @Column(name = "user_lastlogin_time", nullable = false)
+    private LocalDateTime userLastLoginTime;
 
-    // 一个用户拥有一个购物车 (一对一)
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ShoppingCart shoppingCart; //
+    @Column(name = "user_name", length = 50, nullable = false)
+    private String userName;
+
+    @Column(name = "user_gender", length = 50, nullable = false)
+    private String userGender;
+
+    @Column(name = "user_birthday")
+    private LocalDate userBirthday;
+
+    @Column(name = "user_introduce", columnDefinition = "TEXT")
+    private String userIntroduce;
+
+    @Column(name = "user_profile_url", length = 255)
+    private String userProfileUrl;
 
     // 一个用户可以有多个订单 (一对多)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orders; //
+    private List<Order> orders;
 
     // 一个用户可以发表多个评论 (一对多)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews; //
+    private List<Review> reviews;
 
-    public Long getId() {
-        return id;
-    }
+    // 一个用户（管理员）可以管理多个商品
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // 一个用户（管理员）可以管理多个优惠券
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Coupon> coupons;
 
-    public String getUsername() {
-        return username;
-    }
+    // 一个用户（管理员）可以管理多个折扣活动
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Discount> discounts;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    // 一个用户可以有多个购物车项 (一对多)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ShoppingCart> shoppingCarts;
 
-    public String getPassword() {
-        return password;
-    }
+    // 一个用户可以拥有多张优惠券 (一对多)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserCoupon> userCoupons;
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public String getPersonalDetails() {
-        return personalDetails;
-    }
-
-    public void setPersonalDetails(String personalDetails) {
-        this.personalDetails = personalDetails;
-    }
-
-    public ShoppingCart getShoppingCart() {
-        return shoppingCart;
-    }
-
-    public void setShoppingCart(ShoppingCart shoppingCart) {
-        this.shoppingCart = shoppingCart;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
-
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
-    }
 }

@@ -2,111 +2,57 @@ package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
+@Getter
+@Setter
 @Entity
-@Table(name = "products")
+@Table(name = "product")
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer productId;
+
+    @Column(length = 50, nullable = false)
+    private String productName;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String productDescription;
 
     @Column(nullable = false)
-    private String name;
+    private Float productPrice;
 
-    private String category;
+    @Column(name = "product_stock_quantity", nullable = false)
+    private Integer productStockQuantity;
 
-    @Column(length = 1000)
-    private String description;
+    @Column(name = "product_category", length = 20, nullable = false)
+    private String productCategory;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
+    @Column(nullable = false)
+    private Integer isVisible; // ✅ 对应数据库 int 类型，不用 boolean
 
-    @Column(name = "stock_quantity", nullable = false)
-    private Integer stockQuantity;
-
-    @Column(name = "is_visible", nullable = false)
-    private boolean isVisible = true;
-
-    @Column(name = "image_url")
+    @Column(length = 255)
     private String imageUrl;
 
-    // 一个商品可以有多条评论。如果商品被删除，关联的评论也应被删除。
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
-    public Long getId() {
-        return id;
-    }
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ShoppingCart> shoppingCarts;
 
-    public String getName() {
-        return name;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
-    public String getCategory() {
-        return category;
-    }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public Integer getStockQuantity() {
-        return stockQuantity;
-    }
-
-    public void setStockQuantity(Integer stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
-
-    public boolean isVisible() {
-        return isVisible;
-    }
-
-    public void setVisible(boolean visible) {
-        isVisible = visible;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
-    }
 }
