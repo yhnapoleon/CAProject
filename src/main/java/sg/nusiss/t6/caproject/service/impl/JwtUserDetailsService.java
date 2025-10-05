@@ -38,14 +38,15 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         // 2. 将 User 实体转换为 Spring Security 要求的 UserDetails
         // 创建权限列表。注意：权限/角色必须以 "ROLE_" 开头
+        String role = user.getUserType() == 0 ? "ADMIN" : "USER";
         List<GrantedAuthority> authorities = Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+                new SimpleGrantedAuthority("ROLE_" + role)
         );
 
         // 3. 返回 Spring Security 内部的 UserDetails 对象
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),      // 用户名
-                user.getPassword(),      // 数据库中存储的加密后的密码
+                user.getUserName(),      // 用户名
+                user.getUserPassword(),      // 数据库中存储的加密后的密码
                 authorities              // 用户权限（ROLE_USER 或 ROLE_ADMIN）
         );
     }

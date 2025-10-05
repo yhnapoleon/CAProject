@@ -31,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<Product> getAllVisibleProducts(Pageable pageable) {
-        return productRepository.findByIsVisible(true, pageable);
+        return productRepository.findByIsVisible(1, pageable);
     }
 
     @Override
@@ -76,13 +76,13 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Optional<Product> updateProduct(Long id, Product productDetails) {
         return productRepository.findById(id).map(existingProduct -> {
-            existingProduct.setName(productDetails.getName());
-            existingProduct.setCategory(productDetails.getCategory());
-            existingProduct.setDescription(productDetails.getDescription());
-            existingProduct.setPrice(productDetails.getPrice());
-            existingProduct.setStockQuantity(productDetails.getStockQuantity());
+            existingProduct.setProductName(productDetails.getProductName());
+            existingProduct.setProductCategory(productDetails.getProductCategory());
+            existingProduct.setProductDescription(productDetails.getProductDescription());
+            existingProduct.setProductPrice(productDetails.getProductPrice());
+            existingProduct.setProductStockQuantity(productDetails.getProductStockQuantity());
             existingProduct.setImageUrl(productDetails.getImageUrl());
-            existingProduct.setVisible(productDetails.isVisible());
+            existingProduct.setIsVisible(productDetails.getIsVisible());
             return productRepository.save(existingProduct);
         });
     }
@@ -97,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Optional<Product> updateStock(Long id, Integer newStock) {
         return productRepository.findById(id).map(product -> {
-            product.setStockQuantity(newStock);
+            product.setProductStockQuantity(newStock);
             return productRepository.save(product);
         });
     }
@@ -106,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Optional<Product> setProductVisibility(Long id, boolean isVisible) {
         return productRepository.findById(id).map(product -> {
-            product.setVisible(isVisible);
+            product.setIsVisible(isVisible ? 1 : 0);
             return productRepository.save(product);
         });
     }
