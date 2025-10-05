@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 @Data
 @Getter
@@ -24,8 +25,8 @@ public class Product {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String productDescription;
 
-    @Column(nullable = false)
-    private Float productPrice;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal productPrice;
 
     @Column(name = "product_stock_quantity", nullable = false)
     private Integer productStockQuantity;

@@ -1,6 +1,8 @@
 package sg.nusiss.t6.caproject.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sg.nusiss.t6.caproject.model.Product;
@@ -9,9 +11,8 @@ import sg.nusiss.t6.caproject.repository.ProductRepository;
 import sg.nusiss.t6.caproject.repository.ReviewRepository;
 import sg.nusiss.t6.caproject.service.ProductService;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -29,33 +30,25 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Product> getAllVisibleProducts() {
-        // 默认返回全部可见商品；如需分页可在 Controller 上层处理或拓展
-        return productRepository.findByIsVisible(1, org.springframework.data.domain.Pageable.unpaged()).getContent();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Page<Product> getAllVisibleProducts(Pageable pageable) {
         return productRepository.findByIsVisible(1, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Product getProductById(Integer id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+    public Optional<Product> getProductById(Long id) {
+        return productRepository.findById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Review> getReviewsByProductId(Integer productId) {
-        return reviewRepository.findByProductId(productId);
+    public List<Review> getReviewsByProductId(Long productId) {
+        return reviewRepository.findByProductProductId(productId);
     }
 
     @Override
     @Transactional
-    public Review addReviewToProduct(Integer productId, Review review) {
+    public Review addReviewToProduct(Long productId, Review review) {
         // 查找商品，如果不存在则抛出异常
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
@@ -66,12 +59,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // --- 管理员侧功能实现 ---
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -87,40 +74,40 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Product updateProduct(Integer id, Product productDetails) {
-        Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
-        existingProduct.setProductName(productDetails.getProductName());
-        existingProduct.setProductCategory(productDetails.getProductCategory());
-        existingProduct.setProductDescription(productDetails.getProductDescription());
-        existingProduct.setProductPrice(productDetails.getProductPrice());
-        existingProduct.setProductStockQuantity(productDetails.getProductStockQuantity());
-        existingProduct.setImageUrl(productDetails.getImageUrl());
-        existingProduct.setIsVisible(productDetails.getIsVisible());
-        return productRepository.save(existingProduct);
+    public Optional<Product> updateProduct(Long id, Product productDetails) {
+        return productRepository.findById(id).map(existingProduct -> {
+            existingProduct.setProductName(productDetails.getProductName());
+            existingProduct.setProductCategory(productDetails.getProductCategory());
+            existingProduct.setProductDescription(productDetails.getProductDescription());
+            existingProduct.setProductPrice(productDetails.getProductPrice());
+            existingProduct.setProductStockQuantity(productDetails.getProductStockQuantity());
+            existingProduct.setImageUrl(productDetails.getImageUrl());
+            existingProduct.setIsVisible(productDetails.getIsVisible());
+            return productRepository.save(existingProduct);
+        });
     }
 
     @Override
     @Transactional
-    public void deleteProduct(Integer id) {
+    public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    public Product updateStock(Integer id, Integer newStock) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
-        product.setProductStockQuantity(newStock);
-        return productRepository.save(product);
+    public Optional<Product> updateStock(Long id, Integer newStock) {
+        return productRepository.findById(id).map(product -> {
+            product.setProductStockQuantity(newStock);
+            return productRepository.save(product);
+        });
     }
 
     @Override
     @Transactional
-    public Product setProductVisibility(Integer id, boolean isVisible) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
-        product.setIsVisible(isVisible ? 1 : 0);
-        return productRepository.save(product);
+    public Optional<Product> setProductVisibility(Long id, boolean isVisible) {
+        return productRepository.findById(id).map(product -> {
+            product.setIsVisible(isVisible ? 1 : 0);
+            return productRepository.save(product);
+        });
     }
 }

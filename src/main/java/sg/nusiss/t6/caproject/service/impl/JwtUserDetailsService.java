@@ -34,7 +34,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // 1. 从数据库查找用户实体
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        User user = userRepository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         // 2. 将 User 实体转换为 Spring Security 要求的 UserDetails
         // 创建权限列表。注意：权限/角色必须以 "ROLE_" 开头
