@@ -23,9 +23,15 @@ public class ProductController {
         this.productService = productService;
     }
 
-    // 获取所有上架商品 (分页)
+    // 获取所有上架商品 (按需返回全部列表)
+    @GetMapping("/getVisibleProducts")
+    public ResponseEntity<List<Product>> getVisibleProducts() {
+        return ResponseEntity.ok(productService.getAllVisibleProducts());
+    }
+
+    // 获取所有上架商品 (分页版)
     @GetMapping
-    public ResponseEntity<Page<Product>> getVisibleProducts(
+    public ResponseEntity<Page<Product>> getVisibleProductsPaged(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -33,22 +39,20 @@ public class ProductController {
     }
 
     // 获取单个商品详情
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        return productService.getProductById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/getProductById/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Integer id) {
+        return ResponseEntity.ok(productService.getProductById(id));
     }
 
     // 获取某个商品的所有评论
-    @GetMapping("/{id}/reviews")
-    public ResponseEntity<List<Review>> getProductReviews(@PathVariable Long id) {
+    @GetMapping("/getReviewsByProductId/{id}")
+    public ResponseEntity<List<Review>> getProductReviews(@PathVariable Integer id) {
         return ResponseEntity.ok(productService.getReviewsByProductId(id));
     }
 
     // 为某个商品添加评论 (需要用户认证)
-    @PostMapping("/{id}/reviews")
-    public ResponseEntity<Review> addReview(@PathVariable Long id, @RequestBody Review review) {
+    @PostMapping("/addReviewToProduct/{id}")
+    public ResponseEntity<Review> addReview(@PathVariable Integer id, @RequestBody Review review) {
         // 注意：实际项目中需要从安全上下文中获取当前用户并设置到 review 对象中
         Review savedReview = productService.addReviewToProduct(id, review);
         return ResponseEntity.status(201).body(savedReview);
