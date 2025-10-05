@@ -1,5 +1,7 @@
 package sg.nusiss.t6.caproject.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.model.Review;
 
@@ -10,6 +12,8 @@ public interface ProductService {
     // --- 用户侧功能 ---
     List<Product> getAllVisibleProducts();
 
+    Page<Product> getAllVisibleProducts(Pageable pageable);
+
     Product getProductById(Integer id);
 
     List<Review> getReviewsByProductId(Integer productId);
@@ -18,6 +22,8 @@ public interface ProductService {
 
     // --- 管理员侧功能 ---
     List<Product> getAllProducts();
+
+    Page<Product> getAllProducts(Pageable pageable);
 
     Product createProduct(Product product);
 
