@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -34,7 +35,7 @@ public class Discount {
     private LocalDateTime discountEndTime;
 
     @Column(name = "discount_discount", nullable = false, precision = 10, scale = 2)
-    private Float discountDiscount;
+    private BigDecimal discountDiscount;
 
     // 一个折扣可以被多个订单使用 (一对多)
     @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

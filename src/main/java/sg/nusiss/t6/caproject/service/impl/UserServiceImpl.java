@@ -2,7 +2,6 @@ package sg.nusiss.t6.caproject.service.impl;
 
 import org.springframework.transaction.annotation.Transactional;
 import sg.nusiss.t6.caproject.model.User;
-import sg.nusiss.t6.caproject.model.User.Role;
 import sg.nusiss.t6.caproject.repository.UserRepository;
 import sg.nusiss.t6.caproject.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,21 +29,24 @@ public class UserServiceImpl implements UserService {
     // 假设：User registerUser(String username, String password);
     public User registerUser(String username, String password) {
         // 1. 检查用户名是否已存在
-        if (userRepository.existsByUsername(username)) {
+        if (userRepository.existsByUserName(username)) {
             // 在实际项目中，应抛出自定义异常
             throw new RuntimeException("Username already taken: " + username);
         }
 
         User newUser = new User();
-        newUser.setUsername(username);
+        newUser.setUserName(username);
         // 2. 关键步骤：存储密码前必须进行加密
-        newUser.setPassword(passwordEncoder.encode(password));
+        newUser.setUserPassword(passwordEncoder.encode(password));
         // 3. 设置默认邮箱（用户名@example.com）
-        newUser.setEmail(username + "@example.com");
+        newUser.setUserEmail(username + "@example.com");
         // 4. 设置默认个人详情
-        newUser.setPersonalDetails("User account created via registration");
-        // 5. 默认注册为普通用户
-        newUser.setRole(Role.USER);
+        newUser.setUserIntroduce("User account created via registration");
+        // 5. 默认注册为普通用户 (1=用户, 0=管理员)
+        newUser.setUserType(1);
+        newUser.setUserRegisterTime(java.time.LocalDateTime.now());
+        newUser.setUserLastLoginTime(java.time.LocalDateTime.now());
+        newUser.setUserGender("Unknown");
 
         return userRepository.save(newUser);
     }
@@ -52,6 +54,6 @@ public class UserServiceImpl implements UserService {
     // (如果您的接口还需要 loadUserByUsername, 也要实现)
     // 示例：
     public java.util.Optional<User> loadUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUserName(username);
     }
 }

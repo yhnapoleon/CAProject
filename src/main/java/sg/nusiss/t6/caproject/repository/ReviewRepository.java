@@ -10,9 +10,7 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     /**
-     * 根据商品ID查找所有评论
-     * @param productId 商品ID
-     * @return 评论列表
+     * 根据商品ID查找所有评论（关联字段为 product.productId）
      */
-    List<Review> findByProductId(Long productId);
+    List<Review> findByProductProductId(Long productId);
 }

@@ -2,7 +2,6 @@ package sg.nusiss.t6.caproject.controller;
 
 import sg.nusiss.t6.caproject.controller.dto.LoginRequest;
 import sg.nusiss.t6.caproject.controller.dto.AuthResponse;
-import sg.nusiss.t6.caproject.model.User.Role;
 import sg.nusiss.t6.caproject.service.UserService;
 import sg.nusiss.t6.caproject.util.JwtTokenUtil;
 import org.springframework.http.HttpStatus;
@@ -41,7 +40,7 @@ public class AdminAuthController {
         // 2. 额外检查角色：只有 ADMIN 角色才能登录后台
         // 从 UserService 加载原始 User 实体，检查角色
         boolean isAdmin = userService.loadUserByUsername(authenticationRequest.getUsername())
-                .map(user -> user.getRole() == Role.ADMIN)
+                .map(user -> user.getUserType() == 0) // 0=管理员, 1=用户
                 .orElse(false);
 
         if (!isAdmin) {

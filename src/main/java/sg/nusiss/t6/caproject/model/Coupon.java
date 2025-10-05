@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -36,8 +37,8 @@ public class Coupon {
     @Column(name = "coupon_type", length = 20)
     private String couponType;
 
-    @Column(name = "discount", nullable = false)
-    private Float discount;
+    @Column(name = "discount", nullable = false, precision = 10, scale = 2)
+    private BigDecimal discount;
 
     @Column(name = "manjian_value", nullable = false)
     private Integer manjianValue;

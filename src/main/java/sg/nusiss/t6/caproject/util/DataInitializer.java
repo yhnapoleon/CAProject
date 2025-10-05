@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sg.nusiss.t6.caproject.model.User;
 import sg.nusiss.t6.caproject.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Optional; // 引入 Optional
 
 @Component
@@ -32,7 +33,7 @@ public class DataInitializer implements CommandLineRunner {
 
         try {
             // userRepository.findByUsername 返回 Optional<User>
-            existingUserOptional = userRepository.findByUsername(ADMIN_USERNAME);
+            existingUserOptional = userRepository.findByUserName(ADMIN_USERNAME);
         } catch (Exception e) {
             // 如果查询本身失败，打印错误并退出
             System.err.println("!!! 数据库查询失败，请检查数据库连接和表结构配置 !!!");
@@ -46,11 +47,15 @@ public class DataInitializer implements CommandLineRunner {
 
             try {
                 User adminUser = new User();
-                adminUser.setUsername(ADMIN_USERNAME);
-                adminUser.setEmail(ADMIN_EMAIL);
-                adminUser.setPassword(passwordEncoder.encode(ADMIN_PASSWORD));
-                adminUser.setRole(User.Role.ADMIN);
-                adminUser.setPersonalDetails("System Administrator Account"); // 确保非空字段有值
+                adminUser.setUserName(ADMIN_USERNAME);
+                adminUser.setUserEmail(ADMIN_EMAIL);
+                adminUser.setUserPassword(passwordEncoder.encode(ADMIN_PASSWORD));
+                adminUser.setUserType(0); // 0=管理员
+                adminUser.setUserRegisterTime(LocalDateTime.now());
+                adminUser.setUserLastLoginTime(LocalDateTime.now());
+                adminUser.setUserGender("Unknown"); // 确保非空字段有值
+                adminUser.setUserIntroduce("System Administrator Account"); // 确保非空字段有值
+                adminUser.setUserPhone("0000000000"); // 占位手机号，满足非空与唯一约束
 
                 userRepository.save(adminUser);
 
@@ -65,7 +70,7 @@ public class DataInitializer implements CommandLineRunner {
 
         } else {
             // 如果用户已存在，打印 ID 以供确认
-            System.out.println("--- 管理员账户已存在 (ID: " + existingUserOptional.get().getId() + ")，跳过创建。 ---");
+            System.out.println("--- 管理员账户已存在 (ID: " + existingUserOptional.get().getUserId() + ")，跳过创建。 ---");
         }
     }
 }
