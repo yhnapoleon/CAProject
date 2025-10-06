@@ -38,15 +38,19 @@ public class UserServiceImpl implements UserService {
         newUser.setUserName(username);
         // 2. 关键步骤：存储密码前必须进行加密
         newUser.setUserPassword(passwordEncoder.encode(password));
-        // 3. 设置默认邮箱（用户名@example.com）
-        newUser.setUserEmail(username + "@example.com");
-        // 4. 设置默认个人详情
+        // 3. 设置邮箱（用户名就是邮箱）
+        newUser.setUserEmail(username);
+        // 4. 设置默认手机号（使用用户名作为手机号）
+        newUser.setUserPhone(username);
+        // 5. 设置默认个人详情
         newUser.setUserIntroduce("User account created via registration");
-        // 5. 默认注册为普通用户 (1=用户, 0=管理员)
+        // 6. 默认注册为普通用户 (1=用户, 0=管理员)
         newUser.setUserType(1);
         newUser.setUserRegisterTime(java.time.LocalDateTime.now());
         newUser.setUserLastLoginTime(java.time.LocalDateTime.now());
         newUser.setUserGender("Unknown");
+        // 7. 设置默认生日
+        newUser.setUserBirthday(java.time.LocalDate.now());
 
         return userRepository.save(newUser);
     }
