@@ -13,14 +13,13 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "coupons")
+@Table(name = "coupon")
 public class Coupon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coupon_id")
     private Integer couponId;
-
 
     @Column(name = "coupon_number", length = 20)
     private String couponNumber;
@@ -34,20 +33,9 @@ public class Coupon {
     @Column(name = "coupon_end_time", nullable = false)
     private LocalDateTime couponEndTime;
 
-    @Column(name = "coupon_type", length = 20)
-    private String couponType;
-
-    @Column(name = "discount", nullable = false, precision = 10, scale = 2)
-    private BigDecimal discount;
-
-    @Column(name = "manjian_value", nullable = false)
-    private Integer manjianValue;
-
     @Column(name = "coupon_name", length = 20)
     private String couponName;
 
-    @Column(name = "coupon_quantity", nullable = false)
-    private Integer couponQuantity;
 
     // 一个优惠券可以被多个订单使用 (一对多)
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -61,4 +49,78 @@ public class Coupon {
     // 一个优惠券可以被多个用户拥有 (一对多)
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserCoupon> userCoupons;
+
+    public Integer getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(Integer couponId) {
+        this.couponId = couponId;
+    }
+
+    public String getCouponNumber() {
+        return couponNumber;
+    }
+
+    public void setCouponNumber(String couponNumber) {
+        this.couponNumber = couponNumber;
+    }
+
+    public Integer getCouponValue() {
+        return couponValue;
+    }
+
+    public void setCouponValue(Integer couponValue) {
+        this.couponValue = couponValue;
+    }
+
+    public LocalDateTime getCouponStartTime() {
+        return couponStartTime;
+    }
+
+    public void setCouponStartTime(LocalDateTime couponStartTime) {
+        this.couponStartTime = couponStartTime;
+    }
+
+    public LocalDateTime getCouponEndTime() {
+        return couponEndTime;
+    }
+
+    public void setCouponEndTime(LocalDateTime couponEndTime) {
+        this.couponEndTime = couponEndTime;
+    }
+
+
+    public String getCouponName() {
+        return couponName;
+    }
+
+    public void setCouponName(String couponName) {
+        this.couponName = couponName;
+    }
+
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<UserCoupon> getUserCoupons() {
+        return userCoupons;
+    }
+
+    public void setUserCoupons(List<UserCoupon> userCoupons) {
+        this.userCoupons = userCoupons;
+    }
 }

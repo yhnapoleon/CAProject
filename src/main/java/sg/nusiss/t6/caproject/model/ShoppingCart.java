@@ -30,5 +30,35 @@ public class ShoppingCart {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public Integer getShoppingCartId() {
+        return shoppingCartId;
+    }
+
+    public void setShoppingCartId(Integer shoppingCartId) {
+        this.shoppingCartId = shoppingCartId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 }

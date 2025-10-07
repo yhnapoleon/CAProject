@@ -52,4 +52,68 @@ public class Discount {
             this.discountStartTime = LocalDateTime.now();
         }
     }
+
+    public Integer getDiscountId() {
+        return discountId;
+    }
+
+    public void setDiscountId(Integer discountId) {
+        this.discountId = discountId;
+    }
+
+    public String getDiscountName() {
+        return discountName;
+    }
+
+    public void setDiscountName(String discountName) {
+        this.discountName = discountName;
+    }
+
+    public String getDiscountDescription() {
+        return discountDescription;
+    }
+
+    public void setDiscountDescription(String discountDescription) {
+        this.discountDescription = discountDescription;
+    }
+
+    public LocalDateTime getDiscountStartTime() {
+        return discountStartTime;
+    }
+
+    public void setDiscountStartTime(LocalDateTime discountStartTime) {
+        this.discountStartTime = discountStartTime;
+    }
+
+    public LocalDateTime getDiscountEndTime() {
+        return discountEndTime;
+    }
+
+    public void setDiscountEndTime(LocalDateTime discountEndTime) {
+        this.discountEndTime = discountEndTime;
+    }
+
+    public BigDecimal getDiscountDiscount() {
+        return discountDiscount;
+    }
+
+    public void setDiscountDiscount(BigDecimal discountDiscount) {
+        this.discountDiscount = discountDiscount;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
