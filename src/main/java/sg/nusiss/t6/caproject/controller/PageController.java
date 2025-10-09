@@ -55,4 +55,9 @@ public class PageController {
     public String home() {
         return "registration"; // Default to registration page
     }
+
+    @GetMapping("/image-test")
+    public String imageTest() {
+        return "image-test";
+    }
 }
