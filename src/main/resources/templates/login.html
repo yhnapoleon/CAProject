@@ -61,7 +61,7 @@
       }
       .input-field {
         width: 640px;
-        height: 84px;
+        height: 100px;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -81,9 +81,10 @@
         overflow: hidden;
         display: flex;
         align-items: center;
-        padding: 14px 18px;
+        padding: 20px 18px;
         min-width: 240px;
         color: #b3b3b3;
+        min-height: 24px;
       }
       .value {
         flex: 1;
@@ -532,8 +533,140 @@
       }
       .face-blowing-a-kiss { width: 22px; height: 22px; vertical-align: middle; margin-left: 6px; opacity: 0.9; }
 
+      .input-value {
+        width: 100%;
+        padding: 8px 12px;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        color: #1e1e1e;
+        outline: none;
+      }
+      
+      .input-value::placeholder {
+        color: #b3b3b3;
+      }
+      
+      .error-message {
+        color: #ff6b6b;
+        font-size: 14px;
+        margin-top: 8px;
+        text-align: center;
+      }
+      
+      .success-message {
+        color: #4CAF50;
+        font-size: 14px;
+        margin-top: 8px;
+        text-align: center;
+      }
+
       body { margin: 0; line-height: normal; }
     </style>
+    
+    <script>
+      async function handleLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        // 清除之前的错误消息
+        clearMessages();
+        
+        if (!username || !password) {
+          showError('请填写用户名和密码');
+          return;
+        }
+        
+        try {
+          // 显示加载状态
+          const submitButton = document.querySelector('.button2');
+          const originalText = submitButton.innerHTML;
+          submitButton.innerHTML = '<div class="div-button">Signing in...</div>';
+          submitButton.style.pointerEvents = 'none';
+          
+          // 发送登录请求到后端
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: username,
+              password: password
+            })
+          });
+          
+          const result = await response.json();
+          
+          if (response.ok) {
+            // 登录成功
+            showSuccess('登录成功！正在跳转...');
+            
+            // 保存用户信息到sessionStorage
+            sessionStorage.setItem('user', JSON.stringify(result.user));
+            sessionStorage.setItem('isLoggedIn', 'true');
+            
+            // 延迟跳转到个人信息页面
+            setTimeout(() => {
+              window.location.href = '/personal-info';
+            }, 1500);
+          } else {
+            // 登录失败
+            showError(result.message || '登录失败，请检查用户名和密码');
+          }
+          
+        } catch (error) {
+          console.error('Login error:', error);
+          showError('网络错误，请稍后重试');
+        } finally {
+          // 恢复按钮状态
+          const submitButton = document.querySelector('.button2');
+          submitButton.innerHTML = originalText;
+          submitButton.style.pointerEvents = 'auto';
+        }
+      }
+      
+      function clearForm() {
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        clearMessages();
+      }
+      
+      function showError(message) {
+        clearMessages();
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        document.querySelector('.login-form').appendChild(errorDiv);
+      }
+      
+      function showSuccess(message) {
+        clearMessages();
+        const successDiv = document.createElement('div');
+        successDiv.className = 'success-message';
+        successDiv.textContent = message;
+        document.querySelector('.login-form').appendChild(successDiv);
+      }
+      
+      function clearMessages() {
+        const existingError = document.querySelector('.error-message');
+        const existingSuccess = document.querySelector('.success-message');
+        if (existingError) existingError.remove();
+        if (existingSuccess) existingSuccess.remove();
+      }
+      
+      // 页面加载时检查是否已登录
+      document.addEventListener('DOMContentLoaded', function() {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        if (isLoggedIn === 'true') {
+          // 如果已登录，直接跳转到个人信息页面
+          window.location.href = '/personal-info';
+        } else {
+          // 如果未登录，确保表单为空
+          clearForm();
+        }
+      });
+    </script>
   </head>
   <body>
     <div class="div">
@@ -544,19 +677,21 @@
 
         <div class="input-field">
           <div class="label">User name/Email</div>
-          <div class="input"><div class="value">Value</div></div>
+          <div class="input">
+            <input type="text" id="username" name="username" class="input-value" placeholder="Enter your username or email" required>
+          </div>
         </div>
 
         <div class="input-field">
           <div class="label">Password</div>
-          <div class="input"><div class="value">Value</div></div>
+          <div class="input">
+            <input type="password" id="password" name="password" class="input-value" placeholder="Enter your password" required>
+          </div>
         </div>
 
         <div class="header-auth">
-          <div class="button"><div class="div-button">Delete</div></div>
-          <a href="/personal-info" style="text-decoration: none; flex: 1;">
-            <div class="button2"><div class="div-button">Sign in</div></div>
-          </a>
+          <div class="button" onclick="clearForm()"><div class="div-button">Delete</div></div>
+          <div class="button2" onclick="handleLogin()"><div class="div-button">Sign in</div></div>
         </div>
 
         <div class="forgot-password">Can not remember your password? Please check here</div>

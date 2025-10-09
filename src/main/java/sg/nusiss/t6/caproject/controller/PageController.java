@@ -41,6 +41,16 @@ public class PageController {
         return "password-reset-confirmation";
     }
 
+    @GetMapping("/logout-success")
+    public String logoutSuccess() {
+        return "logout-success";
+    }
+
+    @GetMapping("/address-management")
+    public String addressManagement() {
+        return "address-management";
+    }
+
     @GetMapping("/")
     public String home() {
         return "registration"; // Default to registration page

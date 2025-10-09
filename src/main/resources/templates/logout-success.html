@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Login - Component1</title>
+    <title>Logout Success - Component1</title>
 
     <!-- Base URL and Favicon -->
     <base href="/" />
@@ -29,7 +29,7 @@
         color: #1e1e1e;
         font-family: Inter;
       }
-      .admin-login-form {
+      .logout-success-form {
         position: relative;
         margin: 80px auto 0;
         width: 820px;
@@ -39,124 +39,87 @@
         align-items: center;
         padding: 24px 96px 32px;
         box-sizing: border-box;
-        gap: 16px;
+        gap: 32px;
+      }
+      .success-icon-container {
+        width: 120px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .success-icon {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: #4CAF50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+      }
+      .checkmark {
+        width: 60px;
+        height: 60px;
+        position: relative;
+      }
+      .checkmark::after {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 10px;
+        width: 20px;
+        height: 40px;
+        border: solid white;
+        border-width: 0 4px 4px 0;
+        transform: rotate(45deg);
       }
       .title-container {
-        width: 581px;
+        width: 100%;
         position: relative;
         text-align: center;
         display: inline-block;
         overflow: hidden;
         text-overflow: ellipsis;
-        height: 107px;
+        height: auto;
         flex-shrink: 0;
+      }
+      .main-title {
+        margin: 0;
         font-size: 48px;
         color: #F58220;
-        white-space: nowrap;
-      }
-      .background-management-system {
-        margin: 0;
-        letter-spacing: -0.02em;
-        line-height: 120%;
         font-weight: 600;
+        line-height: 120%;
+        letter-spacing: -0.02em;
       }
-      .input-field {
-        width: 640px;
-        height: 100px;
+      .button-container {
+        width: 100%;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-      .label {
-        align-self: stretch;
-        position: relative;
-        line-height: 140%;
-      }
-      .input {
-        align-self: stretch;
-        border-radius: 12px;
-        background-color: #fff;
-        border: 1px solid #e0e0e0;
-        box-sizing: border-box;
-        overflow: hidden;
-        display: flex;
         align-items: center;
-        padding: 20px 18px;
-        min-width: 240px;
-        color: #b3b3b3;
-        min-height: 24px;
+        margin-top: 40px;
+        gap: 16px;
       }
-      .value {
-        flex: 1;
-        position: relative;
-        line-height: 100%;
-      }
-      .header-auth {
-        width: 260px;
-        height: 42px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 20px;
-      }
-      .button {
-        flex: 1;
-        border-radius: 99px;
-        background-color: #ffa065;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px 12px;
-        box-shadow: 0 4px 10px rgba(255,118,30,0.25);
-      }
-      .div-button {
-        position: relative;
-        font-weight: 500;
-        color: #fff;
-      }
-      .button2 {
-        flex: 1;
+      .homepage-button {
+        width: 240px;
+        height: 56px;
         border-radius: 99px;
         background-color: #F58220;
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 10px 12px;
         color: #f5f5f5;
         box-shadow: 0 6px 14px rgba(255,118,30,0.35);
+        font-size: 18px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        text-decoration: none;
       }
-      .forgot-password {
-        width: 334px;
-        position: relative;
-        font-size: 14px;
-        line-height: 140%;
-        color: rgba(0, 0, 0, 0.25);
-        display: inline-block;
-        height: 25px;
-        flex-shrink: 0;
-        text-align: center;
-        white-space: nowrap;
-      }
-      .div-header-auth {
-        width: 225px;
-        height: 42px;
-        display: flex;
-        align-items: center;
-        font-size: 20px;
-        color: #f5f5f5;
-      }
-      .button4 {
-        flex: 1;
-        border-radius: 99px;
-        background-color: #F58220;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 8px;
+      .homepage-button:hover {
+        background-color: #e6741a;
       }
       .footer {
         position: static;
@@ -498,37 +461,71 @@
         overflow: hidden;
         max-height: 100%;
       }
-      .face-blowing-a-kiss { width: 22px; height: 22px; vertical-align: middle; margin-left: 6px; opacity: 0.9; }
 
       body { margin: 0; line-height: normal; }
+      
+      .auto-redirect-message {
+        color: #666;
+        font-size: 14px;
+        text-align: center;
+        margin-top: 20px;
+        width: 100%;
+      }
+      
+      .countdown {
+        color: #F58220;
+        font-weight: 600;
+      }
     </style>
+    
+    <script>
+      // 自动跳转功能
+      document.addEventListener('DOMContentLoaded', function() {
+        let countdown = 5; // 5秒后自动跳转
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'auto-redirect-message';
+        messageDiv.innerHTML = `页面将在 <span class="countdown">${countdown}</span> 秒后自动跳转到登录页面`;
+        
+        // 将消息插入到按钮容器中，在按钮下方
+        const buttonContainer = document.querySelector('.button-container');
+        buttonContainer.appendChild(messageDiv);
+        
+        // 开始倒计时
+        const timer = setInterval(function() {
+          countdown--;
+          messageDiv.innerHTML = `页面将在 <span class="countdown">${countdown}</span> 秒后自动跳转到登录页面`;
+          
+          if (countdown <= 0) {
+            clearInterval(timer);
+            window.location.href = '/login';
+          }
+        }, 1000);
+        
+        // 点击按钮时清除定时器
+        const loginButton = document.querySelector('.homepage-button');
+        loginButton.addEventListener('click', function() {
+          clearInterval(timer);
+        });
+      });
+    </script>
   </head>
   <body>
     <div class="div">
-      <div class="admin-login-form">
+      <div class="logout-success-form">
+        <div class="success-icon-container">
+          <div class="success-icon">
+            <div class="checkmark"></div>
+          </div>
+        </div>
+
         <div class="title-container">
-          <p class="background-management-system">Background management system</p>
+          <h1 class="main-title">Log out success</h1>
         </div>
 
-        <div class="input-field">
-          <div class="label">Employee Number</div>
-          <div class="input"><div class="value"></div></div>
-        </div>
-
-        <div class="input-field">
-          <div class="label">Password</div>
-          <div class="input"><div class="value"></div></div>
-        </div>
-
-        <div class="header-auth">
-          <div class="button"><div class="div-button">Delete</div></div>
-          <div class="button2"><div class="div-button">Sign in</div></div>
-        </div>
-
-        <div class="forgot-password">Can not remember your password? Please check here</div>
-
-        <div class="div-header-auth">
-          <div class="button4"><div class="div-button">Find Password</div></div>
+        <div class="button-container">
+          <a href="/login" class="homepage-button">
+            Back to Login
+          </a>
         </div>
       </div>
 
@@ -624,6 +621,6 @@
     </div>
   </body>
   <!--
-    Admin login page with same header and footer as component1.html
+    Logout Success page with same header and footer as other pages
   -->
 </html>

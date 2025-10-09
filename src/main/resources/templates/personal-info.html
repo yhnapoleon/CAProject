@@ -569,6 +569,210 @@
           reader.readAsDataURL(file);
         }
       }
+
+      async function handleLogout() {
+        if (confirm('确定要退出登录吗？')) {
+          try {
+            // 调用后端登出API
+            await fetch('/api/logout', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+          } catch (error) {
+            console.error('Logout API error:', error);
+          } finally {
+            // 清除本地存储的用户信息
+            sessionStorage.removeItem('user');
+            sessionStorage.removeItem('isLoggedIn');
+            
+            // 跳转到退出成功页面
+            window.location.href = '/logout-success';
+          }
+        }
+      }
+
+      // 编辑字段功能
+      function editField(fieldType) {
+        const valueElement = document.getElementById(fieldType + '-value');
+        const currentValue = valueElement.textContent;
+        
+        // 如果是密码字段，显示空值而不是星号
+        const displayValue = fieldType === 'password' ? '' : currentValue;
+        
+        // 创建输入框
+        const input = document.createElement('input');
+        input.type = fieldType === 'password' ? 'password' : 'text';
+        input.value = displayValue;
+        input.className = 'edit-input';
+        input.style.cssText = `
+          padding: 14px 18px;
+          border: 1px solid #e0e0e0;
+          border-radius: 6px;
+          background: #fff;
+          font-size: 14px;
+          color: #1e1e1e;
+          width: 200px;
+          margin-right: 12px;
+          min-height: 20px;
+        `;
+        
+        // 创建保存和取消按钮
+        const saveButton = document.createElement('button');
+        saveButton.textContent = 'Save';
+        saveButton.className = 'edit-button';
+        saveButton.style.marginRight = '8px';
+        saveButton.onclick = () => saveField(fieldType, input.value);
+        
+        const cancelButton = document.createElement('button');
+        cancelButton.textContent = 'Cancel';
+        cancelButton.className = 'edit-button';
+        cancelButton.style.background = '#f5f5f5';
+        cancelButton.style.color = '#666';
+        cancelButton.onclick = () => cancelEdit(fieldType, currentValue);
+        
+        // 隐藏原值和编辑按钮
+        valueElement.style.display = 'none';
+        const editButton = valueElement.parentNode.querySelector(`button[onclick="editField('${fieldType}')"]`);
+        if (editButton) {
+          editButton.style.display = 'none';
+        } else {
+          // 如果通过onclick属性找不到，尝试通过文本内容找到Edit按钮
+          const allButtons = valueElement.parentNode.querySelectorAll('button');
+          for (let button of allButtons) {
+            if (button.textContent === 'Edit') {
+              button.style.display = 'none';
+              break;
+            }
+          }
+        }
+        
+        // 插入新元素
+        const insertBefore = valueElement.parentNode.lastElementChild;
+        valueElement.parentNode.insertBefore(input, insertBefore);
+        valueElement.parentNode.insertBefore(saveButton, insertBefore);
+        valueElement.parentNode.insertBefore(cancelButton, insertBefore);
+        
+        // 聚焦输入框
+        input.focus();
+        input.select();
+      }
+
+      // 保存字段
+      function saveField(fieldType, newValue) {
+        if (!newValue.trim()) {
+          alert('请输入有效值！');
+          return;
+        }
+        
+        // 验证邮箱格式
+        if (fieldType === 'email' && !isValidEmail(newValue)) {
+          alert('请输入有效的邮箱地址！');
+          return;
+        }
+        
+        // 验证电话号码格式
+        if (fieldType === 'phone' && !isValidPhone(newValue)) {
+          alert('请输入有效的电话号码！');
+          return;
+        }
+        
+        // 更新显示值
+        const valueElement = document.getElementById(fieldType + '-value');
+        if (fieldType === 'password') {
+          valueElement.textContent = '************';
+        } else {
+          valueElement.textContent = newValue;
+        }
+        
+        // 恢复显示
+        restoreFieldDisplay(fieldType);
+        
+        // 显示成功消息
+        showEditSuccessMessage(fieldType + ' updated successfully!');
+      }
+
+      // 取消编辑
+      function cancelEdit(fieldType, originalValue) {
+        const valueElement = document.getElementById(fieldType + '-value');
+        valueElement.textContent = originalValue;
+        restoreFieldDisplay(fieldType);
+      }
+
+      // 恢复字段显示
+      function restoreFieldDisplay(fieldType) {
+        const valueElement = document.getElementById(fieldType + '-value');
+        
+        // 移除所有动态添加的元素（输入框、Save按钮、Cancel按钮）
+        const allButtons = valueElement.parentNode.querySelectorAll('button');
+        const input = valueElement.parentNode.querySelector('input');
+        
+        // 移除输入框
+        if (input) input.remove();
+        
+        // 移除所有非Edit按钮（Save和Cancel按钮）
+        allButtons.forEach(button => {
+          if (button.textContent === 'Save' || button.textContent === 'Cancel') {
+            button.remove();
+          }
+        });
+        
+        // 恢复显示
+        valueElement.style.display = 'block';
+        
+        // 找到并恢复Edit按钮的显示
+        const editButton = valueElement.parentNode.querySelector(`button[onclick="editField('${fieldType}')"]`);
+        if (editButton) {
+          editButton.style.display = 'block';
+        } else {
+          // 如果通过onclick属性找不到，尝试通过文本内容找到Edit按钮
+          const remainingButtons = valueElement.parentNode.querySelectorAll('button');
+          for (let button of remainingButtons) {
+            if (button.textContent === 'Edit') {
+              button.style.display = 'block';
+              break;
+            }
+          }
+        }
+      }
+
+      // 验证邮箱格式
+      function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+
+      // 验证电话号码格式
+      function isValidPhone(phone) {
+        const phoneRegex = /^\+?[\d\s\-\(\)]+$/;
+        return phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 8;
+      }
+
+      // 显示编辑成功消息
+      function showEditSuccessMessage(message) {
+        const successDiv = document.createElement('div');
+        successDiv.style.position = 'fixed';
+        successDiv.style.top = '20px';
+        successDiv.style.right = '20px';
+        successDiv.style.background = '#4CAF50';
+        successDiv.style.color = 'white';
+        successDiv.style.padding = '12px 20px';
+        successDiv.style.borderRadius = '6px';
+        successDiv.style.fontSize = '14px';
+        successDiv.style.zIndex = '10000';
+        successDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+        successDiv.textContent = message;
+
+        document.body.appendChild(successDiv);
+
+        // 3秒后自动移除
+        setTimeout(() => {
+          if (successDiv.parentNode) {
+            successDiv.remove();
+          }
+        }, 3000);
+      }
       
     </script>
   </head>
@@ -586,12 +790,12 @@
           <div class="nav-menu">
             <button class="nav-item active">Account</button>
             <button class="nav-item">Orders</button>
-            <button class="nav-item">Manage Addresses</button>
+            <a href="/address-management" style="text-decoration: none;">
+              <button class="nav-item">Manage Addresses</button>
+            </a>
             <button class="nav-item">Favourites</button>
             <button class="nav-item">My Coupons</button>
-            <a href="/login" style="text-decoration: none;">
-              <button class="nav-item">Sign out</button>
-            </a>
+            <button class="nav-item" onclick="handleLogout()">Sign out</button>
           </div>
         </div>
         
@@ -602,32 +806,32 @@
             <div class="info-item">
               <div class="info-label">Name</div>
               <div class="info-content">
-                <div class="info-value">Tina</div>
-                <button class="edit-button">Edit</button>
+                <div class="info-value" id="name-value">Tina</div>
+                <button class="edit-button" onclick="editField('name')">Edit</button>
               </div>
             </div>
             
             <div class="info-item">
               <div class="info-label">Email</div>
               <div class="info-content">
-                <div class="info-value">89655356@163.com</div>
-                <button class="edit-button">Edit</button>
+                <div class="info-value" id="email-value">89655356@163.com</div>
+                <button class="edit-button" onclick="editField('email')">Edit</button>
               </div>
             </div>
             
             <div class="info-item">
               <div class="info-label">Password</div>
               <div class="info-content">
-                <div class="info-value">************</div>
-                <button class="edit-button">Edit</button>
+                <div class="info-value" id="password-value">************</div>
+                <button class="edit-button" onclick="editField('password')">Edit</button>
               </div>
             </div>
             
             <div class="info-item">
               <div class="info-label">Contact number</div>
               <div class="info-content">
-                <div class="info-value">+65 89655356</div>
-                <button class="edit-button">Edit</button>
+                <div class="info-value" id="phone-value">+65 89655356</div>
+                <button class="edit-button" onclick="editField('phone')">Edit</button>
               </div>
             </div>
             
@@ -643,7 +847,6 @@
                   <div class="address-line">126821</div>
                   <div class="address-line">Singapore</div>
                 </div>
-                <button class="edit-button">Edit</button>
               </div>
             </div>
           </div>
