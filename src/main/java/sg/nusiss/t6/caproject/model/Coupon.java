@@ -123,4 +123,5 @@ public class Coupon {
     public void setUserCoupons(List<UserCoupon> userCoupons) {
         this.userCoupons = userCoupons;
     }
+
 }
