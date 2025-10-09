@@ -10,7 +10,7 @@ import sg.nusiss.t6.caproject.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.Optional; // 引入 Optional
 
-@Component
+// @Component  // 暂时禁用以避免启动时的数据库操作
 @Transactional // 确保数据库操作在事务中执行
 public class DataInitializer implements CommandLineRunner {
 
