@@ -74,7 +74,7 @@ public class WebSecurityConfig {
                 // 设置接口访问权限
                 .authorizeHttpRequests(auth -> auth
                         // 登录、注册接口放行（所有用户都可访问）
-                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/admin/auth/login").permitAll()
+                        .requestMatchers("/api/login", "/api/register", "/api/logout", "/api/auth/login", "/api/auth/register", "/api/admin/auth/login").permitAll()
 
                         // 产品浏览接口放行
                         .requestMatchers("/api/products/**").permitAll()

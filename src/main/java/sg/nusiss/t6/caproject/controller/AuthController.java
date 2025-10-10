@@ -3,7 +3,7 @@ package sg.nusiss.t6.caproject.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sg.nusiss.t6.caproject.model.LoginRequest;
+import sg.nusiss.t6.caproject.controller.dto.LoginRequest;
 import sg.nusiss.t6.caproject.service.AuthService;
 import java.util.HashMap;
 import java.util.Map;
