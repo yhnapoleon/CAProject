@@ -10,7 +10,7 @@ public class GlobalCorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 匹配所有接口路径
-                .allowedOrigins("http://localhost:3000") // 允许的前端地址（React项目）
+                .allowedOriginPatterns("*") // 允许所有来源（使用allowedOriginPatterns而不是allowedOrigins）
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // 允许的HTTP方法
                 .allowedHeaders("*") // 允许的请求头
                 .allowCredentials(true); // 是否允许携带cookie
