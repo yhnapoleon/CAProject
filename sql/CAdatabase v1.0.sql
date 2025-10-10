@@ -1,3 +1,9 @@
+-- 1. 创建数据库（如果不存在）
+CREATE DATABASE IF NOT EXISTS `caproject` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+-- 2. 使用该数据库
+USE `caproject`;
+
 /*
  Navicat Premium Data Transfer
 
@@ -147,8 +153,6 @@ CREATE TABLE `product`  (
   `product_price` decimal(10, 2) NOT NULL,
   `product_stock_quantity` int NOT NULL COMMENT '库存',
   `product_category` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `isVisible` int NOT NULL,
-  `imageUrl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `is_visible` int NOT NULL,
   `image_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`product_id`) USING BTREE,
@@ -159,7 +163,7 @@ CREATE TABLE `product`  (
 -- ----------------------------
 -- Records of product
 -- ----------------------------
-INSERT INTO `product` VALUES (200001, NULL, 'aaa', 'sss', 12.00, 345, '1', 1, NULL, 1, NULL);
+INSERT INTO `product` VALUES (200001, NULL, 'aaa', 'sss', 12.00, 345, '1', 1, NULL);
 
 -- ----------------------------
 -- Table structure for review
@@ -281,17 +285,17 @@ CREATE TABLE `user_coupon`  (
 
 
 --
-INSERT INTO `product` (`product_id`, `user_id`, `product_name`, `product_description`, `product_price`, `product_stock_quantity`, `product_category`, `isVisible`, `is_visible`, `image_url`) VALUES
-(200002, 100000, '高性能笔记本电脑', '最新款16英寸笔记本电脑，配备M3芯片，18GB内存和512GB SSD。适用于专业人士和游戏玩家。', 9999.00, 50, '电子产品', 1, 1, 'https://example.com/images/laptop.jpg'),
-(200003, 100000, '无线蓝牙耳机', '主动降噪功能，提供沉浸式音效体验。长达24小时电池续航。', 1299.00, 150, '电子产品', 1, 1, 'https://example.com/images/headphones.jpg'),
-(200004, 100000, '智能手机旗舰版', '6.7英寸OLED显示屏，三摄系统，A17处理器，全天候电池续航。', 7999.00, 80, '电子产品', 1, 1, 'https://example.com/images/smartphone.jpg'),
-(200005, 100031, '男士纯棉T恤', '100%纯棉，舒适透气，经典圆领设计，多种颜色可选。', 188.00, 300, '服装', 1, 1, 'https://example.com/images/tshirt.jpg'),
-(200006, 100031, '女士牛仔裤', '修身设计，弹力面料，打造完美腿型。适合日常穿着。', 399.00, 200, '服装', 1, 1, 'https://example.com/images/jeans.jpg'),
-(200007, 100032, '《数据库系统概念》', '数据库领域的经典教材，全面介绍了数据库设计、理论和实现。', 98.00, 500, '书籍', 1, 1, 'https://example.com/images/db_book.jpg'),
-(200008, 100032, '《人工智能：一种现代方法》', '人工智能领域的权威著作，涵盖了从基础理论到前沿应用的所有内容。', 158.00, 250, '书籍', 1, 1, 'https://example.com/images/ai_book.jpg'),
-(200009, 100033, '香薰加湿器', '超声波技术，静音运行，七彩夜灯，帮助放松身心，改善空气质量。', 259.00, 120, '家居用品', 1, 1, 'https://example.com/images/humidifier.jpg'),
-(200010, 100033, '记忆棉枕头', '人体工程学设计，有效支撑颈部，缓解压力，提升睡眠质量。', 199.00, 180, '家居用品', 1, 1, 'https://example.com/images/pillow.jpg'),
-(200011, 100000, '4K智能电视', '55英寸超高清显示屏，支持HDR，内置智能操作系统，畅享海量内容。', 3599.00, 60, '电子产品', 1, 1, 'https://example.com/images/tv.jpg');
+INSERT INTO `product` (`product_id`, `user_id`, `product_name`, `product_description`, `product_price`, `product_stock_quantity`, `product_category`, `is_visible`, `image_url`) VALUES
+(200002, 100000, '高性能笔记本电脑', '最新款16英寸笔记本电脑，配备M3芯片，18GB内存和512GB SSD。适用于专业人士和游戏玩家。', 9999.00, 50, '电子产品', 1, 'https://example.com/images/laptop.jpg'),
+(200003, 100000, '无线蓝牙耳机', '主动降噪功能，提供沉浸式音效体验。长达24小时电池续航。', 1299.00, 150, '电子产品', 1, 'https://example.com/images/headphones.jpg'),
+(200004, 100000, '智能手机旗舰版', '6.7英寸OLED显示屏，三摄系统，A17处理器，全天候电池续航。', 7999.00, 80, '电子产品', 1, 'https://example.com/images/smartphone.jpg'),
+(200005, 100031, '男士纯棉T恤', '100%纯棉，舒适透气，经典圆领设计，多种颜色可选。', 188.00, 300, '服装', 1, 'https://example.com/images/tshirt.jpg'),
+(200006, 100031, '女士牛仔裤', '修身设计，弹力面料，打造完美腿型。适合日常穿着。', 399.00, 200, '服装', 1, 'https://example.com/images/jeans.jpg'),
+(200007, 100032, '《数据库系统概念》', '数据库领域的经典教材，全面介绍了数据库设计、理论和实现。', 98.00, 500, '书籍', 1, 'https://example.com/images/db_book.jpg'),
+(200008, 100032, '《人工智能：一种现代方法》', '人工智能领域的权威著作，涵盖了从基础理论到前沿应用的所有内容。', 158.00, 250, '书籍', 1, 'https://example.com/images/ai_book.jpg'),
+(200009, 100033, '香薰加湿器', '超声波技术，静音运行，七彩夜灯，帮助放松身心，改善空气质量。', 259.00, 120, '家居用品', 1, 'https://example.com/images/humidifier.jpg'),
+(200010, 100033, '记忆棉枕头', '人体工程学设计，有效支撑颈部，缓解压力，提升睡眠质量。', 199.00, 180, '家居用品', 1, 'https://example.com/images/pillow.jpg'),
+(200011, 100000, '4K智能电视', '55英寸超高清显示屏，支持HDR，内置智能操作系统，畅享海量内容。', 3599.00, 60, '电子产品', 1, 'https://example.com/images/tv.jpg');
 
 --
 -- 表：`location` 的样例数据
