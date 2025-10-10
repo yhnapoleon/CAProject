@@ -147,8 +147,6 @@ CREATE TABLE `product`  (
   `product_price` decimal(10, 2) NOT NULL,
   `product_stock_quantity` int NOT NULL COMMENT '库存',
   `product_category` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `isVisible` int NOT NULL,
-  `imageUrl` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `is_visible` int NOT NULL,
   `image_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`product_id`) USING BTREE,
@@ -159,7 +157,7 @@ CREATE TABLE `product`  (
 -- ----------------------------
 -- Records of product
 -- ----------------------------
-INSERT INTO `product` VALUES (200001, NULL, 'aaa', 'sss', 12.00, 345, '1', 1, NULL, 1, NULL);
+INSERT INTO `product` VALUES (200001, NULL, 'aaa', 'sss', 12.00, 345, '1', 1, NULL);
 
 -- ----------------------------
 -- Table structure for review
