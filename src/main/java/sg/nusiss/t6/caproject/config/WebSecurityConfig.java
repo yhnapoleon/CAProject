@@ -74,10 +74,18 @@ public class WebSecurityConfig {
                 // 设置接口访问权限
                 .authorizeHttpRequests(auth -> auth
                         // 登录、注册接口放行（所有用户都可访问）
-                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/admin/auth/login").permitAll()
+                        .requestMatchers("/api/login", "/api/register", "/api/logout", "/api/auth/login", "/api/auth/register", "/api/admin/auth/login").permitAll()
 
                         // 产品浏览接口放行
                         .requestMatchers("/api/products/**").permitAll()
+
+                        // 静态资源放行
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+
+                        // 页面访问放行
+                        .requestMatchers("/", "/login", "/registration", "/admin-login", "/forgot-password", 
+                                        "/password-reset-confirmation", "/logout-success", "/easter-egg",
+                                        "/personal-info", "/address-management", "/image-test").permitAll()
 
                         // 管理后台接口仅允许 ADMIN 角色访问
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")

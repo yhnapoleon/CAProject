@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Address Management - Group Six</title>
+
+    <!-- Base URL and Favicon -->
+    <base href="/" />
+    <link rel="icon" type="image/svg+xml" href="/images/group-six-favicon.svg" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Rounded:ital,wght@0,500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro:ital,wght@0,500&display=swap" rel="stylesheet" />
+
+    <style>
+      .div {
+        width: 100%;
+        position: relative;
+        background-color: #fff;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        text-align: left;
+        font-size: 16px;
+        color: #1e1e1e;
+        font-family: Inter;
+      }
+      .main-content {
+        position: relative;
+        margin: 80px auto 0;
+        width: 100%;
+        max-width: 1400px;
+        min-height: 640px;
+        display: flex;
+        padding: 40px;
+        box-sizing: border-box;
+        gap: 40px;
+      }
+      .sidebar {
+        width: 280px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+        flex-shrink: 0;
+      }
+      .profile-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+      .profile-picture {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255,121,38,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+      .profile-picture:hover {
+        border: 2px solid #F58220;
+        box-shadow: 0 4px 12px rgba(245, 130, 32, 0.3);
+        transform: scale(1.05);
+      }
+      .profile-picture::after {
+        content: "📷";
+        position: absolute;
+        bottom: -5px;
+        right: -5px;
+        background: #F58220;
+        color: white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .profile-picture:hover::after {
+        opacity: 1;
+      }
+      .profile-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1e1e1e;
+        text-align: center;
+      }
+      .nav-menu {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .nav-item {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        background: transparent;
+        border: none;
+        text-align: left;
+        font-size: 16px;
+        font-weight: 500;
+        color: #1e1e1e;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .nav-item.active {
+        background: #fff3cd;
+        color: #F58220;
+      }
+      .nav-item:hover {
+        background: #f5f5f5;
+      }
+      .content-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .page-title {
+        font-size: 32px;
+        font-weight: 600;
+        color: #F58220;
+        margin: 0;
+      }
+      .address-section {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .address-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 20px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .address-label {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1e1e1e;
+      }
+      .address-label.default::after {
+        content: " (default)";
+        color: #999;
+        font-weight: 400;
+        font-size: 14px;
+      }
+      .address-label.numbered::after {
+        content: "";
+        color: #999;
+        font-weight: 400;
+        font-size: 14px;
+      }
+      .address-details {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 16px;
+        font-size: 14px;
+        color: #1e1e1e;
+        line-height: 1.5;
+      }
+      .address-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        width: 100%;
+        margin-top: 8px;
+      }
+      .delete-button {
+        padding: 8px 16px;
+        background: #F58220;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .delete-button:hover {
+        background: #e6731a;
+      }
+      .edit-button {
+        padding: 8px 16px;
+        background: #F58220;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .edit-button:hover {
+        background: #e6731a;
+      }
+      .add-address-button {
+        padding: 12px 24px;
+        background: #F58220;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        align-self: flex-start;
+        margin-top: 20px;
+      }
+      .add-address-button:hover {
+        background: #e6731a;
+      }
+      
+      .add-address-button:disabled {
+        background: #ccc;
+        color: #666;
+        cursor: not-allowed;
+      }
+      
+      .add-address-button:disabled:hover {
+        background: #ccc;
+      }
+      
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      
+      .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 30px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+      
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      
+      .modal-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #F58220;
+        margin: 0;
+      }
+      
+      .close {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        line-height: 1;
+      }
+      
+      .close:hover {
+        color: #F58220;
+      }
+      
+      .form-group {
+        margin-bottom: 20px;
+        min-height: 84px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .form-label {
+        display: block;
+        font-weight: 500;
+        color: #1e1e1e;
+        margin-bottom: 8px;
+      }
+      
+      .form-input {
+        width: 100%;
+        padding: 14px 18px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 14px;
+        color: #1e1e1e;
+        box-sizing: border-box;
+        min-height: 20px;
+      }
+      
+      .form-input:focus {
+        outline: none;
+        border-color: #F58220;
+        box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.1);
+      }
+      
+      .form-row {
+        display: flex;
+        gap: 15px;
+      }
+      
+      .form-row .form-group {
+        flex: 1;
+      }
+      
+      .modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #f0f0f0;
+      }
+      
+      .btn-cancel {
+        padding: 10px 20px;
+        background: #f5f5f5;
+        color: #666;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      
+      .btn-cancel:hover {
+        background: #e0e0e0;
+      }
+      
+      .btn-save {
+        padding: 10px 20px;
+        background: #F58220;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      
+      .btn-save:hover {
+        background: #e6731a;
+      }
+
+      .default-button {
+        padding: 8px 16px;
+        background: #F58220;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .default-button:hover {
+        background: #e6731a;
+      }
+      .footer {
+        position: static;
+        width: 100%;
+        min-height: 240px;
+        margin-top: 64px;
+      }
+      .div-footer {
+        position: relative;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+        background-color: rgba(255, 121, 38, 0.18);
+        width: 100%;
+        height: auto;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+
+      /* Centered inner grid to control columns and spacing */
+      .div-footer {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: auto 1fr 1fr 1fr;
+        column-gap: 80px;
+        row-gap: 20px;
+        padding: 40px 60px;
+        align-items: start;
+      }
+      .title { 
+        width: 100%; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 12px; 
+        grid-column: 1;
+      }
+      .footer-logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255,121,38,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
+      .footer-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+      .figma {
+        width: 23.3px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .button-list {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .x-logo-icon { width: 20px; height: 20px; opacity: 0.85; }
+      .text-link-list {
+        width: 100%;
+        position: relative;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        grid-column: 2;
+      }
+      .div-title {
+        position: static;
+        width: 301px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0px 0px 8px;
+        box-sizing: border-box;
+      }
+      .text-strong {
+        align-self: stretch;
+        display: flex;
+        align-items: flex-start;
+      }
+      .div-text-strong {
+        position: relative;
+        line-height: 140%;
+        font-weight: 600;
+      }
+      .text-link-list-item {
+        position: static;
+        width: auto;
+        height: auto;
+      }
+      .list-item {
+        position: static;
+        line-height: 160%;
+      }
+      .div-text-link-list-item { position: static; width: auto; height: auto; }
+      .text-link-list-item2 { position: static; width: auto; height: auto; }
+      .text-link-list-item3 { position: static; width: auto; height: auto; }
+      .text-link-list-item4 { position: static; width: auto; height: auto; }
+      .text-link-list-item5 { position: static; width: auto; height: auto; }
+      .list-item5 { position: static; line-height: 160%; }
+      .blank-line {
+        margin: 0;
+      }
+      .div-text-link-list {
+        width: 100%;
+        position: relative;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        grid-column: 3;
+      }
+      .title2 {
+        position: static;
+        width: 262px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0px 0px 8px;
+        box-sizing: border-box;
+      }
+      .text-link-list2 {
+        width: 100%;
+        position: relative;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        grid-column: 4;
+      }
+      .list-item12 { position: static; line-height: 160%; font-weight: 600; margin-top: 12px; }
+      .header {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 64px;
+        background: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: visible;
+        text-align: center;
+        font-size: 13px;
+        color: #ffa065;
+        font-family: 'SF Pro Rounded';
+        z-index: 1000;
+      }
+      .logo {
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255,121,38,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .home {
+        position: absolute;
+        top: 10px;
+        left: 80px;
+        width: 44px;
+        height: 44px;
+        overflow: hidden;
+      }
+      .icon {
+        position: absolute;
+        height: 83.33%;
+        width: 75%;
+        top: 8.33%;
+        right: 12.49%;
+        bottom: 8.33%;
+        left: 12.51%;
+        max-width: 100%;
+        overflow: hidden;
+        max-height: 100%;
+      }
+      .shopping-cart {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+        overflow: hidden;
+      }
+      .div-icon {
+        position: absolute;
+        height: 87.5%;
+        width: 91.74%;
+        top: 4.17%;
+        right: 4.09%;
+        bottom: 8.33%;
+        left: 4.17%;
+        max-width: 100%;
+        overflow: hidden;
+        max-height: 100%;
+      }
+      .account-circle-icon {
+        position: absolute;
+        top: 10px;
+        right: 80px;
+        width: 44px;
+        height: 44px;
+      }
+      .search-field {
+        position: absolute;
+        top: 10px;
+        left: 190px;
+        right: 160px;
+        height: 44px;
+        background-color: rgba(255,121,38,0.25);
+        border: 1px solid rgba(255,121,38,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0px 12px 0px 16px;
+        box-sizing: border-box;
+        gap: 8px;
+        border-radius: 22px;
+      }
+      .bg {
+        width: calc(100% + 0.3px);
+        position: absolute;
+        margin: 0 !important;
+        height: 100%;
+        top: 0px;
+        right: -0.3px;
+        bottom: 0px;
+        left: 0px;
+        border-radius: 6px;
+        z-index: 0;
+      }
+      .border {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.08);
+        border-radius: 1000px;
+        background-color: #fff;
+        overflow: hidden;
+      }
+      .fill {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        border-radius: 1000px;
+        background-color: rgba(255, 121, 38, 0.18);
+        overflow: hidden;
+      }
+      .magnifying-glass {
+        width: 16px;
+        position: relative;
+        height: 15px;
+        z-index: 1;
+      }
+      .div2 {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0%;
+        left: 0%;
+        line-height: 20px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .search {
+        flex: 1;
+        position: relative;
+        font-size: 20px;
+        line-height: 16px;
+        font-weight: 500;
+        font-family: 'SF Pro';
+        color: #999;
+        white-space: nowrap;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        mix-blend-mode: linear-burn;
+        z-index: 2;
+      }
+      .clear {
+        width: 16px;
+        position: relative;
+        height: 15px;
+        z-index: 3;
+      }
+      .header-child { display: none; }
+      .icon-button {
+        position: absolute;
+        top: 10px;
+        left: 130px;
+        border-radius: 32px;
+        background-color: #ffa065;
+        width: 44px;
+        height: 44px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+      .menu {
+        width: 20px;
+        position: relative;
+        height: 20px;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .icon2 {
+        position: absolute;
+        height: 60%;
+        width: 85%;
+        top: 20%;
+        right: 7.5%;
+        bottom: 20%;
+        left: 7.5%;
+        max-width: 100%;
+        overflow: hidden;
+        max-height: 100%;
+      }
+
+      body { margin: 0; line-height: normal; }
+    </style>
+    <script>
+      function handleAvatarUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+          // 检查文件类型
+          if (!file.type.startsWith('image/')) {
+            alert('请选择图片文件！');
+            return;
+          }
+          
+          // 检查文件大小 (限制为5MB)
+          if (file.size > 5 * 1024 * 1024) {
+            alert('图片文件过大，请选择小于5MB的图片！');
+            return;
+          }
+          
+          // 创建FileReader来读取文件
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            // 更新头像图片
+            document.getElementById('avatar-image').src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      // 地址管理功能
+      document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-button');
+        const editButtons = document.querySelectorAll('.edit-button');
+        const addButton = document.querySelector('.add-address-button');
+
+        deleteButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            if (confirm('确定要删除这个地址吗？')) {
+              this.closest('.address-item').remove();
+            }
+          });
+        });
+
+        editButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            alert('编辑功能即将实现！');
+          });
+        });
+
+        addButton.addEventListener('click', function() {
+          if (!this.disabled) {
+            showAddAddressModal();
+          }
+        });
+      });
+
+      // 显示添加地址模态框
+      function showAddAddressModal() {
+        // 检查地址数量限制
+        const existingAddresses = document.querySelectorAll('.address-item');
+        if (existingAddresses.length >= 5) {
+          showSuccessMessage('最多只能添加5个地址！');
+          return;
+        }
+        
+        const modal = document.getElementById('addAddressModal');
+        modal.style.display = 'block';
+        
+        // 清空表单
+        document.getElementById('addressForm').reset();
+      }
+
+      // 隐藏模态框
+      function hideAddAddressModal() {
+        const modal = document.getElementById('addAddressModal');
+        modal.style.display = 'none';
+      }
+
+      // 保存新地址
+      function saveNewAddress() {
+        const street = document.getElementById('street').value.trim();
+        const building = document.getElementById('building').value.trim();
+        const postalCode = document.getElementById('postalCode').value.trim();
+        const city = document.getElementById('city').value.trim();
+
+        // 验证必填字段
+        if (!street || !building || !postalCode || !city) {
+          showModalError('请填写所有必填字段！');
+          return;
+        }
+
+        // 验证邮政编码格式（新加坡邮政编码是6位数字）
+        if (!/^\d{6}$/.test(postalCode)) {
+          showModalError('请输入有效的6位邮政编码！');
+          return;
+        }
+
+        // 验证地址长度
+        if (street.length < 5 || building.length < 3) {
+          showModalError('地址信息过短，请提供更详细的地址！');
+          return;
+        }
+
+        // 检查是否已存在相同地址
+        if (isDuplicateAddress(street, building, postalCode, city)) {
+          showModalError('该地址已存在，请勿重复添加！');
+          return;
+        }
+
+        // 创建新地址项
+        const addressSection = document.querySelector('.address-section');
+        const newAddressItem = document.createElement('div');
+        newAddressItem.className = 'address-item';
+        
+        // 计算新的地址编号
+        const existingAddresses = document.querySelectorAll('.address-item');
+        const newNumber = existingAddresses.length;
+        
+        // 生成地址ID用于管理
+        const addressId = 'address_' + Date.now();
+        
+        newAddressItem.innerHTML = `
+          <div class="address-label ${newNumber === 1 ? 'default' : 'numbered'}">Shipping address</div>
+          <div class="address-details">
+            ${escapeHtml(street)}<br>
+            ${escapeHtml(building)}<br>
+            ${escapeHtml(postalCode)}<br>
+            ${escapeHtml(city)}
+          </div>
+          <div class="address-actions">
+            <button class="delete-button" onclick="deleteAddress(this)">Delete</button>
+            <button class="edit-button" onclick="editAddress(this)">Edit</button>
+            ${newNumber === 1 ? '' : '<button class="default-button" onclick="setDefaultAddress(this)">Set as Default</button>'}
+          </div>
+        `;
+        
+        // 设置地址数据属性
+        newAddressItem.setAttribute('data-address-id', addressId);
+        newAddressItem.setAttribute('data-street', street);
+        newAddressItem.setAttribute('data-building', building);
+        newAddressItem.setAttribute('data-postal', postalCode);
+        newAddressItem.setAttribute('data-city', city);
+        
+        // 插入到添加按钮之前
+        const addButton = document.querySelector('.add-address-button');
+        addressSection.insertBefore(newAddressItem, addButton);
+        
+        // 更新地址编号显示
+        updateAddressNumbers();
+        
+        // 更新添加按钮状态
+        updateAddButtonState();
+        
+        // 隐藏模态框
+        hideAddAddressModal();
+        
+        // 显示成功消息
+        showSuccessMessage('地址添加成功！');
+        
+        // 滚动到新添加的地址
+        newAddressItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // 检查重复地址
+      function isDuplicateAddress(street, building, postalCode, city) {
+        const existingAddresses = document.querySelectorAll('.address-item');
+        for (let address of existingAddresses) {
+          const existingStreet = address.getAttribute('data-street') || '';
+          const existingBuilding = address.getAttribute('data-building') || '';
+          const existingPostal = address.getAttribute('data-postal') || '';
+          const existingCity = address.getAttribute('data-city') || '';
+          
+          if (existingStreet.toLowerCase() === street.toLowerCase() &&
+              existingBuilding.toLowerCase() === building.toLowerCase() &&
+              existingPostal === postalCode &&
+              existingCity.toLowerCase() === city.toLowerCase()) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      // 更新地址编号
+      function updateAddressNumbers() {
+        const addresses = document.querySelectorAll('.address-item');
+        addresses.forEach((address, index) => {
+          const label = address.querySelector('.address-label');
+          if (index === 0) {
+            label.className = 'address-label default';
+            label.innerHTML = 'Shipping address';
+          } else {
+            label.className = 'address-label numbered';
+            label.innerHTML = `Shipping address ${index}`;
+          }
+        });
+      }
+
+      // HTML转义防止XSS
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // 显示模态框错误消息
+      function showModalError(message) {
+        // 清除之前的错误消息
+        const existingError = document.querySelector('.modal-error');
+        if (existingError) {
+          existingError.remove();
+        }
+
+        // 创建错误消息元素
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'modal-error';
+        errorDiv.style.color = '#ff6b6b';
+        errorDiv.style.fontSize = '14px';
+        errorDiv.style.marginTop = '10px';
+        errorDiv.style.textAlign = 'center';
+        errorDiv.textContent = message;
+
+        // 插入到表单中
+        const form = document.getElementById('addressForm');
+        form.appendChild(errorDiv);
+
+        // 3秒后自动移除错误消息
+        setTimeout(() => {
+          if (errorDiv.parentNode) {
+            errorDiv.remove();
+          }
+        }, 3000);
+      }
+
+      // 显示成功消息
+      function showSuccessMessage(message) {
+        // 创建成功提示
+        const successDiv = document.createElement('div');
+        successDiv.style.position = 'fixed';
+        successDiv.style.top = '20px';
+        successDiv.style.right = '20px';
+        successDiv.style.background = '#4CAF50';
+        successDiv.style.color = 'white';
+        successDiv.style.padding = '12px 20px';
+        successDiv.style.borderRadius = '6px';
+        successDiv.style.fontSize = '14px';
+        successDiv.style.zIndex = '10000';
+        successDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+        successDiv.textContent = message;
+
+        document.body.appendChild(successDiv);
+
+        // 3秒后自动移除
+        setTimeout(() => {
+          if (successDiv.parentNode) {
+            successDiv.remove();
+          }
+        }, 3000);
+      }
+
+      // 删除地址
+      function deleteAddress(button) {
+        if (confirm('确定要删除这个地址吗？')) {
+          const addressItem = button.closest('.address-item');
+          const addressLabel = addressItem.querySelector('.address-label');
+          const isDefault = addressLabel.classList.contains('default');
+          
+          // 如果删除的是默认地址，需要设置新的默认地址
+          if (isDefault) {
+            const remainingAddresses = document.querySelectorAll('.address-item');
+            if (remainingAddresses.length > 1) {
+              // 将第一个剩余地址设为默认
+              const firstRemaining = remainingAddresses[1]; // 跳过当前要删除的地址
+              if (firstRemaining) {
+                const firstLabel = firstRemaining.querySelector('.address-label');
+                firstLabel.className = 'address-label default';
+                firstLabel.innerHTML = 'Shipping address';
+              }
+            }
+          }
+          
+          addressItem.remove();
+          
+          // 重新编号所有地址
+          updateAddressNumbers();
+          
+          // 更新添加按钮状态
+          updateAddButtonState();
+          
+          // 显示删除成功消息
+          showSuccessMessage('地址删除成功！');
+        }
+      }
+
+      // 编辑地址
+      function editAddress(button) {
+        const addressItem = button.closest('.address-item');
+        const street = addressItem.getAttribute('data-street');
+        const building = addressItem.getAttribute('data-building');
+        const postalCode = addressItem.getAttribute('data-postal');
+        const city = addressItem.getAttribute('data-city');
+        
+        // 创建编辑模态框
+        showEditAddressModal(addressItem, street, building, postalCode, city);
+      }
+
+      // 显示编辑地址模态框
+      function showEditAddressModal(addressItem, street, building, postalCode, city) {
+        // 创建模态框
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.id = 'editAddressModal';
+        modal.style.display = 'block';
+        
+        modal.innerHTML = `
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 class="modal-title">Edit Address</h2>
+              <span class="close" onclick="hideEditAddressModal()">&times;</span>
+            </div>
+
+            <form id="editAddressForm">
+              <div class="form-group">
+                <label class="form-label" for="edit-street">Street Address *</label>
+                <input type="text" id="edit-street" class="form-input" value="${street}" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="edit-building">Building/Unit *</label>
+                <input type="text" id="edit-building" class="form-input" value="${building}" required>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="edit-postalCode">Postal Code *</label>
+                  <input type="text" id="edit-postalCode" class="form-input" value="${postalCode}" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="edit-city">City *</label>
+                  <input type="text" id="edit-city" class="form-input" value="${city}" required>
+                </div>
+              </div>
+
+              <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="hideEditAddressModal()">Cancel</button>
+                <button type="button" class="btn-save" onclick="saveEditedAddress('${addressItem.getAttribute('data-address-id')}')">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // 点击模态框外部关闭
+        modal.onclick = function(event) {
+          if (event.target === modal) {
+            hideEditAddressModal();
+          }
+        };
+      }
+
+      // 隐藏编辑地址模态框
+      function hideEditAddressModal() {
+        const modal = document.getElementById('editAddressModal');
+        if (modal) {
+          modal.remove();
+        }
+      }
+
+      // 保存编辑的地址
+      function saveEditedAddress(addressId) {
+        const street = document.getElementById('edit-street').value.trim();
+        const building = document.getElementById('edit-building').value.trim();
+        const postalCode = document.getElementById('edit-postalCode').value.trim();
+        const city = document.getElementById('edit-city').value.trim();
+
+        // 验证必填字段
+        if (!street || !building || !postalCode || !city) {
+          showModalError('请填写所有必填字段！');
+          return;
+        }
+
+        // 验证邮政编码格式
+        if (!/^\d{6}$/.test(postalCode)) {
+          showModalError('请输入有效的6位邮政编码！');
+          return;
+        }
+
+        // 验证地址长度
+        if (street.length < 5 || building.length < 3) {
+          showModalError('地址信息过短，请提供更详细的地址！');
+          return;
+        }
+
+        // 检查是否与其他地址重复（排除当前地址）
+        if (isDuplicateAddressForEdit(street, building, postalCode, city, addressId)) {
+          showModalError('该地址已存在，请勿重复添加！');
+          return;
+        }
+
+        // 找到要更新的地址项
+        const addressItem = document.querySelector(`[data-address-id="${addressId}"]`);
+        if (!addressItem) {
+          showModalError('地址未找到！');
+          return;
+        }
+
+        // 更新地址数据属性
+        addressItem.setAttribute('data-street', street);
+        addressItem.setAttribute('data-building', building);
+        addressItem.setAttribute('data-postal', postalCode);
+        addressItem.setAttribute('data-city', city);
+
+        // 更新地址显示
+        const addressDetails = addressItem.querySelector('.address-details');
+        addressDetails.innerHTML = `
+          ${escapeHtml(street)}<br>
+          ${escapeHtml(building)}<br>
+          ${escapeHtml(postalCode)}<br>
+          ${escapeHtml(city)}
+        `;
+
+        // 隐藏模态框
+        hideEditAddressModal();
+
+        // 显示成功消息
+        showSuccessMessage('地址更新成功！');
+      }
+
+      // 检查编辑时的重复地址（排除当前地址）
+      function isDuplicateAddressForEdit(street, building, postalCode, city, excludeId) {
+        const existingAddresses = document.querySelectorAll('.address-item');
+        for (let address of existingAddresses) {
+          const addressId = address.getAttribute('data-address-id');
+          if (addressId === excludeId) continue; // 跳过当前编辑的地址
+          
+          const existingStreet = address.getAttribute('data-street') || '';
+          const existingBuilding = address.getAttribute('data-building') || '';
+          const existingPostal = address.getAttribute('data-postal') || '';
+          const existingCity = address.getAttribute('data-city') || '';
+          
+          if (existingStreet.toLowerCase() === street.toLowerCase() &&
+              existingBuilding.toLowerCase() === building.toLowerCase() &&
+              existingPostal === postalCode &&
+              existingCity.toLowerCase() === city.toLowerCase()) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      // 设置默认地址
+      function setDefaultAddress(button) {
+        const addressItem = button.closest('.address-item');
+        const addressLabel = addressItem.querySelector('.address-label');
+        
+        // 如果已经是默认地址，不需要操作
+        if (addressLabel.classList.contains('default')) {
+          return;
+        }
+        
+        // 清除所有地址的默认状态
+        const allAddresses = document.querySelectorAll('.address-item');
+        allAddresses.forEach(addr => {
+          const label = addr.querySelector('.address-label');
+          label.className = 'address-label numbered';
+        });
+        
+        // 设置当前地址为默认
+        addressLabel.className = 'address-label default';
+        addressLabel.innerHTML = 'Shipping address';
+        
+        // 重新编号所有地址
+        updateAddressNumbers();
+        
+        // 显示成功消息
+        showSuccessMessage('默认地址设置成功！');
+      }
+
+      // 更新添加按钮状态
+      function updateAddButtonState() {
+        const addButton = document.querySelector('.add-address-button');
+        const existingAddresses = document.querySelectorAll('.address-item');
+        
+        if (existingAddresses.length >= 5) {
+          addButton.disabled = true;
+          addButton.style.opacity = '0.5';
+          addButton.style.cursor = 'not-allowed';
+          addButton.textContent = 'Maximum 5 addresses reached';
+        } else {
+          addButton.disabled = false;
+          addButton.style.opacity = '1';
+          addButton.style.cursor = 'pointer';
+          addButton.textContent = 'Add new address';
+        }
+      }
+
+      // 页面加载时初始化地址编号和按钮状态
+      document.addEventListener('DOMContentLoaded', function() {
+        updateAddressNumbers();
+        updateAddButtonState();
+      });
+
+      // 点击模态框外部关闭
+      window.onclick = function(event) {
+        const modal = document.getElementById('addAddressModal');
+        if (event.target === modal) {
+          hideAddAddressModal();
+        }
+      }
+
+      // 登出功能
+      async function handleLogout() {
+        if (confirm('确定要退出登录吗？')) {
+          try {
+            // 调用后端登出API
+            await fetch('/api/logout', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+          } catch (error) {
+            console.error('Logout API error:', error);
+          } finally {
+            // 清除本地存储的用户信息
+            sessionStorage.removeItem('user');
+            sessionStorage.removeItem('isLoggedIn');
+            
+            // 跳转到退出成功页面
+            window.location.href = '/logout-success';
+          }
+        }
+      }
+      
+    </script>
+  </head>
+  <body>
+    <div class="div">
+      <div class="main-content">
+        <div class="sidebar">
+          <div class="profile-section">
+            <div class="profile-picture" onclick="document.getElementById('avatar-upload').click()" style="cursor: pointer;">
+              <img id="avatar-image" src="/images/user-avatar.svg" alt="User Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+              <input type="file" id="avatar-upload" accept="image/*" style="display: none;" onchange="handleAvatarUpload(event)" />
+            </div>
+            <div class="profile-name">Tina</div>
+          </div>
+          <div class="nav-menu">
+            <a href="/personal-info" style="text-decoration: none;">
+              <button class="nav-item">Account</button>
+            </a>
+            <button class="nav-item">Orders</button>
+            <button class="nav-item active">Manage Addresses</button>
+            <button class="nav-item">Favourites</button>
+            <button class="nav-item">My Coupons</button>
+            <button class="nav-item" onclick="handleLogout()">Sign out</button>
+          </div>
+        </div>
+        
+        <div class="content-area">
+          <h1 class="page-title">Address management</h1>
+          
+          <div class="address-section">
+            <div class="address-item" data-address-id="address_1" data-street="12 West Coast Road 05-12" data-building="The Stellar 12#05-12" data-postal="126821" data-city="Singapore">
+              <div class="address-label default">Shipping address</div>
+              <div class="address-details">
+                12 West Coast Road 05-12<br>
+                The Stellar 12#05-12<br>
+                126821<br>
+                Singapore
+              </div>
+              <div class="address-actions">
+                <button class="delete-button" onclick="deleteAddress(this)">Delete</button>
+                <button class="edit-button" onclick="editAddress(this)">Edit</button>
+              </div>
+            </div>
+            
+            <div class="address-item" data-address-id="address_2" data-street="12 West Coast Road 05-12" data-building="The Stellar 12#05-12" data-postal="126821" data-city="Singapore">
+              <div class="address-label numbered">Shipping address</div>
+              <div class="address-details">
+                12 West Coast Road 05-12<br>
+                The Stellar 12#05-12<br>
+                126821<br>
+                Singapore
+              </div>
+              <div class="address-actions">
+                <button class="delete-button" onclick="deleteAddress(this)">Delete</button>
+                <button class="edit-button" onclick="editAddress(this)">Edit</button>
+                <button class="default-button" onclick="setDefaultAddress(this)">Set as Default</button>
+              </div>
+            </div>
+            
+            <div class="address-item" data-address-id="address_3" data-street="12 West Coast Road 05-12" data-building="The Stellar 12#05-12" data-postal="126821" data-city="Singapore">
+              <div class="address-label numbered">Shipping address</div>
+              <div class="address-details">
+                12 West Coast Road 05-12<br>
+                The Stellar 12#05-12<br>
+                126821<br>
+                Singapore
+              </div>
+              <div class="address-actions">
+                <button class="delete-button" onclick="deleteAddress(this)">Delete</button>
+                <button class="edit-button" onclick="editAddress(this)">Edit</button>
+                <button class="default-button" onclick="setDefaultAddress(this)">Set as Default</button>
+              </div>
+            </div>
+          </div>
+          
+          <button class="add-address-button">Add new address</button>
+        </div>
+      </div>
+
+      <!-- Add Address Modal -->
+      <div id="addAddressModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">Add New Address</h2>
+            <span class="close" onclick="hideAddAddressModal()">&times;</span>
+          </div>
+          
+          <form id="addressForm">
+            <div class="form-group">
+              <label class="form-label" for="street">Street Address *</label>
+              <input type="text" id="street" class="form-input" placeholder="e.g., 12 West Coast Road 05-12" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="building">Building/Unit *</label>
+              <input type="text" id="building" class="form-input" placeholder="e.g., The Stellar 12#05-12" required>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="postalCode">Postal Code *</label>
+                <input type="text" id="postalCode" class="form-input" placeholder="e.g., 126821" required>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="city">City *</label>
+                <input type="text" id="city" class="form-input" placeholder="e.g., Singapore" required>
+              </div>
+            </div>
+            
+            <div class="modal-actions">
+              <button type="button" class="btn-cancel" onclick="hideAddAddressModal()">Cancel</button>
+              <button type="button" class="btn-save" onclick="saveNewAddress()">Save Address</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="div-footer">
+          <div class="title">
+            <a href="/easter-egg" style="text-decoration: none;">
+              <div class="footer-logo">
+                <img src="/images/group-six-logo.png" alt="Group Six Logo" style="width: 100%; height: 100%; object-fit: contain;" />
+              </div>
+            </a>
+            <div class="button-list">
+              <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
+                <img class="x-logo-icon" src="/images/linkedin-icon.svg" alt="LinkedIn" />
+              </a>
+              <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
+                <img class="x-logo-icon" src="/images/youtube-icon.svg" alt="YouTube" />
+              </a>
+              <a href="https://www.x.com" target="_blank" rel="noopener noreferrer">
+                <img class="x-logo-icon" src="/images/x-icon.svg" alt="X (Twitter)" />
+              </a>
+              <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
+                <img class="x-logo-icon" src="/images/instagram-icon.svg" alt="Instagram" />
+              </a>
+            </div>
+          </div>
+          <div class="text-link-list">
+            <div class="div-title">
+              <div class="text-strong">
+                <div class="div-text-strong">Contact us</div>
+              </div>
+            </div>
+            <div class="text-link-list-item"><div class="list-item">Email: <a href="mailto:GroupSix@gmail.com" style="color: #1e1e1e; text-decoration: underline;">GroupSix@gmail.com</a></div></div>
+            <div class="text-link-list-item2"><div class="list-item">Phone: <a href="tel:+6583956478" style="color: #1e1e1e; text-decoration: underline;">+65 83956478</a></div></div>
+            <div class="text-link-list-item4"><div class="list-item">Address:</div></div>
+            <div class="text-link-list-item5">
+              <div class="list-item5">
+                <p class="blank-line"><a href="https://maps.google.com/?q=25+Heng+Mui+Keng+Ter,+Singapore+119615" target="_blank" rel="noopener noreferrer" style="color: #1e1e1e; text-decoration: underline;">25 Heng Mui Keng Ter,</a></p>
+                <p class="blank-line"><a href="https://maps.google.com/?q=25+Heng+Mui+Keng+Ter,+Singapore+119615" target="_blank" rel="noopener noreferrer" style="color: #1e1e1e; text-decoration: underline;">Singapore 119615</a></p>
+              </div>
+            </div>
+          </div>
+          <div class="div-text-link-list">
+            <div class="title2">
+              <div class="text-strong">
+                <div class="div-text-strong">Our story</div>
+              </div>
+            </div>
+            <div class="text-link-list-item"><div class="list-item">Since 1888</div></div>
+            <div class="text-link-list-item2"><div class="list-item">Centry-old shop</div></div>
+            <div class="text-link-list-item3"><div class="list-item">Development features</div></div>
+            <div class="text-link-list-item4"><div class="list-item">Quality choice</div></div>
+            <div class="text-link-list-item5"><div class="list-item">Intergrity managment</div></div>
+          </div>
+          <div class="text-link-list2">
+            <div class="title2">
+              <div class="text-strong">
+                <div class="div-text-strong">Terms&Condition</div>
+              </div>
+            </div>
+            <div class="text-link-list-item"><div class="list-item">Terms&Conditions</div></div>
+            <div class="text-link-list-item2"><div class="list-item">Privacy Policy</div></div>
+            <div class="text-link-list-item3"><div class="list-item12">Secure payment method</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header">
+        <a href="/easter-egg" style="text-decoration: none;">
+          <div class="logo">
+            <img src="/images/group-six-logo.png" alt="Group Six Logo" style="width: 100%; height: 100%; object-fit: contain;" />
+          </div>
+        </a>
+        <div class="home"><img class="icon" src="/images/home-icon.svg" alt="Home" /></div>
+        <div class="shopping-cart"><img class="div-icon" src="/images/cart-icon.svg" alt="Shopping Cart" /></div>
+        <a href="/login" style="text-decoration: none;">
+          <img class="account-circle-icon" src="/images/user-icon.svg" alt="User Account" />
+        </a>
+        <div class="search-field">
+          <div class="bg">
+            <div class="border"></div>
+            <div class="fill"></div>
+          </div>
+          <div class="magnifying-glass"><div class="div2">􀊫</div></div>
+          <div class="search">Search</div>
+          <div class="clear"></div>
+        </div>
+        <div class="header-child"></div>
+        <div class="icon-button">
+          <div class="menu"><img class="icon2" src="/images/menu-icon.svg" alt="Menu" /></div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <!--
+    Address Management page with same header, footer and sidebar as personal-info.html
+  -->
+</html>

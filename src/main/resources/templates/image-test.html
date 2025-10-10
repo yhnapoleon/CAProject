@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Test</title>
+    <base href="/" />
+</head>
+<body>
+    <h1>Image Loading Test</h1>
+    
+    <h2>Test 1: Group Six Logo</h2>
+    <img src="/images/group-six-logo.png" alt="Group Six Logo" style="width: 200px; height: auto; border: 1px solid #ccc;" />
+    
+    <h2>Test 2: User Avatar</h2>
+    <img src="/images/user-avatar.svg" alt="User Avatar" style="width: 100px; height: 100px; border: 1px solid #ccc;" />
+    
+    <h2>Test 3: Home Icon</h2>
+    <img src="/images/home-icon.svg" alt="Home Icon" style="width: 50px; height: 50px; border: 1px solid #ccc;" />
+    
+    <h2>Test 4: Cart Icon</h2>
+    <img src="/images/cart-icon.svg" alt="Cart Icon" style="width: 50px; height: 50px; border: 1px solid #ccc;" />
+    
+    <h2>Test 5: Social Media Icons</h2>
+    <img src="/images/linkedin-icon.svg" alt="LinkedIn" style="width: 30px; height: 30px; border: 1px solid #ccc;" />
+    <img src="/images/youtube-icon.svg" alt="YouTube" style="width: 30px; height: 30px; border: 1px solid #ccc;" />
+    <img src="/images/x-icon.svg" alt="X" style="width: 30px; height: 30px; border: 1px solid #ccc;" />
+    <img src="/images/instagram-icon.svg" alt="Instagram" style="width: 30px; height: 30px; border: 1px solid #ccc;" />
+    
+    <script>
+        // 检查图片加载状态
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('img');
+            images.forEach((img, index) => {
+                img.onload = function() {
+                    console.log(`Image ${index + 1} loaded successfully: ${img.src}`);
+                };
+                img.onerror = function() {
+                    console.error(`Image ${index + 1} failed to load: ${img.src}`);
+                };
+            });
+        });
+    </script>
+</body>
+</html>
+
