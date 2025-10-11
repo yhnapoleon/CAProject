@@ -33,7 +33,7 @@ public class Coupon {
     @Column(name = "coupon_end_time", nullable = false)
     private LocalDateTime couponEndTime;
 
-    @Column(name = "coupon_name", length = 20)
+    @Column(name = "coupon_name", length = 50)
     private String couponName;
 
 
