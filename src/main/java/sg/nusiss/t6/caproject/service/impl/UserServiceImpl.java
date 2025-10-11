@@ -26,31 +26,41 @@ public class UserServiceImpl implements UserService {
      * 实际项目中，您还需要处理 UserService 接口的定义，这里我们只关注注册实现。
      */
     // 注意：您需要确保您的 UserService 接口中定义了 registerUser 方法
-    // 假设：User registerUser(String username, String password);
-    public User registerUser(String username, String password) {
+    public User registerUser(String username, String email, String password, String phone) {
         // 1. 检查用户名是否已存在
         if (userRepository.existsByUserName(username)) {
-            // 在实际项目中，应抛出自定义异常
             throw new RuntimeException("Username already taken: " + username);
+        }
+
+        // 2. 检查邮箱是否已存在
+        if (userRepository.existsByUserEmail(email)) {
+            throw new RuntimeException("Email already taken: " + email);
+        }
+
+        // 3. 检查手机号是否已存在
+        if (userRepository.existsByUserPhone(phone)) {
+            throw new RuntimeException("Phone number already taken: " + phone);
         }
 
         User newUser = new User();
         newUser.setUserName(username);
-        // 2. 关键步骤：存储密码前必须进行加密
+        // 4. 关键步骤：存储密码前必须进行加密
         newUser.setUserPassword(passwordEncoder.encode(password));
-        // 3. 设置邮箱（用户名就是邮箱）
-        newUser.setUserEmail(username);
-        // 4. 设置默认手机号（使用用户名作为手机号）
-        newUser.setUserPhone(username);
-        // 5. 设置默认个人详情
+        // 5. 设置邮箱
+        newUser.setUserEmail(email);
+        // 6. 设置手机号
+        newUser.setUserPhone(phone);
+        // 7. 设置默认个人详情
         newUser.setUserIntroduce("User account created via registration");
-        // 6. 默认注册为普通用户 (1=用户, 0=管理员)
+        // 8. 默认注册为普通用户 (1=用户, 0=管理员)
         newUser.setUserType(1);
         newUser.setUserRegisterTime(java.time.LocalDateTime.now());
         newUser.setUserLastLoginTime(java.time.LocalDateTime.now());
         newUser.setUserGender("Unknown");
-        // 7. 设置默认生日
+        // 9. 设置默认生日
         newUser.setUserBirthday(java.time.LocalDate.now());
+        // 10. 设置默认钱包余额
+        newUser.setWallet(0.0f);
 
         return userRepository.save(newUser);
     }

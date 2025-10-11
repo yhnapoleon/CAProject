@@ -10,11 +10,13 @@ public interface UserService {
 
     /**
      * 注册新用户。
-     * * @param username 用户名
+     * @param username 用户名
+     * @param email 邮箱
      * @param password 用户的明文密码（Impl 中会进行加密）
+     * @param phone 手机号
      * @return 注册成功的 User 实体
      */
-    User registerUser(String username, String password);
+    User registerUser(String username, String email, String password, String phone);
 
     /**
      * 根据用户名加载用户（供管理员登录等逻辑使用）。
