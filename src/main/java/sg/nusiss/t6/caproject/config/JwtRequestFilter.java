@@ -67,9 +67,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
 
-        // 如果路径以 /api/auth/login, /api/auth/register, /api/admin/auth/login 开头，则跳过过滤
+        // 如果路径以 /api/auth/login, /api/auth/register, /api/register, /api/admin/auth/login 开头，则跳过过滤
         return path.startsWith("/api/auth/login") ||
                 path.startsWith("/api/auth/register") ||
+                path.startsWith("/api/register") ||
                 path.startsWith("/api/admin/auth/login");
     }
 
