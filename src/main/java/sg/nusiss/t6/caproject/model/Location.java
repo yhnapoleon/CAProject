@@ -23,6 +23,9 @@ public class Location {
     @Column(name = "user_id", nullable = false)
     private Integer userId;
 
+    @Column(name = "default_address", length = 20, nullable = false)
+    private String defaultAddress;
+
     // 一个地址属于一个用户 (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
@@ -59,5 +62,13 @@ public class Location {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getDefaultAddress() {
+        return defaultAddress;
+    }
+
+    public void setDefaultAddress(String defaultAddress) {
+        this.defaultAddress = defaultAddress;
     }
 }
