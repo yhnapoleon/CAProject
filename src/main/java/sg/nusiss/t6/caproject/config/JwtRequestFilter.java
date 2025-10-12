@@ -67,16 +67,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
 
-        // 如果路径以 /api/auth/login, /api/auth/register, /api/register, /api/admin/auth/login 开头，则跳过过滤
+        // 如果路径以 /api/auth/login, /api/auth/register, /api/register,
+        // /api/admin/auth/login 开头，则跳过过滤
         return path.startsWith("/api/auth/login") ||
                 path.startsWith("/api/auth/register") ||
                 path.startsWith("/api/register") ||
-                path.startsWith("/api/admin/auth/login");
+                path.startsWith("/api/admin/auth/login") ||
+                // Swagger/OpenAPI 文档与 UI 放行，避免无 token 访问被拦截
+                path.equals("/swagger-ui.html") ||
+                path.startsWith("/swagger-ui/") ||
+                path.startsWith("/v3/api-docs");
     }
 
-
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull FilterChain chain)
             throws ServletException, IOException {
 
         final String requestTokenHeader = request.getHeader("Authorization");
@@ -113,7 +118,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     // 并且必须在 parse 之前调用 build()
                     Claims claims = Jwts.parser()
                             .verifyWith((SecretKey) this.signingKey) // ⬅️ 修正点 1: 使用 Key 对象和 verifyWith
-                            .build()                    // ⬅️ 修正点 2: 必须调用 build()
+                            .build() // ⬅️ 修正点 2: 必须调用 build()
                             .parseSignedClaims(jwtToken)
                             .getPayload();
 

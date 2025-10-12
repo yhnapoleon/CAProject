@@ -33,8 +33,8 @@ public class WebSecurityConfig {
      * 构造函数注入：用户服务、JWT 过滤器、密码加密器
      */
     public WebSecurityConfig(UserDetailsService jwtUserDetailsService,
-                             JwtRequestFilter jwtRequestFilter,
-                             PasswordEncoder passwordEncoder) {
+            JwtRequestFilter jwtRequestFilter,
+            PasswordEncoder passwordEncoder) {
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
         this.passwordEncoder = passwordEncoder;
@@ -57,7 +57,8 @@ public class WebSecurityConfig {
      * 在 Spring Security 6 中，推荐通过 AuthenticationConfiguration 来获取它。
      */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -73,10 +74,22 @@ public class WebSecurityConfig {
 
                 // 设置接口访问权限
                 .authorizeHttpRequests(auth -> auth
+                        // Swagger/OpenAPI 端点放行
+                        .requestMatchers(
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs/swagger-config",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/swagger-resources/**",
+                                "/webjars/**")
+                        .permitAll()
                         .requestMatchers("/images/**").permitAll()
 
                         // 登录、注册接口放行（所有用户都可访问）
-                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/register/**", "/api/admin/auth/login").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/register/**",
+                                "/api/admin/auth/login")
+                        .permitAll()
 
                         // 产品浏览接口放行
                         .requestMatchers("/api/products/**").permitAll()
@@ -85,13 +98,11 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
 
                         // 其他所有接口都需要认证后才能访问
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
 
                 // 设置会话策略为无状态（Stateless），不会使用 Session 保存用户状态
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 // 设置身份认证提供者
                 .authenticationProvider(authenticationProvider());
