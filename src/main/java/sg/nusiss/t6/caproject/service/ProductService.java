@@ -2,9 +2,9 @@ package sg.nusiss.t6.caproject.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.model.Review;
+import sg.nusiss.t6.caproject.controller.dto.ReviewRequestDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,10 +20,10 @@ public interface ProductService {
 
     List<Review> getReviewsByProductId(Integer productId);
 
-    @Transactional(readOnly = true)
-    List<Review> getReviewsByProductId(Long productId);
+    Review addReviewToProduct(Integer productId, ReviewRequestDTO reviewRequest);
 
-    Review addReviewToProduct(Integer productId, Review review);
+    // 测试用：无鉴权写入评论
+    Review addReviewToProductForTest(Integer productId, ReviewRequestDTO reviewRequest);
 
     // --- 管理员侧功能 ---
     List<Product> getAllProducts();

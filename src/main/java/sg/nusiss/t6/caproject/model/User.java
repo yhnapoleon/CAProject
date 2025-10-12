@@ -1,6 +1,7 @@
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -59,34 +60,42 @@ public class User {
 
     // 一个用户可以有多个订单 (一对多)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Order> orders;
 
     // 一个用户可以发表多个评论 (一对多)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Review> reviews;
 
     // 一个用户（管理员）可以管理多个商品
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Product> products;
 
     // 一个用户（管理员）可以管理多个优惠券
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Coupon> coupons;
 
     // 一个用户（管理员）可以管理多个折扣活动
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Discount> discounts;
 
     // 一个用户可以有多个购物车项 (一对多)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ShoppingCart> shoppingCarts;
 
     // 一个用户可以拥有多张优惠券 (一对多)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<UserCoupon> userCoupons;
 
     // 一个用户可以有多个地址 (一对多)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Location> locations;
 
     public Integer getUserId() {
@@ -192,6 +201,5 @@ public class User {
     public void setWallet(Float wallet) {
         this.wallet = wallet;
     }
-
 
 }

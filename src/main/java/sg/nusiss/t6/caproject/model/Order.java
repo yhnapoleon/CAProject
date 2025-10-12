@@ -1,6 +1,8 @@
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,21 +36,25 @@ public class Order {
 
     // 一个订单包含多个订单项 (一对多)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<OrderItem> orderItems;
 
     // 一个订单属于一个用户 (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     // 一个订单可以使用一个折扣 (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_id")
+    @JsonBackReference
     private Discount discount;
 
     // 一个订单可以使用一张优惠券 (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
+    @JsonBackReference
     private Coupon coupon;
 
     @PrePersist

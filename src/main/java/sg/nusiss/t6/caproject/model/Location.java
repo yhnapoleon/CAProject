@@ -1,6 +1,7 @@
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +30,7 @@ public class Location {
     // 一个地址属于一个用户 (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JsonBackReference
     private User user;
 
     // Getters and Setters

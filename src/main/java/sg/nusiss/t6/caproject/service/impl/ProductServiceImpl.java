@@ -5,10 +5,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.model.Review;
+import sg.nusiss.t6.caproject.model.User;
+import sg.nusiss.t6.caproject.controller.dto.ReviewRequestDTO;
 import sg.nusiss.t6.caproject.repository.ProductRepository;
 import sg.nusiss.t6.caproject.repository.ReviewRepository;
+import sg.nusiss.t6.caproject.repository.UserRepository;
 import sg.nusiss.t6.caproject.service.ProductService;
 
 import java.util.List;
@@ -19,18 +24,22 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, ReviewRepository reviewRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ReviewRepository reviewRepository,
+            UserRepository userRepository) {
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
+        this.userRepository = userRepository;
     }
 
     // --- 用户侧功能实现 ---
 
     @Override
+    @Transactional(readOnly = true)
     public List<Product> getAllVisibleProducts() {
-        return List.of();
+        return productRepository.findByIsVisible(1);
     }
 
     @Override
@@ -46,31 +55,53 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Review> getReviewsByProductId(Integer productId) {
-        return List.of();
-    }
-
     @Transactional(readOnly = true)
-    @Override
-    public List<Review> getReviewsByProductId(Long productId) {
-        return reviewRepository.findByProductProductId(productId);
+    public List<Review> getReviewsByProductId(Integer productId) {
+        return reviewRepository.findByProductProductId(productId.longValue());
     }
 
     @Override
     @Transactional
-    public Review addReviewToProduct(Integer productId, Review review) {
+    public Review addReviewToProduct(Integer productId, ReviewRequestDTO reviewRequest) {
         // 查找商品，如果不存在则抛出异常
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+
+        Review review = new Review();
         review.setProduct(product);
-        // 在实际应用中，User 对象应该从 SecurityContext 中获取
-        // review.setUser(currentUser);
+        review.setComment(reviewRequest.getComment());
+        review.setReviewRank(reviewRequest.getReviewRank());
+        // 从安全上下文中获取当前用户并关联
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        review.setUser(user);
         return reviewRepository.save(review);
     }
 
     @Override
+    @Transactional
+    public Review addReviewToProductForTest(Integer productId, ReviewRequestDTO reviewRequest) {
+        // 查找商品，如果不存在则抛出异常
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+        // 使用硬编码测试用户ID
+        User user = userRepository.findById(100031)
+                .orElseThrow(() -> new RuntimeException("Test user not found: 100031"));
+
+        Review review = new Review();
+        review.setProduct(product);
+        review.setUser(user);
+        review.setComment(reviewRequest.getComment());
+        review.setReviewRank(reviewRequest.getReviewRank());
+        return reviewRepository.save(review);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
-        return List.of();
+        return productRepository.findAll();
     }
 
     // --- 管理员侧功能实现 ---
