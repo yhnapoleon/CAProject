@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.service.ProductService;
+import sg.nusiss.t6.caproject.controller.dto.ProductRequestDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -40,16 +41,17 @@ public class AdminProductController {
         return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
 
-    // 添加新商品
+    // 添加新商品（使用DTO避免循环与冗长请求体）
     @PostMapping("/createProduct")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> createProduct(@RequestBody ProductRequestDTO product) {
         Product createdProduct = productService.createProduct(product);
         return ResponseEntity.status(201).body(createdProduct);
     }
 
-    // 更新商品信息
+    // 更新商品信息（使用DTO）
     @PutMapping("/updateProduct/{id}")
-    public ResponseEntity<Optional<Product>> updateProduct(@PathVariable Integer id, @RequestBody Product productDetails) {
+    public ResponseEntity<Optional<Product>> updateProduct(@PathVariable Integer id,
+            @RequestBody ProductRequestDTO productDetails) {
         return ResponseEntity.ok(productService.updateProduct(id, productDetails));
     }
 
@@ -63,7 +65,7 @@ public class AdminProductController {
     // 修改库存
     @PatchMapping("/updateStock/{id}")
     public ResponseEntity<Optional<Product>> updateStock(@PathVariable Integer id,
-                                                         @RequestBody Map<String, Integer> stockUpdate) {
+            @RequestBody Map<String, Integer> stockUpdate) {
         // 兼容两种字段名
         Integer newStock = stockUpdate.get("stock");
         if (newStock == null) {
@@ -78,7 +80,7 @@ public class AdminProductController {
     // 上架/下架商品
     @PatchMapping("/setVisibility/{id}")
     public ResponseEntity<Optional<Product>> setVisibility(@PathVariable Integer id,
-                                                           @RequestBody Map<String, Boolean> visibilityUpdate) {
+            @RequestBody Map<String, Boolean> visibilityUpdate) {
         Boolean isVisible = visibilityUpdate.get("isVisible");
         if (isVisible == null) {
             return ResponseEntity.badRequest().build();

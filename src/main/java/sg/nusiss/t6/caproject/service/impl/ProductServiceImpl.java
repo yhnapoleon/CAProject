@@ -11,6 +11,7 @@ import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.model.Review;
 import sg.nusiss.t6.caproject.model.User;
 import sg.nusiss.t6.caproject.controller.dto.ReviewRequestDTO;
+import sg.nusiss.t6.caproject.controller.dto.ProductRequestDTO;
 import sg.nusiss.t6.caproject.repository.ProductRepository;
 import sg.nusiss.t6.caproject.repository.ReviewRepository;
 import sg.nusiss.t6.caproject.repository.UserRepository;
@@ -114,13 +115,28 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public Product createProduct(ProductRequestDTO product) {
+        // 从安全上下文确定当前用户作为商品的 owner/admin
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        Product entity = new Product();
+        entity.setProductName(product.getProductName());
+        entity.setProductCategory(product.getProductCategory());
+        entity.setProductDescription(product.getProductDescription());
+        entity.setProductPrice(product.getProductPrice());
+        entity.setProductStockQuantity(product.getProductStockQuantity());
+        entity.setImageUrl(product.getImageUrl());
+        entity.setIsVisible(product.getIsVisible());
+        entity.setUser(user);
+        return productRepository.save(entity);
     }
 
     @Override
     @Transactional
-    public Optional<Product> updateProduct(Integer id, Product productDetails) {
+    public Optional<Product> updateProduct(Integer id, ProductRequestDTO productDetails) {
         return productRepository.findById(id).map(existingProduct -> {
             existingProduct.setProductName(productDetails.getProductName());
             existingProduct.setProductCategory(productDetails.getProductCategory());
