@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sg.nusiss.t6.caproject.model.Discount;
 import sg.nusiss.t6.caproject.repository.DiscountRepository;
 import sg.nusiss.t6.caproject.service.DiscountService;
+import sg.nusiss.t6.caproject.controller.dto.DiscountRequestDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,13 +41,19 @@ public class DiscountServiceImpl implements DiscountService {
 
 	@Override
 	@Transactional
-	public Discount createDiscount(Discount discount) {
-		return discountRepository.save(discount);
+	public Discount createDiscount(DiscountRequestDTO discount) {
+		Discount entity = new Discount();
+		entity.setDiscountName(discount.getDiscountName());
+		entity.setDiscountDescription(discount.getDiscountDescription());
+		entity.setDiscountStartTime(discount.getDiscountStartTime());
+		entity.setDiscountEndTime(discount.getDiscountEndTime());
+		entity.setDiscountDiscount(discount.getDiscountDiscount());
+		return discountRepository.save(entity);
 	}
 
 	@Override
 	@Transactional
-	public Optional<Discount> updateDiscount(Integer id, Discount discountDetails) {
+	public Optional<Discount> updateDiscount(Integer id, DiscountRequestDTO discountDetails) {
 		return discountRepository.findById(id).map(existing -> {
 			existing.setDiscountName(discountDetails.getDiscountName());
 			existing.setDiscountDescription(discountDetails.getDiscountDescription());
@@ -63,5 +70,3 @@ public class DiscountServiceImpl implements DiscountService {
 		discountRepository.deleteById(id);
 	}
 }
-
-
