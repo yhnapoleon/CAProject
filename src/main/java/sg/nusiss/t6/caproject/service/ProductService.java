@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.model.Review;
 import sg.nusiss.t6.caproject.controller.dto.ReviewRequestDTO;
+import sg.nusiss.t6.caproject.controller.dto.ProductRequestDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,9 +31,9 @@ public interface ProductService {
 
     Page<Product> getAllProducts(Pageable pageable);
 
-    Product createProduct(Product product);
+    Product createProduct(ProductRequestDTO product);
 
-    Optional<Product> updateProduct(Integer id, Product productDetails);
+    Optional<Product> updateProduct(Integer id, ProductRequestDTO productDetails);
 
     void deleteProduct(Integer id);
 

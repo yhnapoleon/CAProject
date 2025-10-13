@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sg.nusiss.t6.caproject.model.Discount;
 import sg.nusiss.t6.caproject.service.DiscountService;
+import sg.nusiss.t6.caproject.controller.dto.DiscountRequestDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,25 +29,29 @@ public class AdminDiscountController {
 
 	@GetMapping
 	public ResponseEntity<Page<Discount>> getAllDiscountsPaged(@RequestParam(defaultValue = "0") int page,
-	                                                         @RequestParam(defaultValue = "10") int size) {
+			@RequestParam(defaultValue = "10") int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		return ResponseEntity.ok(discountService.getAllDiscounts(pageable));
 	}
 
 	@GetMapping("/getDiscount/{id}")
-	public ResponseEntity<Optional<Discount>> getDiscount(@PathVariable Integer id) {
-		return ResponseEntity.ok(discountService.getDiscountById(id));
+	public ResponseEntity<?> getDiscount(@PathVariable Integer id) {
+		Optional<Discount> d = discountService.getDiscountById(id);
+		return d.<ResponseEntity<?>>map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@PostMapping("/createDiscount")
-	public ResponseEntity<Discount> createDiscount(@RequestBody Discount discount) {
+	public ResponseEntity<Discount> createDiscount(@RequestBody DiscountRequestDTO discount) {
 		Discount created = discountService.createDiscount(discount);
 		return ResponseEntity.status(201).body(created);
 	}
 
 	@PutMapping("/updateDiscount/{id}")
-	public ResponseEntity<Optional<Discount>> updateDiscount(@PathVariable Integer id, @RequestBody Discount discount) {
-		return ResponseEntity.ok(discountService.updateDiscount(id, discount));
+	public ResponseEntity<?> updateDiscount(@PathVariable Integer id, @RequestBody DiscountRequestDTO discount) {
+		Optional<Discount> updated = discountService.updateDiscount(id, discount);
+		return updated.<ResponseEntity<?>>map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@DeleteMapping("/deleteDiscount/{id}")
@@ -55,5 +60,3 @@ public class AdminDiscountController {
 		return ResponseEntity.noContent().build();
 	}
 }
-
-

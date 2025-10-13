@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sg.nusiss.t6.caproject.model.Coupon;
 import sg.nusiss.t6.caproject.service.CouponService;
+import sg.nusiss.t6.caproject.controller.dto.CouponRequestDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class AdminCouponController {
 
 	@GetMapping
 	public ResponseEntity<Page<Coupon>> getAllCouponsPaged(@RequestParam(defaultValue = "0") int page,
-	                                                      @RequestParam(defaultValue = "10") int size) {
+			@RequestParam(defaultValue = "10") int size) {
 		Pageable pageable = PageRequest.of(page, size);
 		return ResponseEntity.ok(couponService.getAllCoupons(pageable));
 	}
@@ -41,13 +42,13 @@ public class AdminCouponController {
 	}
 
 	@PostMapping("/createCoupon")
-	public ResponseEntity<Coupon> createCoupon(@RequestBody Coupon coupon) {
+	public ResponseEntity<Coupon> createCoupon(@RequestBody CouponRequestDTO coupon) {
 		Coupon created = couponService.createCoupon(coupon);
 		return ResponseEntity.status(201).body(created);
 	}
 
 	@PutMapping("/updateCoupon/{id}")
-	public ResponseEntity<?> updateCoupon(@PathVariable Integer id, @RequestBody Coupon coupon) {
+	public ResponseEntity<?> updateCoupon(@PathVariable Integer id, @RequestBody CouponRequestDTO coupon) {
 		Optional<Coupon> updated = couponService.updateCoupon(id, coupon);
 		return updated.<ResponseEntity<?>>map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.notFound().build());
@@ -59,5 +60,3 @@ public class AdminCouponController {
 		return ResponseEntity.noContent().build();
 	}
 }
-
-

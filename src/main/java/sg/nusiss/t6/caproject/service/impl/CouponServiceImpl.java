@@ -14,6 +14,7 @@ import sg.nusiss.t6.caproject.repository.UserRepository;
 import sg.nusiss.t6.caproject.service.CouponService;
 import sg.nusiss.t6.caproject.util.Code;
 import sg.nusiss.t6.caproject.util.DataResult;
+import sg.nusiss.t6.caproject.controller.dto.CouponRequestDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,13 +55,19 @@ public class CouponServiceImpl implements CouponService {
 
 	@Override
 	@Transactional
-	public Coupon createCoupon(Coupon coupon) {
-		return couponRepository.save(coupon);
+	public Coupon createCoupon(CouponRequestDTO coupon) {
+		Coupon entity = new Coupon();
+		entity.setCouponNumber(coupon.getCouponNumber());
+		entity.setCouponValue(coupon.getCouponValue());
+		entity.setCouponStartTime(coupon.getCouponStartTime());
+		entity.setCouponEndTime(coupon.getCouponEndTime());
+		entity.setCouponName(coupon.getCouponName());
+		return couponRepository.save(entity);
 	}
 
 	@Override
 	@Transactional
-	public Optional<Coupon> updateCoupon(Integer id, Coupon couponDetails) {
+	public Optional<Coupon> updateCoupon(Integer id, CouponRequestDTO couponDetails) {
 		return couponRepository.findById(id).map(existing -> {
 			existing.setCouponName(couponDetails.getCouponName());
 			existing.setCouponNumber(couponDetails.getCouponNumber());
@@ -135,5 +142,3 @@ public class CouponServiceImpl implements CouponService {
 		couponRepository.deleteById(id);
 	}
 }
-
-
