@@ -35,7 +35,7 @@ public class LocationServiceImpl implements LocationService {
     // =========================================================
     @Override
     @Transactional
-    public DataResult addLocation(Integer userId, String locationText) {
+    public DataResult addLocation(Integer userId, String locationText, Integer postal) {
         try {
             // 1️⃣ 查找用户
             User user = userRepository.findById(userId)
@@ -49,6 +49,7 @@ public class LocationServiceImpl implements LocationService {
             location.setUserId(userId);
             location.setLocationText(locationText);
             location.setUser(user);
+            location.setPostal(postal);
 
             // 4️⃣ 设置 defaultAddress: 如果用户没有其他地址，则新地址默认为默认地址 ("1")，否则为非默认 ("0")
             if (existingLocations.isEmpty()) {

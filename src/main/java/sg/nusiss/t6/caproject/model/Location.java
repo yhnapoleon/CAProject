@@ -27,6 +27,9 @@ public class Location {
     @Column(name = "default_address", length = 20, nullable = false)
     private String defaultAddress;
 
+    @Column(name = "postal", nullable = false)
+    private Integer postal;
+
     // 一个地址属于一个用户 (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)

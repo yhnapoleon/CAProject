@@ -32,6 +32,7 @@ public class LocationController {
                         Map<String, Object> m = new HashMap<>();
                         m.put("locationId", loc.getLocationId());
                         m.put("locationText", loc.getLocationText());
+                        m.put("postal", loc.getPostal());
                         // 关键修改：将 String 类型的 "1" 转换为 true，其他转换为 false
                         m.put("defaultAddress", "1".equals(loc.getDefaultAddress()));
                         return m;
@@ -52,12 +53,13 @@ public class LocationController {
         try {
             Integer userId = (Integer) request.get("userId");
             String locationText = (String) request.get("locationText");
+            Integer postal = request.get("postal") == null ? null : (Integer) request.get("postal");
             
-            if (userId == null || locationText == null || locationText.trim().isEmpty()) {
-                return new DataResult(Code.FAILED, null, "用户ID和地址内容不能为空");
+            if (userId == null || locationText == null || locationText.trim().isEmpty() || postal == null) {
+                return new DataResult(Code.FAILED, null, "用户ID、地址内容和邮编不能为空");
             }
             
-            return locationService.addLocation(userId, locationText);
+            return locationService.addLocation(userId, locationText, postal);
         } catch (Exception e) {
             return new DataResult(Code.FAILED, null, "添加地址失败: " + e.getMessage());
         }
