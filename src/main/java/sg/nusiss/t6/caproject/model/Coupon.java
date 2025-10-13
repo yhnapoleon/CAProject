@@ -1,12 +1,13 @@
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -36,18 +37,20 @@ public class Coupon {
     @Column(name = "coupon_name", length = 50)
     private String couponName;
 
-
     // 一个优惠券可以被多个订单使用 (一对多)
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Order> orders;
 
     // 一个优惠券属于一个用户（管理员） (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     // 一个优惠券可以被多个用户拥有 (一对多)
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<UserCoupon> userCoupons;
 
     public Integer getCouponId() {
@@ -90,7 +93,6 @@ public class Coupon {
         this.couponEndTime = couponEndTime;
     }
 
-
     public String getCouponName() {
         return couponName;
     }
@@ -98,7 +100,6 @@ public class Coupon {
     public void setCouponName(String couponName) {
         this.couponName = couponName;
     }
-
 
     public List<Order> getOrders() {
         return orders;

@@ -33,8 +33,8 @@ public class WebSecurityConfig {
      * 构造函数注入：用户服务、JWT 过滤器、密码加密器
      */
     public WebSecurityConfig(UserDetailsService jwtUserDetailsService,
-                             JwtRequestFilter jwtRequestFilter,
-                             PasswordEncoder passwordEncoder) {
+            JwtRequestFilter jwtRequestFilter,
+            PasswordEncoder passwordEncoder) {
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
         this.passwordEncoder = passwordEncoder;
@@ -57,7 +57,8 @@ public class WebSecurityConfig {
      * 在 Spring Security 6 中，推荐通过 AuthenticationConfiguration 来获取它。
      */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -68,27 +69,22 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 关闭 CSRF（因为使用的是基于 Token 的认证）
+                // 关闭 CSRF
                 .csrf(csrf -> csrf.disable())
 
-                // 设置接口访问权限
+                // 管理端接口需 ADMIN 角色，其余接口先放行（可按需收紧）
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/images/**").permitAll()
-
-                        // 登录、注册接口放行（所有用户都可访问）
-                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/register/**", "/api/admin/auth/login").permitAll()
-
-                        // 产品浏览接口放行
-                        .requestMatchers("/api/products/**").permitAll()
-
-                        // 管理后台接口仅允许 ADMIN 角色访问
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
-
-                        // 其他所有接口都需要认证后才能访问
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+                        .anyRequest().permitAll()
                 )
 
-                // 设置会话策略为无状态（Stateless），不会使用 Session 保存用户状态
+                // 设置会话策略为无状态
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -96,8 +92,7 @@ public class WebSecurityConfig {
                 // 设置身份认证提供者
                 .authenticationProvider(authenticationProvider());
 
-        // 将自定义的 JWT 过滤器添加到 Spring Security 的过滤器链中
-        // 确保在用户名密码认证过滤器之前执行
+        // 添加 JWT 过滤器
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         // 返回配置完成的过滤器链

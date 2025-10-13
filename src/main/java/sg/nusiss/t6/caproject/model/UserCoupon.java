@@ -1,6 +1,7 @@
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,11 +24,13 @@ public class UserCoupon {
     // 一个用户优惠券关联属于一个用户 (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     // 一个用户优惠券关联对应一个优惠券 (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id", nullable = false)
+    @JsonBackReference
     private Coupon coupon;
 
     public Integer getUserCouponId() {

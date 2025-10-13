@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.model.Review;
+import sg.nusiss.t6.caproject.controller.dto.ReviewRequestDTO;
 import sg.nusiss.t6.caproject.service.ProductService;
 
 import java.util.List;
@@ -53,9 +54,17 @@ public class ProductController {
 
     // 为某个商品添加评论 (需要用户认证)
     @PostMapping("/addReviewToProduct/{id}")
-    public ResponseEntity<Review> addReview(@PathVariable Integer id, @RequestBody Review review) {
+    public ResponseEntity<Review> addReview(@PathVariable Integer id, @RequestBody ReviewRequestDTO reviewRequest) {
         // 注意：实际项目中需要从安全上下文中获取当前用户并设置到 review 对象中
-        Review savedReview = productService.addReviewToProduct(id, review);
+        Review savedReview = productService.addReviewToProduct(id, reviewRequest);
+        return ResponseEntity.status(201).body(savedReview);
+    }
+
+    // 临时测试端点：跳过鉴权，使用硬编码测试用户
+    @PostMapping("/test/addReviewToProduct/{id}")
+    public ResponseEntity<Review> addReviewForTest(@PathVariable Integer id,
+            @RequestBody ReviewRequestDTO reviewRequest) {
+        Review savedReview = productService.addReviewToProductForTest(id, reviewRequest);
         return ResponseEntity.status(201).body(savedReview);
     }
 }

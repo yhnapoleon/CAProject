@@ -1,5 +1,6 @@
 package sg.nusiss.t6.caproject.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,12 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
      * @return 分页后的商品列表
      */
     Page<Product> findByIsVisible(Integer isVisible, Pageable pageable);
+
+    /**
+     * 查找所有可见状态的商品（不分页）
+     * 
+     * @param isVisible 是否可见 (1=可见, 0=不可见)
+     * @return 商品列表
+     */
+    List<Product> findByIsVisible(Integer isVisible);
 }

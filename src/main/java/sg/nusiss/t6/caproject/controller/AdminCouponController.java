@@ -34,8 +34,10 @@ public class AdminCouponController {
 	}
 
 	@GetMapping("/getCoupon/{id}")
-	public ResponseEntity<Optional<Coupon>> getCoupon(@PathVariable Integer id) {
-		return ResponseEntity.ok(couponService.getCouponById(id));
+	public ResponseEntity<?> getCoupon(@PathVariable Integer id) {
+		Optional<Coupon> coupon = couponService.getCouponById(id);
+		return coupon.<ResponseEntity<?>>map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@PostMapping("/createCoupon")
@@ -45,8 +47,10 @@ public class AdminCouponController {
 	}
 
 	@PutMapping("/updateCoupon/{id}")
-	public ResponseEntity<Optional<Coupon>> updateCoupon(@PathVariable Integer id, @RequestBody Coupon coupon) {
-		return ResponseEntity.ok(couponService.updateCoupon(id, coupon));
+	public ResponseEntity<?> updateCoupon(@PathVariable Integer id, @RequestBody Coupon coupon) {
+		Optional<Coupon> updated = couponService.updateCoupon(id, coupon);
+		return updated.<ResponseEntity<?>>map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@DeleteMapping("/deleteCoupon/{id}")

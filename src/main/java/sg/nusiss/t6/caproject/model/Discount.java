@@ -1,6 +1,8 @@
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +23,6 @@ public class Discount {
     @Column(name = "discount_id")
     private Integer discountId;
 
-
     @Column(name = "discount_name", length = 100)
     private String discountName;
 
@@ -39,11 +40,13 @@ public class Discount {
 
     // 一个折扣可以被多个订单使用 (一对多)
     @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Order> orders;
 
     // 一个折扣属于一个用户（管理员） (多对一)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @PrePersist
