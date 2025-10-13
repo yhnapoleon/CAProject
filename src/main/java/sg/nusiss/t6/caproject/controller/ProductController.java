@@ -10,6 +10,9 @@ import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.model.Review;
 import sg.nusiss.t6.caproject.controller.dto.ReviewRequestDTO;
 import sg.nusiss.t6.caproject.service.ProductService;
+import sg.nusiss.t6.caproject.controller.dto.AddToCartRequestDTO;
+import sg.nusiss.t6.caproject.model.ShoppingCart;
+import sg.nusiss.t6.caproject.service.CartService;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,10 +22,12 @@ import java.util.Optional;
 public class ProductController {
 
     private final ProductService productService;
+    private final CartService cartService;
 
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, CartService cartService) {
         this.productService = productService;
+        this.cartService = cartService;
     }
 
     // 获取所有上架商品 (按需返回全部列表)
@@ -66,5 +71,22 @@ public class ProductController {
             @RequestBody ReviewRequestDTO reviewRequest) {
         Review savedReview = productService.addReviewToProductForTest(id, reviewRequest);
         return ResponseEntity.status(201).body(savedReview);
+    }
+
+    // 将商品加入购物车 (需要前端传递 userId 与数量)
+    @PostMapping("/addToCart/{id}")
+    public ResponseEntity<ShoppingCart> addToCart(@PathVariable Integer id,
+                                                  @RequestParam Integer userId,
+                                                  @RequestBody AddToCartRequestDTO request) {
+        ShoppingCart item = cartService.addProductToCart(userId, id, request.getQuantity());
+        return ResponseEntity.status(201).body(item);
+    }
+
+    // 测试端点：将商品加入购物车（固定测试用户ID=100031）
+    @PostMapping("/test/addToCart/{id}")
+    public ResponseEntity<ShoppingCart> addToCartForTest(@PathVariable Integer id,
+                                                         @RequestBody AddToCartRequestDTO request) {
+        ShoppingCart item = cartService.addProductToCart(100031, id, request.getQuantity());
+        return ResponseEntity.status(201).body(item);
     }
 }

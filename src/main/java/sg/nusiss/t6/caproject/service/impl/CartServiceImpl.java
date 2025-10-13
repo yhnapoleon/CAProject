@@ -4,7 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sg.nusiss.t6.caproject.model.ShoppingCart;
+import sg.nusiss.t6.caproject.model.Product;
+import sg.nusiss.t6.caproject.model.User;
 import sg.nusiss.t6.caproject.repository.CartRepository;
+import sg.nusiss.t6.caproject.repository.ProductRepository;
+import sg.nusiss.t6.caproject.repository.UserRepository;
 import sg.nusiss.t6.caproject.service.CartService;
 
 import java.util.List;
@@ -15,6 +19,12 @@ import java.util.Optional;
 public class CartServiceImpl implements CartService {
     @Autowired
     private CartRepository cartRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<ShoppingCart> getCartItemByUserId(Integer userId){
@@ -46,5 +56,31 @@ public class CartServiceImpl implements CartService {
             throw new RuntimeException("没有找到对应的购物车项进行删除");
         }
         return count;
+    }
+
+    @Override
+    public ShoppingCart addProductToCart(Integer userId, Integer productId, Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("quantity 必须为正整数");
+        }
+
+        // 校验用户与商品是否存在
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("用户不存在: " + userId));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("商品不存在: " + productId));
+
+        // 查找是否已有相同商品的购物车项
+        ShoppingCart existing = cartRepository.findByUserIdAndProductId(userId, productId);
+        if (existing != null) {
+            existing.setQuantity(existing.getQuantity() + quantity);
+            return cartRepository.save(existing);
+        }
+
+        ShoppingCart item = new ShoppingCart();
+        item.setUser(user);
+        item.setProduct(product);
+        item.setQuantity(quantity);
+        return cartRepository.save(item);
     }
 }
