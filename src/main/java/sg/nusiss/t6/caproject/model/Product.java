@@ -42,6 +42,84 @@ public class Product {
     @Column(length = 255)
     private String imageUrl;
 
+    @Column(name = "product_brand", length = 50)
+    private String productBrand; // 新增字段：品牌
+
+    @Column(name = "product_sku", length = 50)
+    private String productSku; // 新增字段：SKU
+
+    public String getProductBrand() {
+        return productBrand;
+    }
+
+    public void setProductBrand(String productBrand) {
+        this.productBrand = productBrand;
+    }
+
+    public String getProductSku() {
+        return productSku;
+    }
+
+    public void setProductSku(String productSku) {
+        this.productSku = productSku;
+    }
+
+    public BigDecimal getProductWeight() {
+        return productWeight;
+    }
+
+    public void setProductWeight(BigDecimal productWeight) {
+        this.productWeight = productWeight;
+    }
+
+    public String getProductDimensions() {
+        return productDimensions;
+    }
+
+    public void setProductDimensions(String productDimensions) {
+        this.productDimensions = productDimensions;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public List<ShoppingCart> getShoppingCarts() {
+        return shoppingCarts;
+    }
+
+    public void setShoppingCarts(List<ShoppingCart> shoppingCarts) {
+        this.shoppingCarts = shoppingCarts;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Column(name = "product_weight", precision = 10, scale = 2)
+    private BigDecimal productWeight; // 新增字段：重量 (使用 BigDecimal 保持精度)
+
+    @Column(name = "product_dimensions", length = 100)
+    private String productDimensions; // 新增字段：尺寸 (使用 String，如 "23 x 15 x 10 cm")
+
+
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Review> reviews;
