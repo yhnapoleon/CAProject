@@ -12,6 +12,7 @@ import sg.nusiss.t6.caproject.repository.UserRepository; // 假设您有这个�
 import sg.nusiss.t6.caproject.service.LocationService;
 import sg.nusiss.t6.caproject.util.Code;
 import sg.nusiss.t6.caproject.util.DataResult;
+import sg.nusiss.t6.caproject.util.AddressFormatUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,31 +38,53 @@ public class LocationServiceImpl implements LocationService {
     @Transactional
     public DataResult addLocation(Integer userId, String locationText, Integer postal) {
         try {
-            // 1️⃣ 查找用户
+            // 1️⃣ 数据验证
+            if (userId == null || userId <= 0) {
+                return new DataResult(Code.FAILED, null, "用户ID无效");
+            }
+            
+            if (locationText == null || locationText.trim().isEmpty()) {
+                return new DataResult(Code.FAILED, null, "地址文本不能为空");
+            }
+            
+            if (locationText.length() > 255) {
+                return new DataResult(Code.FAILED, null, "地址文本长度不能超过255个字符");
+            }
+            
+            if (postal == null || postal <= 0) {
+                return new DataResult(Code.FAILED, null, "邮编无效");
+            }
+            
+            // 验证邮编格式 (6位数字)
+            if (!AddressFormatUtil.isValidPostal(postal)) {
+                return new DataResult(Code.FAILED, null, "邮编必须是6位数字");
+            }
+
+            // 2️⃣ 查找用户
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("用户不存在: " + userId));
 
-            // 2️⃣ 检查该用户是否已有地址
+            // 3️⃣ 检查该用户是否已有地址
             List<Location> existingLocations = locationRepository.findByUserId(userId);
 
-            // 3️⃣ 创建新地址
+            // 4️⃣ 创建新地址
             Location location = new Location();
             location.setUserId(userId);
-            location.setLocationText(locationText);
+            location.setLocationText(locationText.trim());
             location.setUser(user);
             location.setPostal(postal);
 
-            // 4️⃣ 设置 defaultAddress: 如果用户没有其他地址，则新地址默认为默认地址 ("1")，否则为非默认 ("0")
+            // 5️⃣ 设置 defaultAddress: 如果用户没有其他地址，则新地址默认为默认地址 ("1")，否则为非默认 ("0")
             if (existingLocations.isEmpty()) {
                 location.setDefaultAddress("1");
             } else {
                 location.setDefaultAddress("0");
             }
 
-            // 5️⃣ 保存地址
+            // 6️⃣ 保存地址
             Location savedLocation = locationRepository.save(location);
 
-            // 6️⃣ 返回结果
+            // 7️⃣ 返回结果
             return new DataResult(Code.SUCCESS, savedLocation.getLocationId(), "地址添加成功");
         } catch (Exception e) {
             return new DataResult(Code.FAILED, null, "地址添加失败: " + e.getMessage());
