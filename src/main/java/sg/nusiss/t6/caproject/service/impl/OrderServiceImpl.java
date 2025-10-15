@@ -9,9 +9,13 @@ import sg.nusiss.t6.caproject.service.OrderService;
 import sg.nusiss.t6.caproject.util.Code;
 import sg.nusiss.t6.caproject.util.DataResult;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import sg.nusiss.t6.caproject.util.Code;
+import sg.nusiss.t6.caproject.util.DataResult;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -129,28 +133,30 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public DataResult processPayment(Integer userId, Float totalPrice) {
         try {
-            // 1️⃣ 查找用户
+            // 查找用户
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("用户不存在: " + userId));
 
-            // 2️⃣ 检查钱包余额
-            Float currentBalance = user.getWallet() != null ? user.getWallet() : 0.0f;
+            // 检查钱包余额（使用BigDecimal进行精确计算）
+            BigDecimal currentBalance = user.getWallet() != null ?
+                    BigDecimal.valueOf(user.getWallet()).setScale(2, RoundingMode.HALF_UP) :
+                    BigDecimal.ZERO;
+            BigDecimal totalPriceBD = BigDecimal.valueOf(totalPrice).setScale(2, RoundingMode.HALF_UP);
 
-            if (currentBalance < totalPrice) {
+            if (currentBalance.compareTo(totalPriceBD) < 0) {
                 return new DataResult(Code.FAILED, null,
-                        String.format("余额不足，当前余额: %.2f，需要支付: %.2f", currentBalance, totalPrice));
+                        String.format("余额不足，当前余额: %.2f，需要支付: %.2f", currentBalance, totalPriceBD));
             }
 
-            // 3️⃣ 执行扣款
-            Float newBalance = currentBalance - totalPrice;
-            user.setWallet(newBalance);
+            // 执行扣款（精确计算）
+            BigDecimal newBalance = currentBalance.subtract(totalPriceBD);
+            user.setWallet(newBalance.floatValue());
 
-            // 4️⃣ 保存用户信息
+            // 保存用户信息
             userRepository.save(user);
 
-            // 5️⃣ 返回结果
-            return new DataResult(Code.SUCCESS, newBalance,
-                    String.format("付款成功，扣款: %.2f，剩余余额: %.2f", totalPrice, newBalance));
+            return new DataResult(Code.SUCCESS, newBalance.floatValue(),
+                    String.format("付款成功，扣款: %.2f，剩余余额: %.2f", totalPriceBD, newBalance));
         } catch (Exception e) {
             return new DataResult(Code.FAILED, null, "付款失败: " + e.getMessage());
         }

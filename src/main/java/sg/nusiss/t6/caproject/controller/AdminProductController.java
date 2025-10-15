@@ -5,10 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.service.ProductService;
 import sg.nusiss.t6.caproject.controller.dto.ProductRequestDTO;
+import sg.nusiss.t6.caproject.service.FileStorageService;
 
 import java.util.List;
 import java.util.Map;
@@ -20,10 +23,12 @@ import java.util.Optional;
 public class AdminProductController {
 
     private final ProductService productService;
+    private final FileStorageService fileStorageService;
 
     @Autowired
-    public AdminProductController(ProductService productService) {
+    public AdminProductController(ProductService productService, FileStorageService fileStorageService) {
         this.productService = productService;
+        this.fileStorageService = fileStorageService;
     }
 
     // 获取所有商品，包括未上架的
@@ -41,9 +46,24 @@ public class AdminProductController {
         return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
 
-    // 添加新商品（使用DTO避免循环与冗长请求体）
+    // 添加新商品（JSON 请求，imageUrl 直接传链接）
     @PostMapping("/createProduct")
     public ResponseEntity<Product> createProduct(@RequestBody ProductRequestDTO product) {
+        Product createdProduct = productService.createProduct(product);
+        return ResponseEntity.status(201).body(createdProduct);
+    }
+
+    // 添加新商品（multipart 表单，支持直接上传图片文件）
+    @PostMapping(value = "/createProductWithImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Product> createProductWithImage(
+            @RequestPart("product") ProductRequestDTO product,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = fileStorageService.storeProductImage(image);
+            product.setImageUrl(imageUrl);
+        }
+
         Product createdProduct = productService.createProduct(product);
         return ResponseEntity.status(201).body(createdProduct);
     }

@@ -5,10 +5,11 @@ import org.springframework.web.bind.annotation.*;
 import sg.nusiss.t6.caproject.controller.dto.OrderRequestDTO;
 import sg.nusiss.t6.caproject.controller.dto.OrderResponseDTO;
 import sg.nusiss.t6.caproject.model.Order;
+import sg.nusiss.t6.caproject.model.User;
 import sg.nusiss.t6.caproject.service.OrderService;
 import sg.nusiss.t6.caproject.util.DataResult;
 import sg.nusiss.t6.caproject.util.Code;
-
+import sg.nusiss.t6.caproject.repository.UserRepository;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,9 @@ import java.util.Map;
 public class OrderController {
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/getOrders/{userId}")
     public DataResult getOrders(@PathVariable Integer userId){
@@ -119,6 +123,26 @@ public class OrderController {
             return orderService.updateOrderStatus(orderId, orderStatus);
         } catch (Exception e) {
             return new DataResult(Code.FAILED, null, "更新订单状态失败: " + e.getMessage());
+        }
+    }
+    @GetMapping("/getWallet")
+    public DataResult getWallet(@RequestParam Integer userId) {
+        try {
+            if (userId == null) {
+                return new DataResult(Code.FAILED, null, "用户ID不能为空");
+            }
+
+            User user = userRepository.findById(userId)
+                    .orElse(null);
+            if (user == null) {
+                return new DataResult(Code.FAILED, null, "用户不存在");
+            }
+
+            Float wallet = user.getWallet();
+            String walletStr = String.format("%.2f", wallet);
+            return new DataResult(Code.SUCCESS, walletStr, "获取钱包余额成功");
+        } catch (Exception e) {
+            return new DataResult(Code.FAILED, null, "获取钱包余额失败: " + e.getMessage());
         }
     }
 

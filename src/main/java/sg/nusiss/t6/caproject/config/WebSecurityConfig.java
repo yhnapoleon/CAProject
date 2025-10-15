@@ -72,17 +72,18 @@ public class WebSecurityConfig {
                 // 关闭 CSRF
                 .csrf(csrf -> csrf.disable())
 
-                // 管理端接口需 ADMIN 角色，其余接口先放行（可按需收紧）
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
-                        ).permitAll()
-                        .anyRequest().permitAll()
-                )
+		// 放行公开接口与文档；仅后台其余接口要求 ADMIN 角色
+		.authorizeHttpRequests(auth -> auth
+				.requestMatchers(
+						"/api/auth/**",
+						"/api/admin/auth/login",
+						"/swagger-ui.html",
+						"/swagger-ui/**",
+						"/v3/api-docs/**"
+				).permitAll()
+				.requestMatchers("/api/admin/**").hasRole("ADMIN")
+				.anyRequest().permitAll()
+		)
 
                 // 设置会话策略为无状态
                 .sessionManagement(session -> session
