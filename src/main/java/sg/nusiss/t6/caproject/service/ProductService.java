@@ -40,4 +40,7 @@ public interface ProductService {
     Optional<Product> updateStock(Integer id, Integer newStock);
 
     Optional<Product> setProductVisibility(Integer id, boolean isVisible);
+
+    /** 更新商品图片：根据商品ID存储图片并更新数据库路径，返回更新后的商品 */
+    Optional<Product> updateProductImage(Integer id, String absolutePath);
 }

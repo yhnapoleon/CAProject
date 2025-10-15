@@ -11,10 +11,10 @@ import java.nio.file.Paths;
 @Configuration
 public class StaticResourceConfig implements WebMvcConfigurer {
 
-    @Value("${app.upload.dir:uploads}")
+    @Value("${app.upload.dir:D:\\CAimages\\images}")
     private String uploadDir;
 
-    @Value("${app.upload.public-prefix:/uploads}")
+    @Value("${app.upload.public-prefix:/images}")
     private String publicPrefix;
 
     @Override
