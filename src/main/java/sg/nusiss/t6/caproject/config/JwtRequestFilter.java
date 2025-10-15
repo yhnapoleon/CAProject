@@ -73,6 +73,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 path.startsWith("/api/auth/register") ||
                 path.startsWith("/api/register") ||
                 path.startsWith("/api/admin/auth/login") ||
+                // 静态图片与头像资源放行
+                path.startsWith("/images/") ||
+                path.startsWith("/avatars/") ||
                 // Swagger/OpenAPI 文档与 UI 放行，避免无 token 访问被拦截
                 path.equals("/swagger-ui.html") ||
                 path.startsWith("/swagger-ui/") ||

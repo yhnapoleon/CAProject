@@ -69,7 +69,7 @@ public class AdminProductController {
 
         MultipartFile actual = image != null && !image.isEmpty() ? image
                 : file != null && !file.isEmpty() ? file
-                : picture;
+                        : picture;
 
         if (actual != null && !actual.isEmpty()) {
             // 先创建商品以获取ID
@@ -78,11 +78,12 @@ public class AdminProductController {
             String original = actual.getOriginalFilename() != null ? actual.getOriginalFilename() : "";
             String ext = "";
             int idx = original.lastIndexOf('.');
-            if (idx >= 0) ext = original.substring(idx);
+            if (idx >= 0)
+                ext = original.substring(idx);
             String filename = temp.getProductId() + ext; // 例如 200123.jpg
             fileStorageService.storeProductImageWithName(actual, filename);
-            // 数据库存公共URL：http://192.168.159.77:8080/images/{productId}.{ext}
-            String publicUrl = buildPublicUrl(filename);
+            // 数据库存相对公共URL：/images/{productId}.{ext}
+            String publicUrl = buildRelativePublicUrl(filename);
             productService.updateProductImage(temp.getProductId(), publicUrl);
             return ResponseEntity.status(201).body(temp);
         }
@@ -102,7 +103,7 @@ public class AdminProductController {
 
         MultipartFile actual = image != null && !image.isEmpty() ? image
                 : file != null && !file.isEmpty() ? file
-                : picture;
+                        : picture;
         if (actual == null || actual.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -110,12 +111,14 @@ public class AdminProductController {
         String original = actual.getOriginalFilename() != null ? actual.getOriginalFilename() : "";
         String ext = "";
         int idx = original.lastIndexOf('.');
-        if (idx >= 0) ext = original.substring(idx);
+        if (idx >= 0)
+            ext = original.substring(idx);
         String filename = id + ext;
         fileStorageService.storeProductImageWithName(actual, filename);
-        String publicUrl = buildPublicUrl(filename);
+        String publicUrl = buildRelativePublicUrl(filename);
         Optional<Product> updated = productService.updateProductImage(id, publicUrl);
-        if (updated.isEmpty()) return ResponseEntity.notFound().build();
+        if (updated.isEmpty())
+            return ResponseEntity.notFound().build();
         return ResponseEntity.ok(updated);
     }
 
@@ -128,7 +131,7 @@ public class AdminProductController {
 
         MultipartFile actual = image != null && !image.isEmpty() ? image
                 : file != null && !file.isEmpty() ? file
-                : picture;
+                        : picture;
         if (actual == null || actual.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -136,8 +139,7 @@ public class AdminProductController {
         String filename = new java.io.File(storedPath).getName();
         return ResponseEntity.ok(java.util.Map.of(
                 "filename", filename,
-                "path", storedPath
-        ));
+                "path", storedPath));
     }
 
     // 更新商品信息（使用DTO）
@@ -203,27 +205,29 @@ public class AdminProductController {
 
     // 过滤占位符或空串；不做 HTTP 绝对地址转换
     private String sanitizeImageUrl(String raw) {
-        if (raw == null) return null;
+        if (raw == null)
+            return null;
         String url = raw.trim();
-        if (url.isEmpty()) return null;
+        if (url.isEmpty())
+            return null;
         // 忽略常见占位符/设计稿路径
         if ("/images/placeholder.svg".equals(url) || url.contains("/123/images/")) {
             return null;
         }
-        // /images/ 相对路径 → 绝对 URL
+        // /images/ 相对路径保持原样，由前端按当前主机与端口访问
         if (url.startsWith("/images/")) {
-            return "http://192.168.159.77:8080" + url;
+            return url;
         }
         // Windows 本地路径 → 提取文件名 → 绝对 URL
         if (url.matches("^[A-Za-z]:\\\\.*") || url.startsWith("\\\\")) {
             String filename = new java.io.File(url).getName();
-            return buildPublicUrl(filename);
+            return buildRelativePublicUrl(filename);
         }
         // 其余按原样返回（可为完整 URL）
         return url;
     }
 
-    private String buildPublicUrl(String filename) {
-        return "http://192.168.159.77:8080/images/" + filename;
+    private String buildRelativePublicUrl(String filename) {
+        return "/images/" + filename;
     }
 }
