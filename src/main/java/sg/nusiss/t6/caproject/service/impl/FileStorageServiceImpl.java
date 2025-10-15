@@ -16,7 +16,8 @@ import java.util.UUID;
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
-    @Value("${app.upload.dir:uploads}")
+    // 默认保存到 Windows 本机目录 D:\\CAimages\\images（可通过 app.upload.dir 覆盖）
+    @Value("${app.upload.dir:D:\\CAimages\\images}")
     private String uploadDir;
 
     @Value("${app.upload.public-prefix:/uploads}")
@@ -41,12 +42,28 @@ public class FileStorageServiceImpl implements FileStorageService {
             Files.createDirectories(dir);
             Path target = dir.resolve(newFilename);
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+            // 返回后端设备上的本地绝对路径，供数据库存储
+            return target.toAbsolutePath().toString();
         } catch (IOException e) {
             throw new RuntimeException("保存文件失败", e);
         }
+    }
 
-        String prefix = publicPrefix.endsWith("/") ? publicPrefix.substring(0, publicPrefix.length() - 1) : publicPrefix;
-        return prefix + "/" + newFilename;
+    @Override
+    public String storeProductImageWithName(MultipartFile file, String filename) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("上传文件为空");
+        }
+        String clean = StringUtils.cleanPath(filename);
+        try {
+            Path dir = Paths.get(uploadDir).toAbsolutePath().normalize();
+            Files.createDirectories(dir);
+            Path target = dir.resolve(clean);
+            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+            return target.toAbsolutePath().toString();
+        } catch (IOException e) {
+            throw new RuntimeException("保存文件失败", e);
+        }
     }
 }
 

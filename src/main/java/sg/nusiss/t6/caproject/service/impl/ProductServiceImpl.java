@@ -172,4 +172,13 @@ public class ProductServiceImpl implements ProductService {
             return productRepository.save(product);
         });
     }
+
+    @Override
+    @Transactional
+    public Optional<Product> updateProductImage(Integer id, String absolutePath) {
+        return productRepository.findById(id).map(product -> {
+            product.setImageUrl(absolutePath);
+            return productRepository.save(product);
+        });
+    }
 }
