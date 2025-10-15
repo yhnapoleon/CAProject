@@ -114,12 +114,12 @@ public class UserController {
         if (request.getAvatarUrl() != null && !request.getAvatarUrl().isBlank()) {
             resolvedUrl = request.getAvatarUrl();
         } else if (request.getFilename() != null && !request.getFilename().isBlank()) {
-            // 允许前端只提交文件名，后端按静态资源映射规则拼接访问路径，例如 /images/ 下
+            // 允许前端只提交文件名，后端按静态资源映射规则拼接访问路径，使用 /avatars/ 前缀
             String fn = request.getFilename();
             if (fn.startsWith("/")) {
                 fn = fn.substring(1);
             }
-            resolvedUrl = "/images/" + fn;
+            resolvedUrl = "/avatars/" + fn;
         }
 
         if (resolvedUrl == null || resolvedUrl.isBlank()) {
