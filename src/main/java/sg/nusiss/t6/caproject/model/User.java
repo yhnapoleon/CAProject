@@ -40,7 +40,7 @@ public class User {
     @Column(name = "user_lastlogin_time", nullable = false)
     private LocalDateTime userLastLoginTime;
 
-    @Column(name = "user_name", length = 50, nullable = false)
+    @Column(name = "user_name", length = 50, nullable = false, unique = true)
     private String userName;
 
     @Column(name = "user_gender", length = 50, nullable = false)

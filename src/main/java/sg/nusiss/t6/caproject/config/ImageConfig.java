@@ -13,9 +13,15 @@ public class ImageConfig implements WebMvcConfigurer {
     @Value("${app.image-path}")
     private String imagePath;
 
+    @Value("${app.avatar-path}")
+    private String avatarPath;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:" + imagePath);
+
+        registry.addResourceHandler("/avatars/**")
+                .addResourceLocations("file:" + avatarPath);
     }
 }
