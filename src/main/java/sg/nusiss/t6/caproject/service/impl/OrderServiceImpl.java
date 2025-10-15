@@ -133,13 +133,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public DataResult processPayment(Integer userId, Float totalPrice) {
         try {
-            // 查找用户
+            // 1️⃣ 查找用户
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("用户不存在: " + userId));
 
-            // 检查钱包余额（使用BigDecimal进行精确计算）
+            // 2️⃣ 检查钱包余额（直接使用BigDecimal）
             BigDecimal currentBalance = user.getWallet() != null ?
-                    BigDecimal.valueOf(user.getWallet()).setScale(2, RoundingMode.HALF_UP) :
+                    user.getWallet().setScale(2, RoundingMode.HALF_UP) :
                     BigDecimal.ZERO;
             BigDecimal totalPriceBD = BigDecimal.valueOf(totalPrice).setScale(2, RoundingMode.HALF_UP);
 
@@ -148,14 +148,17 @@ public class OrderServiceImpl implements OrderService {
                         String.format("余额不足，当前余额: %.2f，需要支付: %.2f", currentBalance, totalPriceBD));
             }
 
-            // 执行扣款（精确计算）
+            // 3️⃣ 执行扣款（精确计算）
             BigDecimal newBalance = currentBalance.subtract(totalPriceBD);
-            user.setWallet(newBalance.floatValue());
 
-            // 保存用户信息
+            // 4️⃣ 直接保存BigDecimal到数据库，确保精度
+            user.setWallet(newBalance);
+
+            // 5️⃣ 保存用户信息
             userRepository.save(user);
 
-            return new DataResult(Code.SUCCESS, newBalance.floatValue(),
+            // 6️⃣ 返回结果（使用BigDecimal确保精度一致性）
+            return new DataResult(Code.SUCCESS, newBalance.doubleValue(),
                     String.format("付款成功，扣款: %.2f，剩余余额: %.2f", totalPriceBD, newBalance));
         } catch (Exception e) {
             return new DataResult(Code.FAILED, null, "付款失败: " + e.getMessage());

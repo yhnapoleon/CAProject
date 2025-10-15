@@ -125,27 +125,6 @@ public class OrderController {
             return new DataResult(Code.FAILED, null, "更新订单状态失败: " + e.getMessage());
         }
     }
-    @GetMapping("/getWallet")
-    public DataResult getWallet(@RequestParam Integer userId) {
-        try {
-            if (userId == null) {
-                return new DataResult(Code.FAILED, null, "用户ID不能为空");
-            }
-
-            User user = userRepository.findById(userId)
-                    .orElse(null);
-            if (user == null) {
-                return new DataResult(Code.FAILED, null, "用户不存在");
-            }
-
-            Float wallet = user.getWallet();
-            String walletStr = String.format("%.2f", wallet);
-            return new DataResult(Code.SUCCESS, walletStr, "获取钱包余额成功");
-        } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "获取钱包余额失败: " + e.getMessage());
-        }
-    }
-
     @PostMapping("/payOrder")
     public DataResult processPayment(@RequestBody Map<String, Object> request) {
         try {
@@ -163,6 +142,32 @@ public class OrderController {
             return orderService.processPayment(userId, totalPrice);
         } catch (Exception e) {
             return new DataResult(Code.FAILED, null, "付款处理失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/getWallet")
+    public DataResult getWallet(@RequestParam Integer userId) {
+        try {
+            if (userId == null) {
+                return new DataResult(Code.FAILED, null, "用户ID不能为空");
+            }
+
+            User user = userRepository.findById(userId)
+                    .orElse(null);
+            if (user == null) {
+                return new DataResult(Code.FAILED, null, "用户不存在");
+            }
+
+            java.math.BigDecimal wallet = user.getWallet();
+            // 直接返回数据库中的值，确保与payOrder方法返回一致
+            if (wallet == null) {
+                return new DataResult(Code.SUCCESS, 0.0, "获取钱包余额成功");
+            }
+
+            // 直接返回数据库存储的值，确保一致性
+            return new DataResult(Code.SUCCESS, wallet.doubleValue(), "获取钱包余额成功");
+        } catch (Exception e) {
+            return new DataResult(Code.FAILED, null, "获取钱包余额失败: " + e.getMessage());
         }
     }
 }

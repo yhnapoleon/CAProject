@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,8 +56,8 @@ public class User {
     @Column(name = "user_profile_url", length = 255)
     private String userProfileUrl;
 
-    @Column(name = "wallet")
-    private Float wallet;
+    @Column(name = "wallet", nullable = false, precision = 10, scale = 2)
+    private BigDecimal wallet;
 
     // 一个用户可以有多个订单 (一对多)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -194,12 +195,11 @@ public class User {
         this.userProfileUrl = userProfileUrl;
     }
 
-    public Float getWallet() {
+    public BigDecimal getWallet() {
         return wallet;
     }
 
-    public void setWallet(Float wallet) {
+    public void setWallet(BigDecimal wallet) {
         this.wallet = wallet;
     }
-
 }

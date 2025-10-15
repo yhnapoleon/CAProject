@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         // 9. 设置默认生日
         newUser.setUserBirthday(java.time.LocalDate.now());
         // 10. 设置默认钱包余额
-        newUser.setWallet(0.0f);
+        newUser.setWallet(java.math.BigDecimal.ZERO);
 
         return userRepository.save(newUser);
     }
