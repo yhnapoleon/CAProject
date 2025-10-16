@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.model.Review;
 import sg.nusiss.t6.caproject.controller.dto.ReviewRequestDTO;
+import sg.nusiss.t6.caproject.controller.dto.ReviewResponseDTO;
 import sg.nusiss.t6.caproject.service.ProductService;
 import sg.nusiss.t6.caproject.controller.dto.AddToCartRequestDTO;
 import sg.nusiss.t6.caproject.model.ShoppingCart;
@@ -51,10 +52,13 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
-    // 获取某个商品的所有评论
+    // 获取某个商品的所有评论（包含用户名和标题）
     @GetMapping("/getReviewsByProductId/{id}")
-    public ResponseEntity<List<Review>> getProductReviews(@PathVariable Integer id) {
-        return ResponseEntity.ok(productService.getReviewsByProductId(id));
+    public ResponseEntity<List<ReviewResponseDTO>> getProductReviews(@PathVariable Integer id) {
+        List<ReviewResponseDTO> reviews = productService.getReviewsWithUserNameByProductId(id);
+        System.out.println("返回的评论数量: " + reviews.size());
+        reviews.forEach(review -> System.out.println("评论: " + review.getReviewId() + ", 标题: " + review.getTitle() + ", 用户: " + review.getUserName()));
+        return ResponseEntity.ok(reviews);
     }
 
     // 为某个商品添加评论 (需要用户认证)

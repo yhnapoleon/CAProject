@@ -5,13 +5,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.multipart.MultipartFile;
 import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.model.Review;
 import sg.nusiss.t6.caproject.model.User;
 import sg.nusiss.t6.caproject.controller.dto.ReviewRequestDTO;
+import sg.nusiss.t6.caproject.controller.dto.ReviewResponseDTO;
 import sg.nusiss.t6.caproject.controller.dto.ProductRequestDTO;
 import sg.nusiss.t6.caproject.repository.ProductRepository;
 import sg.nusiss.t6.caproject.repository.ReviewRepository;
@@ -21,6 +22,7 @@ import sg.nusiss.t6.caproject.service.FileStorageService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -32,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository, ReviewRepository reviewRepository,
-            UserRepository userRepository, FileStorageService fileStorageService) {
+            UserRepository userRepository,FileStorageService fileStorageService) {
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
@@ -66,6 +68,26 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<ReviewResponseDTO> getReviewsWithUserNameByProductId(Integer productId) {
+        // 使用JOIN FETCH预加载User信息，避免LazyInitializationException
+        List<Review> reviews = reviewRepository.findByProductProductIdWithUser(productId.longValue());
+        return reviews.stream()
+                .map(review -> {
+                    String userName = review.getUser() != null ? review.getUser().getUserName() : "未知用户";
+                    return new ReviewResponseDTO(
+                            review.getReviewId(),
+                            review.getTitle(),
+                            review.getComment(),
+                            review.getReviewCreateTime(),
+                            review.getReviewRank(),
+                            userName
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public Review addReviewToProduct(Integer productId, ReviewRequestDTO reviewRequest) {
         // 查找商品，如果不存在则抛出异常
@@ -74,6 +96,7 @@ public class ProductServiceImpl implements ProductService {
 
         Review review = new Review();
         review.setProduct(product);
+        review.setTitle(reviewRequest.getTitle());
         review.setComment(reviewRequest.getComment());
         review.setReviewRank(reviewRequest.getReviewRank());
         // 从安全上下文中获取当前用户并关联
@@ -98,6 +121,7 @@ public class ProductServiceImpl implements ProductService {
         Review review = new Review();
         review.setProduct(product);
         review.setUser(user);
+        review.setTitle(reviewRequest.getTitle());
         review.setComment(reviewRequest.getComment());
         review.setReviewRank(reviewRequest.getReviewRank());
         return reviewRepository.save(review);

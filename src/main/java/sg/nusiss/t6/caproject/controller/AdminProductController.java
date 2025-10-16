@@ -69,7 +69,7 @@ public class AdminProductController {
 
         MultipartFile actual = image != null && !image.isEmpty() ? image
                 : file != null && !file.isEmpty() ? file
-                        : picture;
+                : picture;
 
         if (actual != null && !actual.isEmpty()) {
             // 先创建商品以获取ID
@@ -97,13 +97,13 @@ public class AdminProductController {
     // 新增：更新商品图片（使用商品ID命名并覆盖原图）
     @PostMapping(value = "/updateImage/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateImage(@PathVariable Integer id,
-            @RequestPart(value = "image", required = false) MultipartFile image,
-            @RequestPart(value = "file", required = false) MultipartFile file,
-            @RequestPart(value = "picture", required = false) MultipartFile picture) {
+                                         @RequestPart(value = "image", required = false) MultipartFile image,
+                                         @RequestPart(value = "file", required = false) MultipartFile file,
+                                         @RequestPart(value = "picture", required = false) MultipartFile picture) {
 
         MultipartFile actualFile = image != null && !image.isEmpty() ? image
                 : file != null && !file.isEmpty() ? file
-                        : picture;
+                : picture;
 
         if (actualFile == null || actualFile.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("message", "Image file is required."));
@@ -123,7 +123,7 @@ public class AdminProductController {
 
         MultipartFile actual = image != null && !image.isEmpty() ? image
                 : file != null && !file.isEmpty() ? file
-                        : picture;
+                : picture;
         if (actual == null || actual.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -131,7 +131,8 @@ public class AdminProductController {
         String filename = new java.io.File(storedPath).getName();
         return ResponseEntity.ok(java.util.Map.of(
                 "filename", filename,
-                "path", storedPath));
+                "path", storedPath
+        ));
     }
 
     // 更新商品信息（使用DTO）

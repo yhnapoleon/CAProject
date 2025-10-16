@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import sg.nusiss.t6.caproject.model.Product;
 import sg.nusiss.t6.caproject.model.Review;
 import sg.nusiss.t6.caproject.controller.dto.ReviewRequestDTO;
+import sg.nusiss.t6.caproject.controller.dto.ReviewResponseDTO;
 import sg.nusiss.t6.caproject.controller.dto.ProductRequestDTO;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public interface ProductService {
     Optional<Product> getProductById(Integer id);
 
     List<Review> getReviewsByProductId(Integer productId);
+    
+    List<ReviewResponseDTO> getReviewsWithUserNameByProductId(Integer productId);
 
     Review addReviewToProduct(Integer productId, ReviewRequestDTO reviewRequest);
 
@@ -48,7 +51,7 @@ public interface ProductService {
     /**
      * Handles storing a new image file for an existing product and updating its
      * record.
-     * 
+     *
      * @param id   The ID of the product to update.
      * @param file The new image file uploaded by the user.
      * @return An Optional containing the updated Product if successful.
