@@ -34,14 +34,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository, ReviewRepository reviewRepository,
-            UserRepository userRepository,FileStorageService fileStorageService) {
+            UserRepository userRepository, FileStorageService fileStorageService) {
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.fileStorageService = fileStorageService;
     }
 
-    // --- 用户侧功能实现 ---
+    // --- Customer-facing feature implementations ---
 
     @Override
     @Transactional(readOnly = true)
@@ -70,19 +70,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public List<ReviewResponseDTO> getReviewsWithUserNameByProductId(Integer productId) {
-        // 使用JOIN FETCH预加载User信息，避免LazyInitializationException
+        // Use JOIN FETCH to preload User info to avoid LazyInitializationException
         List<Review> reviews = reviewRepository.findByProductProductIdWithUser(productId.longValue());
         return reviews.stream()
                 .map(review -> {
-                    String userName = review.getUser() != null ? review.getUser().getUserName() : "未知用户";
+                    String userName = review.getUser() != null ? review.getUser().getUserName() : "Unknown User";
                     return new ReviewResponseDTO(
                             review.getReviewId(),
                             review.getTitle(),
                             review.getComment(),
                             review.getReviewCreateTime(),
                             review.getReviewRank(),
-                            userName
-                    );
+                            userName);
                 })
                 .collect(Collectors.toList());
     }
@@ -90,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Review addReviewToProduct(Integer productId, ReviewRequestDTO reviewRequest) {
-        // 查找商品，如果不存在则抛出异常
+        // Find product; throw if not found
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
 
@@ -99,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
         review.setTitle(reviewRequest.getTitle());
         review.setComment(reviewRequest.getComment());
         review.setReviewRank(reviewRequest.getReviewRank());
-        // 从安全上下文中获取当前用户并关联
+        // Get current user from security context and associate it
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userRepository.findByUserName(username)
@@ -111,10 +110,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Review addReviewToProductForTest(Integer productId, ReviewRequestDTO reviewRequest) {
-        // 查找商品，如果不存在则抛出异常
+        // Find product; throw if not found
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
-        // 使用硬编码测试用户ID
+        // Use hard-coded test user ID
         User user = userRepository.findById(100031)
                 .orElseThrow(() -> new RuntimeException("Test user not found: 100031"));
 
@@ -133,7 +132,7 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAll();
     }
 
-    // --- 管理员侧功能实现 ---
+    // --- Admin-facing feature implementations ---
 
     @Override
     @Transactional(readOnly = true)
@@ -144,7 +143,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Product createProduct(ProductRequestDTO product) {
-        // 从安全上下文确定当前用户作为商品的 owner/admin
+        // Determine current user from security context as the product owner/admin
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userRepository.findByUserName(username)
@@ -211,7 +210,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * 保存新图片并更新数据库记录：使用商品ID作为文件名（保留扩展名），并覆盖旧图。
+     * Save a new image and update the database record: use product ID as the
+     * filename (keep extension) and overwrite old image.
      */
     @Override
     @Transactional

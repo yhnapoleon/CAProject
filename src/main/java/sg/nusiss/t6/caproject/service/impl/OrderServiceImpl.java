@@ -35,35 +35,36 @@ public class OrderServiceImpl implements OrderService {
     private CouponRepository couponRepository;
 
     @Override
-    public List<Order> getOrdersByUserId(Integer userId){
+    public List<Order> getOrdersByUserId(Integer userId) {
         return orderRepository.findOrdersByUserId(userId);
     }
 
     @Override
     public DataResult createOrder(OrderRequestDTO orderRequest) {
-        // 1️⃣ 查询用户
+        // 1) Query user
         User user = userRepository.findById(orderRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
 
-        // 2️⃣ 创建订单
+        // 2) Create order
         Order order = new Order();
         order.setUser(user);
 
-        // 设置订单状态（如果前端传入了状态，使用前端的；否则默认为0=待支付）
+        // Set order status (use frontend value if provided; otherwise default to
+        // 0=pending payment)
         if (orderRequest.getOrderStatus() != null) {
             order.setOrderStatus(orderRequest.getOrderStatus());
         } else {
-            order.setOrderStatus(0); // 0=待支付
+            order.setOrderStatus(0); // 0=pending payment
         }
 
-        // 设置订单时间（如果前端传入了时间，使用前端的；否则使用当前时间）
+        // Set order time (use frontend value if provided; otherwise use current time)
         if (orderRequest.getOrderTime() != null) {
             order.setOrderTime(orderRequest.getOrderTime());
         } else {
             order.setOrderTime(LocalDateTime.now());
         }
 
-        // 设置配送信息
+        // Set delivery info
         if (orderRequest.getDeliveryType() != null) {
             order.setDeliveryType(orderRequest.getDeliveryType());
         }
@@ -71,25 +72,25 @@ public class OrderServiceImpl implements OrderService {
             order.setDeliveryLocation(orderRequest.getDeliveryLocation());
         }
 
-        // 3️⃣ 处理折扣（如果前端传入了discountId）
+        // 3) Handle discount (if discountId provided)
         if (orderRequest.getDiscountId() != null) {
             Discount discount = discountRepository.findById(orderRequest.getDiscountId())
-                    .orElseThrow(() -> new RuntimeException("折扣不存在: " + orderRequest.getDiscountId()));
+                    .orElseThrow(() -> new RuntimeException("Discount not found: " + orderRequest.getDiscountId()));
             order.setDiscount(discount);
         }
 
-        // 4️⃣ 处理优惠券（如果前端传入了couponId）
+        // 4) Handle coupon (if couponId provided)
         if (orderRequest.getCouponId() != null) {
             Coupon coupon = couponRepository.findById(orderRequest.getCouponId())
-                    .orElseThrow(() -> new RuntimeException("优惠券不存在: " + orderRequest.getCouponId()));
+                    .orElseThrow(() -> new RuntimeException("Coupon not found: " + orderRequest.getCouponId()));
             order.setCoupon(coupon);
         }
 
-        // 5️⃣ 遍历前端传来的商品列表
+        // 5) Iterate through items from frontend
         List<OrderItem> orderItems = new ArrayList<>();
         for (OrderRequestDTO.OrderItemDTO itemDTO : orderRequest.getItems()) {
             Product product = productRepository.findById(itemDTO.getProductId())
-                    .orElseThrow(() -> new RuntimeException("商品不存在: " + itemDTO.getProductId()));
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + itemDTO.getProductId()));
 
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
@@ -100,68 +101,68 @@ public class OrderServiceImpl implements OrderService {
             orderItems.add(orderItem);
         }
 
-        // 6️⃣ 建立关系
+        // 6) Establish relations
         order.setOrderItems(orderItems);
 
-        // 7️⃣ 保存订单（JPA 会自动级联保存订单项）
+        // 7) Save order (JPA will cascade to save order items)
         orderRepository.save(order);
 
-        // 8️⃣ 返回结果
-        return new DataResult(200, order.getOrderId(), "订单创建成功");
+        // 8) Return result
+        return new DataResult(200, order.getOrderId(), "Order created successfully");
     }
 
     @Override
     public DataResult updateOrderStatus(Integer orderId, Integer orderStatus) {
         try {
-            // 1️⃣ 查找订单
+            // 1) Find order
             Order order = orderRepository.findById(orderId)
-                    .orElseThrow(() -> new RuntimeException("订单不存在: " + orderId));
+                    .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
 
-            // 2️⃣ 更新订单状态
+            // 2) Update order status
             order.setOrderStatus(orderStatus);
 
-            // 3️⃣ 保存订单
+            // 3) Save order
             orderRepository.save(order);
 
-            // 4️⃣ 返回结果
-            return new DataResult(Code.SUCCESS, order.getOrderId(), "订单状态更新成功");
+            // 4) Return result
+            return new DataResult(Code.SUCCESS, order.getOrderId(), "Order status updated successfully");
         } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "订单状态更新失败: " + e.getMessage());
+            return new DataResult(Code.FAILED, null, "Failed to update order status: " + e.getMessage());
         }
     }
 
     @Override
     public DataResult processPayment(Integer userId, Float totalPrice) {
         try {
-            // 1️⃣ 查找用户
+            // 1) Find user
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("用户不存在: " + userId));
+                    .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
-            // 2️⃣ 检查钱包余额（直接使用BigDecimal）
-            BigDecimal currentBalance = user.getWallet() != null ?
-                    user.getWallet().setScale(2, RoundingMode.HALF_UP) :
-                    BigDecimal.ZERO;
+            // 2) Check wallet balance (use BigDecimal directly)
+            BigDecimal currentBalance = user.getWallet() != null ? user.getWallet().setScale(2, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO;
             BigDecimal totalPriceBD = BigDecimal.valueOf(totalPrice).setScale(2, RoundingMode.HALF_UP);
 
             if (currentBalance.compareTo(totalPriceBD) < 0) {
                 return new DataResult(Code.FAILED, null,
-                        String.format("余额不足，当前余额: %.2f，需要支付: %.2f", currentBalance, totalPriceBD));
+                        String.format("Insufficient balance. Current: %.2f, Required: %.2f", currentBalance,
+                                totalPriceBD));
             }
 
-            // 3️⃣ 执行扣款（精确计算）
+            // 3) Deduct amount (precise calculation)
             BigDecimal newBalance = currentBalance.subtract(totalPriceBD);
 
-            // 4️⃣ 直接保存BigDecimal到数据库，确保精度
+            // 4) Save BigDecimal directly to DB to ensure precision
             user.setWallet(newBalance);
 
-            // 5️⃣ 保存用户信息
+            // 5) Save user
             userRepository.save(user);
 
-            // 6️⃣ 返回结果（使用BigDecimal确保精度一致性）
+            // 6) Return result (use BigDecimal for consistency)
             return new DataResult(Code.SUCCESS, newBalance.doubleValue(),
-                    String.format("付款成功，扣款: %.2f，剩余余额: %.2f", totalPriceBD, newBalance));
+                    String.format("Payment successful. Deducted: %.2f, Remaining: %.2f", totalPriceBD, newBalance));
         } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "付款失败: " + e.getMessage());
+            return new DataResult(Code.FAILED, null, "Payment failed: " + e.getMessage());
         }
     }
 }

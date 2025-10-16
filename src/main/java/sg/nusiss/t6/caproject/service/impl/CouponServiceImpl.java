@@ -86,53 +86,53 @@ public class CouponServiceImpl implements CouponService {
 	@Override
 	public DataResult addUserCoupon(Integer userId, Integer couponId) {
 		try {
-			// 1️⃣ 查找用户
+			// 1) Find user
 			User user = userRepository.findById(userId)
-					.orElseThrow(() -> new RuntimeException("用户不存在: " + userId));
+					.orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
-			// 2️⃣ 查找优惠券
+			// 2) Find coupon
 			Coupon coupon = couponRepository.findById(couponId)
-					.orElseThrow(() -> new RuntimeException("优惠券不存在: " + couponId));
+					.orElseThrow(() -> new RuntimeException("Coupon not found: " + couponId));
 
-			// 3️⃣ 检查是否已经拥有该优惠券
+			// 3) Check whether the user already owns this coupon
 			List<UserCoupon> existingUserCoupons = userCouponRepository.findByUserUserId(userId);
 			boolean alreadyOwned = existingUserCoupons.stream()
 					.anyMatch(uc -> uc.getCoupon().getCouponId().equals(couponId));
 
 			if (alreadyOwned) {
-				return new DataResult(Code.FAILED, null, "用户已经拥有该优惠券");
+				return new DataResult(Code.FAILED, null, "User already owns this coupon");
 			}
 
-			// 4️⃣ 创建用户优惠券关联
+			// 4) Create user-coupon association
 			UserCoupon userCoupon = new UserCoupon();
 			userCoupon.setUser(user);
 			userCoupon.setCoupon(coupon);
-			userCoupon.setCouponStatus(1); // 默认设置为有效状态
+			userCoupon.setCouponStatus(1); // Set as valid by default
 
-			// 5️⃣ 保存关联
+			// 5) Save association
 			UserCoupon savedUserCoupon = userCouponRepository.save(userCoupon);
 
-			// 6️⃣ 返回结果
-			return new DataResult(Code.SUCCESS, savedUserCoupon.getUserCouponId(), "优惠券添加成功");
+			// 6) Return result
+			return new DataResult(Code.SUCCESS, savedUserCoupon.getUserCouponId(), "Coupon added successfully");
 		} catch (Exception e) {
-			return new DataResult(Code.FAILED, null, "优惠券添加失败: " + e.getMessage());
+			return new DataResult(Code.FAILED, null, "Failed to add coupon: " + e.getMessage());
 		}
 	}
 
 	@Override
 	public DataResult deleteUserCoupon(Integer userCouponId) {
 		try {
-			// 1️⃣ 查找用户优惠券关联
+			// 1) Find user-coupon association
 			UserCoupon userCoupon = userCouponRepository.findById(userCouponId)
-					.orElseThrow(() -> new RuntimeException("用户优惠券关联不存在: " + userCouponId));
+					.orElseThrow(() -> new RuntimeException("User-coupon association not found: " + userCouponId));
 
-			// 2️⃣ 删除关联
+			// 2) Delete association
 			userCouponRepository.delete(userCoupon);
 
-			// 3️⃣ 返回结果
-			return new DataResult(Code.SUCCESS, userCouponId, "优惠券删除成功");
+			// 3) Return result
+			return new DataResult(Code.SUCCESS, userCouponId, "Coupon deleted successfully");
 		} catch (Exception e) {
-			return new DataResult(Code.FAILED, null, "优惠券删除失败: " + e.getMessage());
+			return new DataResult(Code.FAILED, null, "Failed to delete coupon: " + e.getMessage());
 		}
 	}
 

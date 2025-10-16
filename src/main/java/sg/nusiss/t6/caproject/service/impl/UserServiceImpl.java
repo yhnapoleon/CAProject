@@ -7,14 +7,13 @@ import sg.nusiss.t6.caproject.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
-// 假设您有一个 UserService 接口，这里是它的实现
+// Assume there is a UserService interface; this is its implementation
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // 依赖注入密码编码器，用于加密
+    private final PasswordEncoder passwordEncoder; // DI for password encoder used for hashing
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -22,51 +21,52 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 实现用户注册逻辑。
-     * 实际项目中，您还需要处理 UserService 接口的定义，这里我们只关注注册实现。
+     * Implement user registration logic.
+     * In real projects, ensure the UserService interface defines this method; here
+     * we focus on registration.
      */
-    // 注意：您需要确保您的 UserService 接口中定义了 registerUser 方法
+    // Note: Ensure your UserService interface defines registerUser
     public User registerUser(String username, String email, String password, String phone) {
-        // 1. 检查用户名是否已存在
+        // 1. Check if username already exists
         if (userRepository.existsByUserName(username)) {
             throw new RuntimeException("Username already taken: " + username);
         }
 
-        // 2. 检查邮箱是否已存在
+        // 2. Check if email already exists
         if (userRepository.existsByUserEmail(email)) {
             throw new RuntimeException("Email already taken: " + email);
         }
 
-        // 3. 检查手机号是否已存在
+        // 3. Check if phone already exists
         if (userRepository.existsByUserPhone(phone)) {
             throw new RuntimeException("Phone number already taken: " + phone);
         }
 
         User newUser = new User();
         newUser.setUserName(username);
-        // 4. 关键步骤：存储密码前必须进行加密
+        // 4. Critical: hash password before storing
         newUser.setUserPassword(passwordEncoder.encode(password));
-        // 5. 设置邮箱
+        // 5. Set email
         newUser.setUserEmail(email);
-        // 6. 设置手机号
+        // 6. Set phone number
         newUser.setUserPhone(phone);
-        // 7. 设置默认个人详情
+        // 7. Set default personal details
         newUser.setUserIntroduce("User account created via registration");
-        // 8. 默认注册为普通用户 (1=用户, 0=管理员)
+        // 8. Default to normal user (1=USER, 0=ADMIN)
         newUser.setUserType(1);
         newUser.setUserRegisterTime(java.time.LocalDateTime.now());
         newUser.setUserLastLoginTime(java.time.LocalDateTime.now());
         newUser.setUserGender("Unknown");
-        // 9. 设置默认生日
+        // 9. Set default birthday
         newUser.setUserBirthday(java.time.LocalDate.now());
-        // 10. 设置默认钱包余额
+        // 10. Set default wallet balance
         newUser.setWallet(java.math.BigDecimal.ZERO);
 
         return userRepository.save(newUser);
     }
 
-    // (如果您的接口还需要 loadUserByUsername, 也要实现)
-    // 示例：
+    // (If your interface also needs loadUserByUsername, implement it as well)
+    // Example:
     public java.util.Optional<User> loadUserByUsername(String username) {
         return userRepository.findByUserName(username);
     }

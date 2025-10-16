@@ -1,3 +1,5 @@
+//By Ying Hao
+
 package sg.nusiss.t6.caproject.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +33,13 @@ public class ProductController {
         this.cartService = cartService;
     }
 
-    // 获取所有上架商品 (按需返回全部列表)
+    // Get all visible products (return full list as needed)
     @GetMapping("/getVisibleProducts")
     public ResponseEntity<List<Product>> getVisibleProducts() {
         return ResponseEntity.ok(productService.getAllVisibleProducts());
     }
 
-    // 获取所有上架商品 (分页版)
+    // Get all visible products (paginated)
     @GetMapping
     public ResponseEntity<Page<Product>> getVisibleProductsPaged(
             @RequestParam(defaultValue = "0") int page,
@@ -46,30 +48,32 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllVisibleProducts(pageable));
     }
 
-    // 获取单个商品详情
+    // Get single product details
     @GetMapping("/getProductById/{id}")
     public ResponseEntity<Optional<Product>> getProductById(@PathVariable Integer id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
-    // 获取某个商品的所有评论（包含用户名和标题）
+    // Get all reviews for a product (includes user name and title)
     @GetMapping("/getReviewsByProductId/{id}")
     public ResponseEntity<List<ReviewResponseDTO>> getProductReviews(@PathVariable Integer id) {
         List<ReviewResponseDTO> reviews = productService.getReviewsWithUserNameByProductId(id);
-        System.out.println("返回的评论数量: " + reviews.size());
-        reviews.forEach(review -> System.out.println("评论: " + review.getReviewId() + ", 标题: " + review.getTitle() + ", 用户: " + review.getUserName()));
+        System.out.println("Returned reviews count: " + reviews.size());
+        reviews.forEach(review -> System.out.println("Review: " + review.getReviewId() + ", Title: " + review.getTitle()
+                + ", User: " + review.getUserName()));
         return ResponseEntity.ok(reviews);
     }
 
-    // 为某个商品添加评论 (需要用户认证)
+    // Add a review to a product (requires user authentication)
     @PostMapping("/addReviewToProduct/{id}")
     public ResponseEntity<Review> addReview(@PathVariable Integer id, @RequestBody ReviewRequestDTO reviewRequest) {
-        // 注意：实际项目中需要从安全上下文中获取当前用户并设置到 review 对象中
+        // Note: In real projects, get the current user from the security context and
+        // set it on the review
         Review savedReview = productService.addReviewToProduct(id, reviewRequest);
         return ResponseEntity.status(201).body(savedReview);
     }
 
-    // 临时测试端点：跳过鉴权，使用硬编码测试用户
+    // Temporary testing endpoint: skip auth and use a hard-coded test user
     @PostMapping("/test/addReviewToProduct/{id}")
     public ResponseEntity<Review> addReviewForTest(@PathVariable Integer id,
             @RequestBody ReviewRequestDTO reviewRequest) {
@@ -77,19 +81,19 @@ public class ProductController {
         return ResponseEntity.status(201).body(savedReview);
     }
 
-    // 将商品加入购物车 (需要前端传递 userId 与数量)
+    // Add product to cart (frontend passes userId and quantity)
     @PostMapping("/addToCart/{id}")
     public ResponseEntity<ShoppingCart> addToCart(@PathVariable Integer id,
-                                                  @RequestParam Integer userId,
-                                                  @RequestBody AddToCartRequestDTO request) {
+            @RequestParam Integer userId,
+            @RequestBody AddToCartRequestDTO request) {
         ShoppingCart item = cartService.addProductToCart(userId, id, request.getQuantity());
         return ResponseEntity.status(201).body(item);
     }
 
-    // 测试端点：将商品加入购物车（固定测试用户ID=100031）
+    // Testing endpoint: add product to cart with fixed test user ID = 100031
     @PostMapping("/test/addToCart/{id}")
     public ResponseEntity<ShoppingCart> addToCartForTest(@PathVariable Integer id,
-                                                         @RequestBody AddToCartRequestDTO request) {
+            @RequestBody AddToCartRequestDTO request) {
         ShoppingCart item = cartService.addProductToCart(100031, id, request.getQuantity());
         return ResponseEntity.status(201).body(item);
     }

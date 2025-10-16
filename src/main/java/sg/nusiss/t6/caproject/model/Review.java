@@ -32,13 +32,13 @@ public class Review {
     @Column(name = "title", nullable = false)
     private String title;
 
-    // 一个评论属于一个用户 (多对一)
+    // A review belongs to one user (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private User user;
 
-    // 一个评论属于一个商品 (多对一)
+    // A review belongs to one product (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     @JsonBackReference

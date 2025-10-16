@@ -1,3 +1,4 @@
+//By Ying Hao
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
@@ -37,16 +38,16 @@ public class Product {
     private String productCategory;
 
     @Column(nullable = false)
-    private Integer isVisible; // ✅ 对应数据库 int 类型，不用 boolean
+    private Integer isVisible; // Corresponds to DB int type; not using boolean
 
     @Column(length = 255)
     private String imageUrl;
 
     @Column(name = "product_brand", length = 50)
-    private String productBrand; // 新增字段：品牌
+    private String productBrand; // New field: brand
 
     @Column(name = "product_sku", length = 50)
-    private String productSku; // 新增字段：SKU
+    private String productSku; // New field: SKU
 
     public String getProductBrand() {
         return productBrand;
@@ -113,12 +114,10 @@ public class Product {
     }
 
     @Column(name = "product_weight", precision = 10, scale = 2)
-    private BigDecimal productWeight; // 新增字段：重量 (使用 BigDecimal 保持精度)
+    private BigDecimal productWeight; // New field: weight (use BigDecimal for precision)
 
     @Column(name = "product_dimensions", length = 100)
-    private String productDimensions; // 新增字段：尺寸 (使用 String，如 "23 x 15 x 10 cm")
-
-
+    private String productDimensions; // New field: dimensions (use String, e.g., "23 x 15 x 10 cm")
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

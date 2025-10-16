@@ -11,7 +11,7 @@ public interface CartService {
 
     int deleteCartItems(List<Integer> shoppingCartIds);
 
-    // 加入购物车：若已存在则累加数量，否则新建
+    // Add to cart: increase quantity if exists; otherwise create new item
     ShoppingCart addProductToCart(Integer userId, Integer productId, Integer quantity);
 
 }

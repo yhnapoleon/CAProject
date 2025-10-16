@@ -38,12 +38,12 @@ public class Discount {
     @Column(name = "discount_discount", nullable = false, precision = 10, scale = 2)
     private BigDecimal discountDiscount;
 
-    // 一个折扣可以被多个订单使用 (一对多)
+    // A discount can be used by many orders (one-to-many)
     @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Order> orders;
 
-    // 一个折扣属于一个用户（管理员） (多对一)
+    // A discount belongs to one user (admin) (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonBackReference

@@ -53,7 +53,7 @@ public class UserController {
         User user = optionalUser.get();
 
         if (request.getUserPhone() != null) {
-            // 手机号唯一性校验
+            // Validate phone number uniqueness
             Optional<User> phoneOwner = userRepository.findByUserPhone(request.getUserPhone());
             if (phoneOwner.isPresent() && !phoneOwner.get().getUserId().equals(user.getUserId())) {
                 return ResponseEntity.badRequest().build();
@@ -61,7 +61,7 @@ public class UserController {
             user.setUserPhone(request.getUserPhone());
         }
         if (request.getUserEmail() != null) {
-            // 邮箱唯一性校验
+            // Validate email uniqueness
             Optional<User> emailOwner = userRepository.findByUserEmail(request.getUserEmail());
             if (emailOwner.isPresent() && !emailOwner.get().getUserId().equals(user.getUserId())) {
                 return ResponseEntity.badRequest().build();
@@ -75,7 +75,7 @@ public class UserController {
             user.setUserLastLoginTime(request.getUserLastLoginTime());
         }
         if (request.getUserName() != null) {
-            // 用户名唯一性校验
+            // Validate username uniqueness
             Optional<User> nameOwner = userRepository.findByUserName(request.getUserName());
             if (nameOwner.isPresent() && !nameOwner.get().getUserId().equals(user.getUserId())) {
                 return ResponseEntity.badRequest().build();
@@ -115,7 +115,8 @@ public class UserController {
         if (request.getAvatarUrl() != null && !request.getAvatarUrl().isBlank()) {
             resolvedUrl = request.getAvatarUrl();
         } else if (request.getFilename() != null && !request.getFilename().isBlank()) {
-            // 允许前端只提交文件名，后端按静态资源映射规则拼接访问路径，使用 /avatars/ 前缀
+            // Allow frontend to submit only filename; backend resolves to static path with
+            // /avatars/ prefix
             String fn = request.getFilename();
             if (fn.startsWith("/")) {
                 fn = fn.substring(1);
@@ -221,8 +222,8 @@ public class UserController {
     @Setter
     @Getter
     public static class AvatarUpdateRequest {
-        private String avatarUrl; // 直接传完整 URL（CDN/对象存储/静态资源）
-        private String filename;  // 或仅传后端静态目录下的文件名，例如 avatars/avatar_01.png
+        private String avatarUrl; // Pass full URL directly (CDN/Object Storage/Static resource)
+        private String filename; // Or pass filename under backend static dir, e.g., avatars/avatar_01.png
 
         public String getAvatarUrl() {
             return avatarUrl;
@@ -242,4 +243,3 @@ public class UserController {
     }
 
 }
-

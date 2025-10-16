@@ -10,20 +10,9 @@ import sg.nusiss.t6.caproject.model.Product;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-    /**
-     * 查找所有可见的商品并进行分页
-     * 
-     * @param isVisible 是否可见 (1=可见, 0=不可见)
-     * @param pageable  分页信息
-     * @return 分页后的商品列表
-     */
+
     Page<Product> findByIsVisible(Integer isVisible, Pageable pageable);
 
-    /**
-     * 查找所有可见状态的商品（不分页）
-     * 
-     * @param isVisible 是否可见 (1=可见, 0=不可见)
-     * @return 商品列表
-     */
+
     List<Product> findByIsVisible(Integer isVisible);
 }

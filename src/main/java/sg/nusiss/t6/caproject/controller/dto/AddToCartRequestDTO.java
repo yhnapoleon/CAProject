@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class AddToCartRequestDTO {
 
-    // 加入购物车的数量
+    // Quantity to add to cart
     private Integer quantity;
 
     public Integer getQuantity() {
@@ -16,5 +16,3 @@ public class AddToCartRequestDTO {
         this.quantity = quantity;
     }
 }
-
-

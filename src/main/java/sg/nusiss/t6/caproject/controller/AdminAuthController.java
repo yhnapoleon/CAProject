@@ -20,39 +20,41 @@ public class AdminAuthController {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserService userService;
 
-    public AdminAuthController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserService userService) {
+    public AdminAuthController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
+            UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.userService = userService;
     }
 
     /**
-     * 管理员登录接口：/api/admin/auth/login
+     * Admin login endpoint: /api/admin/auth/login
      */
     @PostMapping("/login")
     public ResponseEntity<?> createAdminAuthenticationToken(@RequestBody LoginRequest authenticationRequest) {
 
-        // 1. 验证用户凭证
+        // 1. Validate user credentials
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
+                        authenticationRequest.getPassword()));
 
-        // 2. 额外检查角色：只有 ADMIN 角色才能登录后台
-        // 从 UserService 加载原始 User 实体，检查角色
+        // 2. Extra role check: only ADMIN role can log into the admin portal
+        // Load raw User entity from UserService and check role
         boolean isAdmin = userService.loadUserByUsername(authenticationRequest.getUsername())
-                .map(user -> user.getUserType() == 0) // 0=管理员, 1=用户
+                .map(user -> user.getUserType() == 0) // 0=ADMIN, 1=USER
                 .orElse(false);
 
         if (!isAdmin) {
-            // 如果不是管理员，返回 403 Forbidden
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: Only administrators can log in here.");
+            // If not admin, return 403 Forbidden
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Access denied: Only administrators can log in here.");
         }
 
-        // 3. 生成 JWT token
+        // 3. Generate JWT token
         final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        // 4. 返回 token
+        // 4. Return token
         return ResponseEntity.ok(new AuthResponse(token));
     }
 }

@@ -1,3 +1,5 @@
+//By Ying Hao
+
 package sg.nusiss.t6.caproject.service;
 
 import org.springframework.data.domain.Page;
@@ -14,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
 
-    // --- 用户侧功能 ---
+    // --- Customer-facing features ---
     List<Product> getAllVisibleProducts();
 
     Page<Product> getAllVisibleProducts(Pageable pageable);
@@ -22,15 +24,15 @@ public interface ProductService {
     Optional<Product> getProductById(Integer id);
 
     List<Review> getReviewsByProductId(Integer productId);
-    
+
     List<ReviewResponseDTO> getReviewsWithUserNameByProductId(Integer productId);
 
     Review addReviewToProduct(Integer productId, ReviewRequestDTO reviewRequest);
 
-    // 测试用：无鉴权写入评论
+    // For testing: write review without authentication
     Review addReviewToProductForTest(Integer productId, ReviewRequestDTO reviewRequest);
 
-    // --- 管理员侧功能 ---
+    // --- Admin-facing features ---
     List<Product> getAllProducts();
 
     Page<Product> getAllProducts(Pageable pageable);
@@ -45,7 +47,10 @@ public interface ProductService {
 
     Optional<Product> setProductVisibility(Integer id, boolean isVisible);
 
-    /** 更新商品图片：根据商品ID存储图片并更新数据库路径，返回更新后的商品 */
+    /**
+     * Update product image: store image by product ID and update DB path; return
+     * updated product
+     */
     Optional<Product> updateProductImage(Integer id, String absolutePath);
 
     /**

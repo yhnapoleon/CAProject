@@ -11,8 +11,8 @@ import java.util.List;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Integer> {
-    
-    // 根据用户ID查找所有地址
+
+    // Find all locations by user ID
     List<Location> findByUserId(Integer userId);
 
     @Modifying

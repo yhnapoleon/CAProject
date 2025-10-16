@@ -2,11 +2,11 @@ package sg.nusiss.t6.caproject.config;
 
 import sg.nusiss.t6.caproject.service.impl.JwtUserDetailsService;
 import sg.nusiss.t6.caproject.util.JwtTokenUtil;
-// 导入 Jwts 相关的类
+// Import JJWT related classes
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys; // ⬅️ 新增导入：用于密钥工具类
+import io.jsonwebtoken.security.Keys; // Newly added: key utilities
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.annotation.PostConstruct; // ⬅️ 新增导入：用于密钥初始化
+import jakarta.annotation.PostConstruct; // Newly added: for key initialization
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,12 +25,14 @@ import org.springframework.lang.NonNull;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.security.Key; // ⬅️ 新增导入
+import java.security.Key; // Newly added
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * JWT 请求过滤器：拦截除登录/注册外的所有请求，验证 JWT 并设置 Spring Security 上下文。
+ * JWT request filter: intercepts all requests except login/register, validates
+ * the JWT,
+ * and sets the Spring Security context.
  */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -38,11 +40,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtUserDetailsService jwtUserDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
 
-    // 从配置文件中注入 Base64 密钥字符串
+    // Inject Base64-encoded secret string from configuration
     @Value("${jwt.secret}")
     private String secretString;
 
-    // 用于存储转换后的 Key 对象
+    // Store the converted Key object
     private Key signingKey;
 
     public JwtRequestFilter(JwtUserDetailsService jwtUserDetailsService, JwtTokenUtil jwtTokenUtil) {
@@ -51,32 +53,33 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     /**
-     * 初始化：将 Base64 编码的密钥字符串转换为 Key 对象
+     * Initialize: convert Base64-encoded secret string into a Key object.
      */
     @PostConstruct
     public void init() {
-        // 使用 Keys.hmacShaKeyFor 方法将 Base64 字符串安全地转换为 Key 对象
-        // 确保你的 jwt.secret 是一个 Base64 编码的字符串
+        // Use Keys.hmacShaKeyFor to safely convert Base64 string to a Key object
+        // Ensure jwt.secret is a Base64-encoded string
         this.signingKey = Keys.hmacShaKeyFor(secretString.getBytes());
     }
 
     /**
-     * 针对 public 接口（如登录和注册）跳过 JWT 检查。
+     * Skip JWT checks for public endpoints (e.g., login and register).
      */
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
 
-        // 如果路径以 /api/auth/login, /api/auth/register, /api/register,
-        // /api/admin/auth/login 开头，则跳过过滤
+        // Skip filtering if the path starts with /api/auth/login, /api/auth/register,
+        // /api/register,
+        // or /api/admin/auth/login
         return path.startsWith("/api/auth/login") ||
                 path.startsWith("/api/auth/register") ||
                 path.startsWith("/api/register") ||
                 path.startsWith("/api/admin/auth/login") ||
-                // 静态图片与头像资源放行
+                // Allow static image and avatar resources
                 path.startsWith("/images/") ||
                 path.startsWith("/avatars/") ||
-                // Swagger/OpenAPI 文档与 UI 放行，避免无 token 访问被拦截
+                // Allow Swagger/OpenAPI docs and UI to avoid blocking access without token
                 path.equals("/swagger-ui.html") ||
                 path.startsWith("/swagger-ui/") ||
                 path.startsWith("/v3/api-docs");
@@ -92,11 +95,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
-        // 1. 从请求头中提取 Token
+        // 1. Extract token from the Authorization header
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
 
-            // 尝试从 Token 中解析用户名 (用于加载 UserDetails)
+            // Try to parse username from token (used to load UserDetails)
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
@@ -106,43 +109,41 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
 
-        // 2. 验证 Token 并设置 Spring Security 上下文
+        // 2. Validate token and set Spring Security context
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // 从数据库加载用户详情
+            // Load user details from database
             UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
 
-            // 验证 Token 是否有效
+            // Validate the token
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 
-                // 【关键修正区域开始】: 适应 JJWT 0.12.x 新 API
+                // Adjustments for JJWT 0.12.x API
                 try {
-                    // 使用 verifyWith(Key) 替换 setSigningKey(secret)
-                    // 并且必须在 parse 之前调用 build()
+                    // Use verifyWith(Key) instead of setSigningKey(secret)
+                    // and call build() before parse
                     Claims claims = Jwts.parser()
-                            .verifyWith((SecretKey) this.signingKey) // ⬅️ 修正点 1: 使用 Key 对象和 verifyWith
-                            .build() // ⬅️ 修正点 2: 必须调用 build()
+                            .verifyWith((SecretKey) this.signingKey)
+                            .build()
                             .parseSignedClaims(jwtToken)
                             .getPayload();
 
-                    // 【关键修正区域结束】
-
-                    // 从 Claims 中读取 "roles" 列表
+                    // Extract "roles" list from claims
                     List<String> roles = claims.get("roles", List.class);
 
-                    // 将字符串角色列表转换为 Spring Security 的 GrantedAuthority 列表
+                    // Convert role strings to Spring Security GrantedAuthority list
                     List<SimpleGrantedAuthority> authorities = roles.stream()
                             .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toList());
 
-                    // 创建认证对象，并将 Authorities 替换为从 Claims 中解析出的列表
+                    // Create authentication token with authorities parsed from claims
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, authorities);
 
                     usernamePasswordAuthenticationToken
                             .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    // 将认证信息放入 SecurityContext
+                    // Put authentication into SecurityContext
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
                 } catch (Exception e) {

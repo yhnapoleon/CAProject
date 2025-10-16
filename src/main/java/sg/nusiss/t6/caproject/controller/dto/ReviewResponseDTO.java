@@ -6,11 +6,11 @@ import java.time.LocalDateTime;
 @Data
 public class ReviewResponseDTO {
     private Integer reviewId;
-    private String title; // 新增的标题字段
+    private String title; // New field: review title
     private String comment;
     private LocalDateTime reviewCreateTime;
     private Integer reviewRank;
-    private String userName; // 新增的用户名字段
+    private String userName; // New field: user name
 
     public Integer getReviewId() {
         return reviewId;
@@ -60,10 +60,11 @@ public class ReviewResponseDTO {
         this.userName = userName;
     }
 
-    public ReviewResponseDTO() {}
-    
-    public ReviewResponseDTO(Integer reviewId, String title, String comment, LocalDateTime reviewCreateTime, 
-                           Integer reviewRank, String userName) {
+    public ReviewResponseDTO() {
+    }
+
+    public ReviewResponseDTO(Integer reviewId, String title, String comment, LocalDateTime reviewCreateTime,
+            Integer reviewRank, String userName) {
         this.reviewId = reviewId;
         this.title = title;
         this.comment = comment;

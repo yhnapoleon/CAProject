@@ -16,45 +16,48 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager; // 认证管理器，用于验证用户名密码
+    private final AuthenticationManager authenticationManager; // Authentication manager for validating
+                                                               // username/password
     private final JwtTokenUtil jwtTokenUtil;
     private final UserService userService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserService userService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
+            UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.userService = userService;
     }
 
     /**
-     * 普通用户登录接口：/api/auth/login
+     * Standard user login endpoint: /api/auth/login
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> createAuthenticationToken(@RequestBody LoginRequest authenticationRequest) {
         try {
-            // 1. 使用 AuthenticationManager 验证用户凭证 (会调用 JwtUserDetailsService)
+            // 1. Validate user credentials using AuthenticationManager (invokes
+            // JwtUserDetailsService)
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
+                            authenticationRequest.getPassword()));
 
-            // 2. 验证成功后，获取用户详情并生成 JWT token
+            // 2. On success, get user details and generate JWT token
             final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             final String token = jwtTokenUtil.generateToken(userDetails);
 
-            // 3. 获取完整的用户信息
+            // 3. Fetch full user information
             User user = userService.loadUserByUsername(authenticationRequest.getUsername())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // 4. 构建响应
+            // 4. Build response
             LoginResponse response = new LoginResponse();
             response.setSuccess(true);
-            response.setMessage("登录成功");
+            response.setMessage("Login successful");
             response.setToken(token);
 
             LoginResponse.UserInfo userInfo = new LoginResponse.UserInfo();
             userInfo.setUsername(user.getUserName());
             userInfo.setEmail(user.getUserEmail());
-            userInfo.setName(user.getUserName()); // 使用用户名作为显示名称
+            userInfo.setName(user.getUserName()); // Use username as display name
             userInfo.setRole(user.getUserType() == 0 ? "ADMIN" : "USER");
             userInfo.setLoginTime(System.currentTimeMillis());
 
@@ -64,27 +67,27 @@ public class AuthController {
         } catch (Exception e) {
             LoginResponse response = new LoginResponse();
             response.setSuccess(false);
-            response.setMessage("登录失败：" + e.getMessage());
+            response.setMessage("Login failed: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }
 
     /**
-     * 用户注册接口：/api/auth/register
-     * 注意：这个接口保持向后兼容，但建议使用 /api/register/new 接口
+     * User registration endpoint: /api/auth/register
+     * Note: Kept for backward compatibility; prefer /api/register/new
      */
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody LoginRequest registrationRequest) {
         try {
-            // 调用 UserService 进行用户注册（使用默认值）
+            // Call UserService to register user (using defaults)
             userService.registerUser(
-                registrationRequest.getUsername(), 
-                registrationRequest.getUsername(), // 使用用户名作为邮箱
-                registrationRequest.getPassword(), 
-                registrationRequest.getUsername()  // 使用用户名作为手机号
+                    registrationRequest.getUsername(),
+                    registrationRequest.getUsername(), // Use username as email
+                    registrationRequest.getPassword(),
+                    registrationRequest.getUsername() // Use username as phone
             );
 
-            // 返回注册成功的消息
+            // Return success message
             return ResponseEntity.ok("User registered successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

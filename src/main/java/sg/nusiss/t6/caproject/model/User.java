@@ -33,7 +33,7 @@ public class User {
     private String userPassword;
 
     @Column(name = "user_type", nullable = false)
-    private Integer userType; // 0=管理员, 1=用户
+    private Integer userType; // 0=ADMIN, 1=USER
 
     @Column(name = "user_register_time", nullable = false)
     private LocalDateTime userRegisterTime;
@@ -59,42 +59,42 @@ public class User {
     @Column(name = "wallet", nullable = false, precision = 10, scale = 2)
     private BigDecimal wallet;
 
-    // 一个用户可以有多个订单 (一对多)
+    // One user can have many orders (one-to-many)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Order> orders;
 
-    // 一个用户可以发表多个评论 (一对多)
+    // One user can create many reviews (one-to-many)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Review> reviews;
 
-    // 一个用户（管理员）可以管理多个商品
+    // One user (admin) can manage many products
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Product> products;
 
-    // 一个用户（管理员）可以管理多个优惠券
+    // One user (admin) can manage many coupons
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Coupon> coupons;
 
-    // 一个用户（管理员）可以管理多个折扣活动
+    // One user (admin) can manage many discounts
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Discount> discounts;
 
-    // 一个用户可以有多个购物车项 (一对多)
+    // One user can have many shopping cart items (one-to-many)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ShoppingCart> shoppingCarts;
 
-    // 一个用户可以拥有多张优惠券 (一对多)
+    // One user can have many user coupons (one-to-many)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<UserCoupon> userCoupons;
 
-    // 一个用户可以有多个地址 (一对多)
+    // One user can have many addresses (one-to-many)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Location> locations;

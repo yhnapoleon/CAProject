@@ -27,19 +27,19 @@ public class CartServiceImpl implements CartService {
     private UserRepository userRepository;
 
     @Override
-    public List<ShoppingCart> getCartItemByUserId(Integer userId){
+    public List<ShoppingCart> getCartItemByUserId(Integer userId) {
         return cartRepository.findCartItemByUserId(userId);
     }
 
     @Override
     public void updateCartItemQuantity(Integer shoppingCartId, Integer quantity) {
         Optional<ShoppingCart> cartOptional = cartRepository.findById(shoppingCartId);
-        if(cartOptional.isPresent()){
+        if (cartOptional.isPresent()) {
             ShoppingCart item = cartOptional.get();
             item.setQuantity(quantity);
             cartRepository.save(item);
-        }else {
-            throw new RuntimeException("cartItem does not exist which id = "+shoppingCartId);
+        } else {
+            throw new RuntimeException("cartItem does not exist which id = " + shoppingCartId);
         }
     }
 
@@ -53,7 +53,7 @@ public class CartServiceImpl implements CartService {
             }
         }
         if (count == 0) {
-            throw new RuntimeException("没有找到对应的购物车项进行删除");
+            throw new RuntimeException("No matching cart items found to delete");
         }
         return count;
     }
@@ -61,16 +61,16 @@ public class CartServiceImpl implements CartService {
     @Override
     public ShoppingCart addProductToCart(Integer userId, Integer productId, Integer quantity) {
         if (quantity == null || quantity <= 0) {
-            throw new IllegalArgumentException("quantity 必须为正整数");
+            throw new IllegalArgumentException("quantity must be a positive integer");
         }
 
-        // 校验用户与商品是否存在
+        // Validate that user and product exist
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("用户不存在: " + userId));
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("商品不存在: " + productId));
+                .orElseThrow(() -> new RuntimeException("Product not found: " + productId));
 
-        // 查找是否已有相同商品的购物车项
+        // Check whether there is an existing cart item for the same product
         ShoppingCart existing = cartRepository.findByUserIdAndProductId(userId, productId);
         if (existing != null) {
             existing.setQuantity(existing.getQuantity() + quantity);

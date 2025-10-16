@@ -1,3 +1,4 @@
+
 package sg.nusiss.t6.caproject.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class CouponController {
         try {
             List<UserCoupon> userCoupons = CouponService.getUserCouponsByUserId(userId);
 
-            // 转换为简化的DTO格式
+            // Convert to a simplified DTO format
             List<Map<String, Object>> data = userCoupons.stream()
                     .map(uc -> {
                         Map<String, Object> couponInfo = new HashMap<>();
@@ -36,14 +37,14 @@ public class CouponController {
                         couponInfo.put("couponEndTime", uc.getCoupon().getCouponEndTime());
                         couponInfo.put("couponName", uc.getCoupon().getCouponName());
                         couponInfo.put("status", uc.getCouponStatus());
-                        couponInfo.put("isValid", uc.getCouponStatus() == 1); // 添加是否有效的布尔值
+                        couponInfo.put("isValid", uc.getCouponStatus() == 1); // Add a boolean indicating validity
                         return couponInfo;
                     })
                     .collect(Collectors.toList());
 
-            return new DataResult(Code.SUCCESS, data, "获取用户优惠券列表成功");
+            return new DataResult(Code.SUCCESS, data, "Successfully fetched user coupons");
         } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "获取用户优惠券列表失败: " + e.getMessage());
+            return new DataResult(Code.FAILED, null, "Failed to fetch user coupons: " + e.getMessage());
         }
     }
 
@@ -54,12 +55,12 @@ public class CouponController {
             Integer couponId = (Integer) request.get("couponId");
 
             if (userId == null || couponId == null) {
-                return new DataResult(Code.FAILED, null, "用户ID和优惠券ID不能为空");
+                return new DataResult(Code.FAILED, null, "User ID and coupon ID must not be null");
             }
 
             return CouponService.addUserCoupon(userId, couponId);
         } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "添加用户优惠券失败: " + e.getMessage());
+            return new DataResult(Code.FAILED, null, "Failed to add user coupon: " + e.getMessage());
         }
     }
 
@@ -67,12 +68,12 @@ public class CouponController {
     public DataResult deleteUserCoupon(@PathVariable Integer userCouponId) {
         try {
             if (userCouponId == null) {
-                return new DataResult(Code.FAILED, null, "用户优惠券ID不能为空");
+                return new DataResult(Code.FAILED, null, "User coupon ID must not be null");
             }
 
             return CouponService.deleteUserCoupon(userCouponId);
         } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "删除用户优惠券失败: " + e.getMessage());
+            return new DataResult(Code.FAILED, null, "Failed to delete user coupon: " + e.getMessage());
         }
     }
 }

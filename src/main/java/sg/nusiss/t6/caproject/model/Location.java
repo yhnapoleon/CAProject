@@ -30,7 +30,7 @@ public class Location {
     @Column(name = "postal", nullable = false)
     private Integer postal;
 
-    // 一个地址属于一个用户 (多对一)
+    // An address belongs to one user (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     @JsonBackReference

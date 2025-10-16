@@ -11,14 +11,10 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
-    /**
-     * 根据商品ID查找所有评论（关联字段为 product.productId）
-     */
+
     List<Review> findByProductProductId(Long productId);
     
-    /**
-     * 根据商品ID查找所有评论，并预加载User信息
-     */
+
     @Query("SELECT r FROM Review r JOIN FETCH r.user WHERE r.product.productId = :productId")
     List<Review> findByProductProductIdWithUser(@Param("productId") Long productId);
 }
