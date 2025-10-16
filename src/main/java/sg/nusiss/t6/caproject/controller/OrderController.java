@@ -23,11 +23,11 @@ public class OrderController {
     private UserRepository userRepository;
 
     @GetMapping("/getOrders/{userId}")
-    public DataResult getOrders(@PathVariable Integer userId){
+    public DataResult getOrders(@PathVariable Integer userId) {
         try {
             List<Order> orders = orderService.getOrdersByUserId(userId);
 
-            // 转换为DTO格式
+            // Convert to DTO format
             List<OrderResponseDTO> responseDTOs = orders.stream()
                     .map(order -> {
                         OrderResponseDTO dto = new OrderResponseDTO();
@@ -35,7 +35,7 @@ public class OrderController {
                         dto.setOrderTime(order.getOrderTime());
                         dto.setOrderStatus(order.getOrderStatus());
 
-                        // 设置折扣信息
+                        // Set discount info
                         if (order.getDiscount() != null) {
                             OrderResponseDTO.DiscountInfo discountInfo = new OrderResponseDTO.DiscountInfo();
                             discountInfo.setDiscountId(order.getDiscount().getDiscountId());
@@ -47,7 +47,7 @@ public class OrderController {
                             dto.setDiscount(discountInfo);
                         }
 
-                        // 设置优惠券信息
+                        // Set coupon info
                         if (order.getCoupon() != null) {
                             OrderResponseDTO.CouponInfo couponInfo = new OrderResponseDTO.CouponInfo();
                             couponInfo.setCouponId(order.getCoupon().getCouponId());
@@ -57,7 +57,7 @@ public class OrderController {
                             couponInfo.setCouponEndTime(order.getCoupon().getCouponEndTime());
                             couponInfo.setCouponName(order.getCoupon().getCouponName());
 
-                            // 设置优惠券关联的用户信息
+                            // Set coupon's associated user info
                             if (order.getCoupon().getUser() != null) {
                                 OrderResponseDTO.CouponInfo.UserInfo userInfo = new OrderResponseDTO.CouponInfo.UserInfo();
                                 userInfo.setUserId(order.getCoupon().getUser().getUserId());
@@ -68,7 +68,7 @@ public class OrderController {
                             dto.setCoupon(couponInfo);
                         }
 
-                        // 设置订单项信息
+                        // Set order item info
                         if (order.getOrderItems() != null) {
                             List<OrderResponseDTO.OrderItemInfo> orderItemInfos = order.getOrderItems().stream()
                                     .map(orderItem -> {
@@ -77,13 +77,16 @@ public class OrderController {
                                         itemInfo.setQuantity(orderItem.getQuantity());
                                         itemInfo.setUnitPrice(orderItem.getUnitPrice());
 
-                                        // 设置商品信息
+                                        // Set product info
                                         OrderResponseDTO.OrderItemInfo.ProductInfo productInfo = new OrderResponseDTO.OrderItemInfo.ProductInfo();
                                         productInfo.setProductId(orderItem.getProduct().getProductId());
                                         productInfo.setProductName(orderItem.getProduct().getProductName());
-                                        productInfo.setProductDescription(orderItem.getProduct().getProductDescription());
-                                        productInfo.setProductPrice(orderItem.getProduct().getProductPrice().doubleValue());
-                                        productInfo.setProductStockQuantity(orderItem.getProduct().getProductStockQuantity());
+                                        productInfo
+                                                .setProductDescription(orderItem.getProduct().getProductDescription());
+                                        productInfo.setProductPrice(
+                                                orderItem.getProduct().getProductPrice().doubleValue());
+                                        productInfo.setProductStockQuantity(
+                                                orderItem.getProduct().getProductStockQuantity());
                                         productInfo.setProductCategory(orderItem.getProduct().getProductCategory());
                                         productInfo.setIsVisible(orderItem.getProduct().getIsVisible());
                                         productInfo.setImageUrl(orderItem.getProduct().getImageUrl());
@@ -99,9 +102,9 @@ public class OrderController {
                     })
                     .toList();
 
-            return new DataResult(Code.SUCCESS, responseDTOs, "获取订单列表成功");
+            return new DataResult(Code.SUCCESS, responseDTOs, "Fetched order list successfully");
         } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "获取订单列表失败: " + e.getMessage());
+            return new DataResult(Code.FAILED, null, "Failed to fetch order list: " + e.getMessage());
         }
     }
 
@@ -117,14 +120,15 @@ public class OrderController {
             Integer orderStatus = request.get("orderStatus");
 
             if (orderId == null || orderStatus == null) {
-                return new DataResult(Code.FAILED, null, "订单ID和订单状态不能为空");
+                return new DataResult(Code.FAILED, null, "Order ID and order status must not be null");
             }
 
             return orderService.updateOrderStatus(orderId, orderStatus);
         } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "更新订单状态失败: " + e.getMessage());
+            return new DataResult(Code.FAILED, null, "Failed to update order status: " + e.getMessage());
         }
     }
+
     @PostMapping("/payOrder")
     public DataResult processPayment(@RequestBody Map<String, Object> request) {
         try {
@@ -132,16 +136,16 @@ public class OrderController {
             Float totalPrice = ((Number) request.get("totalPrice")).floatValue();
 
             if (userId == null || totalPrice == null) {
-                return new DataResult(Code.FAILED, null, "用户ID和支付金额不能为空");
+                return new DataResult(Code.FAILED, null, "User ID and total price must not be null");
             }
 
             if (totalPrice <= 0) {
-                return new DataResult(Code.FAILED, null, "支付金额必须大于0");
+                return new DataResult(Code.FAILED, null, "Total price must be greater than 0");
             }
 
             return orderService.processPayment(userId, totalPrice);
         } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "付款处理失败: " + e.getMessage());
+            return new DataResult(Code.FAILED, null, "Payment processing failed: " + e.getMessage());
         }
     }
 
@@ -149,25 +153,25 @@ public class OrderController {
     public DataResult getWallet(@RequestParam Integer userId) {
         try {
             if (userId == null) {
-                return new DataResult(Code.FAILED, null, "用户ID不能为空");
+                return new DataResult(Code.FAILED, null, "User ID must not be null");
             }
 
             User user = userRepository.findById(userId)
                     .orElse(null);
             if (user == null) {
-                return new DataResult(Code.FAILED, null, "用户不存在");
+                return new DataResult(Code.FAILED, null, "User does not exist");
             }
 
             java.math.BigDecimal wallet = user.getWallet();
-            // 直接返回数据库中的值，确保与payOrder方法返回一致
+            // Return value directly from DB to remain consistent with payOrder method
             if (wallet == null) {
-                return new DataResult(Code.SUCCESS, 0.0, "获取钱包余额成功");
+                return new DataResult(Code.SUCCESS, 0.0, "Fetched wallet balance successfully");
             }
 
-            // 直接返回数据库存储的值，确保一致性
-            return new DataResult(Code.SUCCESS, wallet.doubleValue(), "获取钱包余额成功");
+            // Return value directly from DB for consistency
+            return new DataResult(Code.SUCCESS, wallet.doubleValue(), "Fetched wallet balance successfully");
         } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "获取钱包余额失败: " + e.getMessage());
+            return new DataResult(Code.FAILED, null, "Failed to fetch wallet balance: " + e.getMessage());
         }
     }
 }

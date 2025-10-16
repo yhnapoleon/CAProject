@@ -29,7 +29,8 @@ public class AvatarController {
 
         File[] files = dir.listFiles((d, name) -> {
             String lower = name.toLowerCase();
-            return lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".gif");
+            return lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg")
+                    || lower.endsWith(".gif");
         });
 
         List<Map<String, Object>> result = new ArrayList<>();
@@ -38,7 +39,7 @@ public class AvatarController {
             for (File f : files) {
                 Map<String, Object> item = new HashMap<>();
                 item.put("id", id++);
-                // 通过 ImageConfig 将 app.avatar-path 映射为 /avatars/**
+                // Map app.avatar-path to /avatars/** via ImageConfig
                 item.put("url", "/avatars/" + f.getName());
                 result.add(item);
             }
@@ -47,5 +48,3 @@ public class AvatarController {
         return ResponseEntity.ok(result);
     }
 }
-
-

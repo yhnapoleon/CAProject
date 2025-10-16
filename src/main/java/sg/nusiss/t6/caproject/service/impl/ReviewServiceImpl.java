@@ -24,7 +24,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public boolean deleteReviewByProduct(Integer productId, Integer reviewId) {
-        // 读取后校验评论是否属于该商品
+        // Load and verify whether the review belongs to the specified product
         java.util.Optional<Review> opt = reviewRepository.findById(reviewId);
         if (opt.isEmpty()) {
             return false;

@@ -1,11 +1,15 @@
+//By Ying Hao
+
 package sg.nusiss.t6.caproject.service;
 
 public interface ReviewService {
     void deleteReview(Integer reviewId);
 
     /**
-     * 根据商品ID与评论ID删除评论。
-     * @return true 表示已删除；false 表示评论不存在或不属于该商品
+     * Delete a review by product and review IDs.
+     * 
+     * @return true if deleted; false if the review does not exist or does not
+     *         belong to the product
      */
     boolean deleteReviewByProduct(Integer productId, Integer reviewId);
 }

@@ -21,13 +21,13 @@ public class UserCoupon {
     @Column(name = "coupon_status", nullable = false)
     private Integer couponStatus;
 
-    // 一个用户优惠券关联属于一个用户 (多对一)
+    // A user-coupon association belongs to one user (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private User user;
 
-    // 一个用户优惠券关联对应一个优惠券 (多对一)
+    // A user-coupon association corresponds to one coupon (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id", nullable = false)
     @JsonBackReference

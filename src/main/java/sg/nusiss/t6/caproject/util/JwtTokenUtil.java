@@ -20,31 +20,33 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenUtil implements Serializable {
 
-    // Token的有效期（例如 5 小时，单位秒）
+    // Token validity (e.g., 5 hours, in seconds)
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
-    // 从配置文件加载 JWT 密钥。实际项目中需配置在 application.properties
+    // Load JWT secret from configuration. Configure in application.properties for
+    // real projects
     @Value("${jwt.secret:defaultSecretKeyForDevelopment}")
     private String secret;
-    
+
     private SecretKey getSigningKey() {
         byte[] keyBytes = secret.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // --- 1. 生成 Token ---
+    // --- 1. Generate Token ---
     /**
-     * 根据用户详情生成 JWT Token
+     * Generate JWT token based on user details
      */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        // 1. 获取用户权限列表，并转换为字符串列表 (ROLE_ADMIN, ROLE_USER 等)
+        // 1. Get authorities and convert to a list of strings (ROLE_ADMIN, ROLE_USER,
+        // etc.)
         final List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        // 2. 将权限列表以 "roles" 为键名添加到 Claims 中
+        // 2. Put roles into claims with key "roles"
         claims.put("roles", roles);
 
         return doGenerateToken(claims, userDetails.getUsername());
@@ -53,50 +55,50 @@ public class JwtTokenUtil implements Serializable {
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .claims(claims)
-                .subject(subject) // Token 的主题，通常是用户名
-                .issuedAt(new Date(System.currentTimeMillis())) // 签发时间
-                // 设置过期时间
+                .subject(subject) // Token subject, usually the username
+                .issuedAt(new Date(System.currentTimeMillis())) // Issued at
+                // Set expiration time
                 .expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-                .signWith(getSigningKey()) // 使用密钥签名
-                .compact(); // 压缩成字符串
+                .signWith(getSigningKey()) // Sign with secret key
+                .compact(); // Compact to string
     }
 
-    // --- 2. 验证 Token ---
+    // --- 2. Validate Token ---
     /**
-     * 验证 Token 是否有效：未过期且用户名匹配
+     * Validate token: not expired and username matches
      */
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    // --- 3. 解析 Token 辅助方法 ---
+    // --- 3. Parse Token helpers ---
 
-    // 从 token 获取用户名
+    // Extract username from token
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    // 检查 token 是否过期
+    // Check whether token is expired
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    // 从 token 获取过期时间
+    // Get token expiration time
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    // 从 token 中提取 Claim
+    // Extract a claim from token
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
-    // 获取 token 中的所有 Claims
+    // Get all claims from token
     private Claims getAllClaimsFromToken(String token) {
-        // 使用密钥解析 Token
+        // Parse token using secret key
         return Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
     }
 }

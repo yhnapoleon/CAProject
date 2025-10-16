@@ -1,7 +1,7 @@
 package sg.nusiss.t6.caproject.controller.dto;
 
 /**
- * 登录成功后返回的 JWT Token 响应 DTO。
+ * JWT token response DTO returned after successful login.
  */
 public class AuthResponse {
     private final String token;

@@ -18,13 +18,13 @@ public class OrderItem {
     @Column(name = "order_item_id")
     private Integer orderItemId;
 
-    // 一个订单项属于一个订单 (多对一)
+    // An order item belongs to one order (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     @JsonBackReference
     private Order order;
 
-    // 一个订单项对应一个商品 (多对一)
+    // An order item corresponds to one product (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     @JsonBackReference

@@ -16,14 +16,15 @@ import java.util.UUID;
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
-    // 与静态映射保持一致：使用 app.image-path（例如 E:/images/）作为物理保存目录
+    // Keep consistent with static mapping: use app.image-path (e.g., E:/images/) as
+    // the physical storage directory
     @Value("${app.image-path}")
     private String uploadDir;
 
     @Override
     public String storeProductImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("上传文件为空");
+            throw new IllegalArgumentException("Uploaded file is empty");
         }
 
         String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
@@ -39,17 +40,17 @@ public class FileStorageServiceImpl implements FileStorageService {
             Files.createDirectories(dir);
             Path target = dir.resolve(newFilename);
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
-            // 返回后端设备上的本地绝对路径，供数据库存储
+            // Return the local absolute path on the backend device for DB storage
             return target.toAbsolutePath().toString();
         } catch (IOException e) {
-            throw new RuntimeException("保存文件失败", e);
+            throw new RuntimeException("Failed to save file", e);
         }
     }
 
     @Override
     public String storeProductImageWithName(MultipartFile file, String filename) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("上传文件为空");
+            throw new IllegalArgumentException("Uploaded file is empty");
         }
         String clean = StringUtils.cleanPath(filename);
         try {
@@ -59,7 +60,7 @@ public class FileStorageServiceImpl implements FileStorageService {
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
             return target.toAbsolutePath().toString();
         } catch (IOException e) {
-            throw new RuntimeException("保存文件失败", e);
+            throw new RuntimeException("Failed to save file", e);
         }
     }
 }

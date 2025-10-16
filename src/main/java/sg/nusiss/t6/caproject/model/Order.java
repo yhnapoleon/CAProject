@@ -34,24 +34,24 @@ public class Order {
     @Column(name = "delivery_location", nullable = false)
     private String deliveryLocation;
 
-    // 一个订单包含多个订单项 (一对多)
+    // An order contains many order items (one-to-many)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<OrderItem> orderItems;
 
-    // 一个订单属于一个用户 (多对一)
+    // An order belongs to one user (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private User user;
 
-    // 一个订单可以使用一个折扣 (多对一)
+    // An order can use one discount (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_id")
     @JsonBackReference
     private Discount discount;
 
-    // 一个订单可以使用一张优惠券 (多对一)
+    // An order can use one coupon (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
     @JsonBackReference

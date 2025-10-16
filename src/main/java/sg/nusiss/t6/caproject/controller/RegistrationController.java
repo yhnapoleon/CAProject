@@ -19,24 +19,23 @@ public class RegistrationController {
     }
 
     /**
-     * 用户注册接口：/api/register/new
+     * User registration endpoint: /api/register/new
      */
     @PostMapping("/new")
     public ResponseEntity<RegistrationResponse> registerUser(@RequestBody RegistrationRequest request) {
         try {
-            // 调用 UserService 进行用户注册
+            // Call UserService to register the user
             User newUser = userService.registerUser(
-                request.getUsername(), 
-                request.getEmail(), 
-                request.getPassword(), 
-                request.getPhone()
-            );
+                    request.getUsername(),
+                    request.getEmail(),
+                    request.getPassword(),
+                    request.getPhone());
 
-            // 构建成功响应
+            // Build success response
             RegistrationResponse response = new RegistrationResponse();
             response.setSuccess(true);
-            response.setMessage("用户注册成功");
-            
+            response.setMessage("User registered successfully");
+
             RegistrationResponse.UserInfo userInfo = new RegistrationResponse.UserInfo();
             userInfo.setUsername(newUser.getUserName());
             userInfo.setEmail(newUser.getUserEmail());
@@ -45,16 +44,16 @@ public class RegistrationController {
 
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            // 处理业务异常（如用户名已存在等）
+            // Handle business exceptions (e.g., username already exists)
             RegistrationResponse response = new RegistrationResponse();
             response.setSuccess(false);
             response.setMessage(e.getMessage());
             return ResponseEntity.badRequest().body(response);
         } catch (Exception e) {
-            // 处理其他异常
+            // Handle other exceptions
             RegistrationResponse response = new RegistrationResponse();
             response.setSuccess(false);
-            response.setMessage("注册失败，请稍后重试");
+            response.setMessage("Registration failed, please try again later");
             return ResponseEntity.internalServerError().body(response);
         }
     }

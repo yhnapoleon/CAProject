@@ -5,14 +5,14 @@ import org.springframework.web.multipart.MultipartFile;
 public interface FileStorageService {
 
     /**
-     * 保存产品图片到本地文件系统并返回可公开访问的 URL（例如 /uploads/xxx.png）。
+     * Save product image to local filesystem and return a publicly accessible URL
+     * (e.g., /uploads/xxx.png).
      */
     String storeProductImage(MultipartFile file);
 
     /**
-     * 使用指定文件名保存图片（例如 12345.jpg），返回本地绝对路径。
+     * Save image with a specified filename (e.g., 12345.jpg) and return the local
+     * absolute path.
      */
     String storeProductImageWithName(MultipartFile file, String filename);
 }
-
-

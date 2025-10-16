@@ -6,7 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-// 导入新的类：用于获取 AuthenticationManager 的配置
+// Import the new class: provides AuthenticationManager configuration
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,11 +18,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * Spring Security 安全配置类，适配 Spring Boot 3 / Spring Security 6 的写法。
+ * Spring Security
  */
 @Configuration
-@EnableWebSecurity // 启用 Spring Security 的 Web 安全功能
-@EnableMethodSecurity(prePostEnabled = true) // 启用方法级别的权限注解（如 @PreAuthorize）
+@EnableWebSecurity // Enable Spring Security web security features
+@EnableMethodSecurity(prePostEnabled = true) // Enable method-level security annotations (e.g., @PreAuthorize)
 public class WebSecurityConfig {
 
     private final UserDetailsService jwtUserDetailsService;
@@ -30,7 +30,7 @@ public class WebSecurityConfig {
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * 构造函数注入：用户服务、JWT 过滤器、密码加密器
+     * constructor injection：user service、JWT filter、encoder
      */
     public WebSecurityConfig(UserDetailsService jwtUserDetailsService,
             JwtRequestFilter jwtRequestFilter,
@@ -41,8 +41,7 @@ public class WebSecurityConfig {
     }
 
     /**
-     * 定义身份验证提供者（AuthenticationProvider），
-     * 用于根据用户名加载用户信息，并验证密码。
+     * AuthenticationProvider
      */
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -52,51 +51,41 @@ public class WebSecurityConfig {
         return authProvider;
     }
 
-    /**
-     * 【修正】暴露 AuthenticationManager Bean，以供登录控制器使用。
-     * 在 Spring Security 6 中，推荐通过 AuthenticationConfiguration 来获取它。
-     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    /**
-     * 核心方法：定义安全过滤器链。
-     * 替代旧版本的 configure(HttpSecurity http) 方法。
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 关闭 CSRF
+                // Disable CSRF
                 .csrf(csrf -> csrf.disable())
 
-		// 放行公开接口与文档；仅后台其余接口要求 ADMIN 角色
-		.authorizeHttpRequests(auth -> auth
-				.requestMatchers(
-						"/api/auth/**",
-						"/api/admin/auth/login",
-						"/swagger-ui.html",
-						"/swagger-ui/**",
-						"/v3/api-docs/**"
-				).permitAll()
-				.requestMatchers("/api/admin/**").hasRole("ADMIN")
-				.anyRequest().permitAll()
-		)
+                // Allow public endpoints and docs; restrict /api/admin/** to ADMIN role
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/admin/auth/login",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**")
+                        .permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .anyRequest().permitAll())
 
-                // 设置会话策略为无状态
+                // Set session policy to stateless
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // 设置身份认证提供者
+                // Set authentication provider
                 .authenticationProvider(authenticationProvider());
 
-        // 添加 JWT 过滤器
+        // Add JWT filter
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // 返回配置完成的过滤器链
+        // Build and return the configured filter chain
         return http.build();
     }
 }

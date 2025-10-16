@@ -4,11 +4,11 @@ package sg.nusiss.t6.caproject.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // <-- 新增导入
+import org.springframework.transaction.annotation.Transactional; // newly added import
 import sg.nusiss.t6.caproject.model.Location;
 import sg.nusiss.t6.caproject.model.User;
 import sg.nusiss.t6.caproject.repository.LocationRepository;
-import sg.nusiss.t6.caproject.repository.UserRepository; // 假设您有这个类来查找用户
+import sg.nusiss.t6.caproject.repository.UserRepository; // Assume this exists to find users
 import sg.nusiss.t6.caproject.service.LocationService;
 import sg.nusiss.t6.caproject.util.Code;
 import sg.nusiss.t6.caproject.util.DataResult;
@@ -32,114 +32,116 @@ public class LocationServiceImpl implements LocationService {
     }
 
     // =========================================================
-    // 【方法 1】新增地址 (已完善默认地址逻辑)
+    // Method 1: Add address (with default address logic)
     // =========================================================
     @Override
     @Transactional
     public DataResult addLocation(Integer userId, String locationText, Integer postal) {
         try {
-            // 1️⃣ 数据验证
+            // 1) Validate input
             if (userId == null || userId <= 0) {
-                return new DataResult(Code.FAILED, null, "用户ID无效");
+                return new DataResult(Code.FAILED, null, "Invalid user ID");
             }
-            
+
             if (locationText == null || locationText.trim().isEmpty()) {
-                return new DataResult(Code.FAILED, null, "地址文本不能为空");
+                return new DataResult(Code.FAILED, null, "Location text must not be empty");
             }
-            
+
             if (locationText.length() > 255) {
-                return new DataResult(Code.FAILED, null, "地址文本长度不能超过255个字符");
+                return new DataResult(Code.FAILED, null, "Location text length must be <= 255 characters");
             }
-            
+
             if (postal == null || postal <= 0) {
-                return new DataResult(Code.FAILED, null, "邮编无效");
+                return new DataResult(Code.FAILED, null, "Invalid postal code");
             }
-            
-            // 验证邮编格式 (6位数字)
+
+            // Validate postal format (6 digits)
             if (!AddressFormatUtil.isValidPostal(postal)) {
-                return new DataResult(Code.FAILED, null, "邮编必须是6位数字");
+                return new DataResult(Code.FAILED, null, "Postal code must be 6 digits");
             }
 
-            // 2️⃣ 查找用户
+            // 2) Find user
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("用户不存在: " + userId));
+                    .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
-            // 3️⃣ 检查该用户是否已有地址
+            // 3) Check whether user already has addresses
             List<Location> existingLocations = locationRepository.findByUserId(userId);
 
-            // 4️⃣ 创建新地址
+            // 4) Create new address
             Location location = new Location();
             location.setUserId(userId);
             location.setLocationText(locationText.trim());
             location.setUser(user);
             location.setPostal(postal);
 
-            // 5️⃣ 设置 defaultAddress: 如果用户没有其他地址，则新地址默认为默认地址 ("1")，否则为非默认 ("0")
+            // 5) Set defaultAddress: if user has no addresses, new address is default
+            // ("1"); otherwise "0"
             if (existingLocations.isEmpty()) {
                 location.setDefaultAddress("1");
             } else {
                 location.setDefaultAddress("0");
             }
 
-            // 6️⃣ 保存地址
+            // 6) Save address
             Location savedLocation = locationRepository.save(location);
 
-            // 7️⃣ 返回结果
-            return new DataResult(Code.SUCCESS, savedLocation.getLocationId(), "地址添加成功");
+            // 7) Return result
+            return new DataResult(Code.SUCCESS, savedLocation.getLocationId(), "Address added successfully");
         } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "地址添加失败: " + e.getMessage());
+            return new DataResult(Code.FAILED, null, "Failed to add address: " + e.getMessage());
         }
     }
 
     @Override
     public DataResult deleteLocation(Integer locationId) {
         try {
-            // 1️⃣ 查找地址
+            // 1) Find address
             Location location = locationRepository.findById(locationId)
-                    .orElseThrow(() -> new RuntimeException("地址不存在: " + locationId));
+                    .orElseThrow(() -> new RuntimeException("Address not found: " + locationId));
 
-            // 2️⃣ 删除地址
+            // 2) Delete address
             locationRepository.delete(location);
 
-            // 3️⃣ 返回结果
-            return new DataResult(Code.SUCCESS, locationId, "地址删除成功");
+            // 3) Return result
+            return new DataResult(Code.SUCCESS, locationId, "Address deleted successfully");
         } catch (Exception e) {
-            return new DataResult(Code.FAILED, null, "地址删除失败: " + e.getMessage());
+            return new DataResult(Code.FAILED, null, "Failed to delete address: " + e.getMessage());
         }
     }
 
     // =========================================================
-    // 【方法 2】设置默认地址 (已完整实现)
+    // Method 2: Set default address (fully implemented)
     // =========================================================
     @Override
-    @Transactional // 保证清除和设置操作的原子性
+    @Transactional // Ensure atomicity for clearing and setting operations
     public DataResult setLocationAsDefault(Integer locationId, String username) {
-        // 1. 查找用户ID
+        // 1) Find user ID
         Integer userId = getUserIdByUsername(username);
         if (userId == null) {
-            return new DataResult(Code.FAILED, null, "用户不存在或用户名无效");
+            return new DataResult(Code.FAILED, null, "User does not exist or username is invalid");
         }
 
-        // 2. 查找目标地址
+        // 2) Find target address
         Optional<Location> locationOptional = locationRepository.findById(locationId);
         if (locationOptional.isEmpty()) {
-            return new DataResult(Code.FAILED, null, "目标地址ID不存在");
+            return new DataResult(Code.FAILED, null, "Target address ID does not exist");
         }
         Location locationToSetDefault = locationOptional.get();
 
-        // 3. 验证地址是否属于该用户
+        // 3) Verify the address belongs to the user
         if (!locationToSetDefault.getUserId().equals(userId)) {
-            throw new RuntimeException("权限不足：该地址不属于当前用户");
+            throw new RuntimeException("Insufficient permissions: address does not belong to the current user");
         }
 
-        // 4. 清除该用户所有其他地址的默认标记 (使用 LocationRepository 中新增的 clearDefaultByUserId 方法)
+        // 4) Clear default flags for other addresses of this user (using
+        // clearDefaultByUserId)
         locationRepository.clearDefaultByUserId(userId, locationId);
 
-        // 5. 设置目标地址为默认 (使用 "1")
+        // 5) Set the target address as default (use "1")
         locationToSetDefault.setDefaultAddress("1");
         locationRepository.save(locationToSetDefault);
 
-        return new DataResult(Code.SUCCESS, null, "默认地址设置成功");
+        return new DataResult(Code.SUCCESS, null, "Default address set successfully");
     }
 
     @Override
@@ -150,14 +152,15 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public List<Location> getLocationsByUsername(String username) {
-        // 步骤 1: 通过用户名获取 userId
+        // Step 1: Get userId by username
         Integer userId = getUserIdByUsername(username);
         if (userId == null) {
-            // 如果用户不存在，抛出 RuntimeException，Controller 会捕获并返回 DataResult(Code.FAILED)
-            throw new RuntimeException("用户不存在");
+            // If user does not exist, throw; controller will catch and return
+            // DataResult(Code.FAILED)
+            throw new RuntimeException("User does not exist");
         }
 
-        // 步骤 2: 调用根据 userId 查找地址的方法
+        // Step 2: Use userId to fetch locations
         return getLocationsByUserId(userId);
     }
 }

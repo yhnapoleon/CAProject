@@ -1,3 +1,5 @@
+//By Ying Hao
+
 package sg.nusiss.t6.caproject.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-// 实际项目中，这个 Controller 应受 Spring Security 保护，只允许管理员访问
+// In a real project, this controller should be protected by Spring Security and accessible to admins only
 @RestController
 @RequestMapping("/api/admin/products")
 public class AdminProductController {
@@ -35,13 +37,13 @@ public class AdminProductController {
         this.fileStorageService = fileStorageService;
     }
 
-    // 获取所有商品，包括未上架的
+    // Get all products, including those not visible (unpublished)
     @GetMapping("/getAllProducts")
     public ResponseEntity<List<Product>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
-    // 获取所有商品（分页）
+    // Get all products (paginated)
     @GetMapping
     public ResponseEntity<Page<Product>> getAllProductsPaged(
             @RequestParam(defaultValue = "0") int page,
@@ -50,16 +52,16 @@ public class AdminProductController {
         return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
 
-    // 添加新商品（JSON 请求，imageUrl 直接传链接）
+    // Create a new product (JSON request, imageUrl passed as a link)
     @PostMapping("/createProduct")
     public ResponseEntity<Product> createProduct(@RequestBody ProductRequestDTO product) {
-        // 清洗 imageUrl（去除占位符）；不再转换为 HTTP 绝对地址
+        // Sanitize imageUrl (remove placeholders); do not convert to absolute HTTP URL
         product.setImageUrl(sanitizeImageUrl(product.getImageUrl()));
         Product createdProduct = productService.createProduct(product);
         return ResponseEntity.status(201).body(createdProduct);
     }
 
-    // 添加新商品（multipart 表单，支持直接上传图片文件）
+    // Create a new product (multipart form, supports direct image upload)
     @PostMapping(value = "/createProductWithImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Product> createProductWithImage(
             @RequestPart("product") ProductRequestDTO product,
@@ -69,41 +71,42 @@ public class AdminProductController {
 
         MultipartFile actual = image != null && !image.isEmpty() ? image
                 : file != null && !file.isEmpty() ? file
-                : picture;
+                        : picture;
 
         if (actual != null && !actual.isEmpty()) {
-            // 先创建商品以获取ID
+            // Create the product first to get its ID
             Product temp = productService.createProduct(product);
-            // 用商品ID作为文件名（保持扩展名）
+            // Use product ID as the filename (preserve extension)
             String original = actual.getOriginalFilename() != null ? actual.getOriginalFilename() : "";
             String ext = "";
             int idx = original.lastIndexOf('.');
             if (idx >= 0)
                 ext = original.substring(idx);
-            String filename = temp.getProductId() + ext; // 例如 200123.jpg
+            String filename = temp.getProductId() + ext; // e.g., 200123.jpg
             fileStorageService.storeProductImageWithName(actual, filename);
-            // 数据库存相对公共URL：/images/{productId}.{ext}
+            // Store relative public URL in DB: /images/{productId}.{ext}
             String publicUrl = buildRelativePublicUrl(filename);
             productService.updateProductImage(temp.getProductId(), publicUrl);
             return ResponseEntity.status(201).body(temp);
         }
-        // 如果未上传文件，但 body 带了 imageUrl，同样做清洗（去占位符）
+        // If no file is uploaded but the body contains imageUrl, also sanitize (remove
+        // placeholders)
         product.setImageUrl(sanitizeImageUrl(product.getImageUrl()));
 
         Product createdProduct = productService.createProduct(product);
         return ResponseEntity.status(201).body(createdProduct);
     }
 
-    // 新增：更新商品图片（使用商品ID命名并覆盖原图）
+    // New: Update product image (name by product ID and overwrite existing image)
     @PostMapping(value = "/updateImage/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateImage(@PathVariable Integer id,
-                                         @RequestPart(value = "image", required = false) MultipartFile image,
-                                         @RequestPart(value = "file", required = false) MultipartFile file,
-                                         @RequestPart(value = "picture", required = false) MultipartFile picture) {
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "picture", required = false) MultipartFile picture) {
 
         MultipartFile actualFile = image != null && !image.isEmpty() ? image
                 : file != null && !file.isEmpty() ? file
-                : picture;
+                        : picture;
 
         if (actualFile == null || actualFile.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("message", "Image file is required."));
@@ -114,7 +117,8 @@ public class AdminProductController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // 新增：仅上传图片，返回自动生成的文件名与本地绝对路径
+    // New: Upload image only and return the generated filename and local absolute
+    // path
     @PostMapping(value = "/uploadImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, String>> uploadImageOnly(
             @RequestPart(value = "image", required = false) MultipartFile image,
@@ -123,7 +127,7 @@ public class AdminProductController {
 
         MultipartFile actual = image != null && !image.isEmpty() ? image
                 : file != null && !file.isEmpty() ? file
-                : picture;
+                        : picture;
         if (actual == null || actual.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -131,11 +135,10 @@ public class AdminProductController {
         String filename = new java.io.File(storedPath).getName();
         return ResponseEntity.ok(java.util.Map.of(
                 "filename", filename,
-                "path", storedPath
-        ));
+                "path", storedPath));
     }
 
-    // 更新商品信息（使用DTO）
+    // Update product information (DTO)
     @PutMapping("/updateProduct/{id}")
     public ResponseEntity<Optional<Product>> updateProduct(@PathVariable Integer id,
             @RequestBody ProductRequestDTO productDetails) {
@@ -143,18 +146,18 @@ public class AdminProductController {
         return ResponseEntity.ok(productService.updateProduct(id, productDetails));
     }
 
-    // 删除商品
+    // Delete product
     @DeleteMapping("/deleteProduct/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
 
-    // 修改库存
+    // Update stock
     @PatchMapping("/updateStock/{id}")
     public ResponseEntity<Optional<Product>> updateStock(@PathVariable Integer id,
             @RequestBody Map<String, Integer> stockUpdate) {
-        // 兼容两种字段名
+        // Support two field names
         Integer newStock = stockUpdate.get("stock");
         if (newStock == null) {
             newStock = stockUpdate.get("stockQuantity");
@@ -165,7 +168,7 @@ public class AdminProductController {
         return ResponseEntity.ok(productService.updateStock(id, newStock));
     }
 
-    // 上架/下架商品
+    // Toggle product visibility
     @PatchMapping("/setVisibility/{id}")
     public ResponseEntity<Optional<Product>> setVisibility(@PathVariable Integer id,
             @RequestBody Map<String, Boolean> visibilityUpdate) {
@@ -176,7 +179,8 @@ public class AdminProductController {
         return ResponseEntity.ok(productService.setProductVisibility(id, isVisible));
     }
 
-    // 下载接口：根据产品ID读取数据库中的本地路径并回传文件
+    // Download endpoint: read the local path from DB by product ID and return the
+    // file
     @GetMapping("/image/{id}")
     public ResponseEntity<Resource> getProductImage(@PathVariable Integer id) {
         Optional<Product> opt = productService.getProductById(id);
@@ -196,27 +200,27 @@ public class AdminProductController {
                 .body(resource);
     }
 
-    // 过滤占位符或空串；不做 HTTP 绝对地址转换
+    // Filter placeholders or empty strings; do not convert to an absolute HTTP URL
     private String sanitizeImageUrl(String raw) {
         if (raw == null)
             return null;
         String url = raw.trim();
         if (url.isEmpty())
             return null;
-        // 忽略常见占位符/设计稿路径
+        // Ignore common placeholders/mock design paths
         if ("/images/placeholder.svg".equals(url) || url.contains("/123/images/")) {
             return null;
         }
-        // /images/ 相对路径保持原样，由前端按当前主机与端口访问
+        // Keep /images/ relative path as-is; the frontend will resolve host and port
         if (url.startsWith("/images/")) {
             return url;
         }
-        // Windows 本地路径 → 提取文件名 → 绝对 URL
+        // Windows local path → extract filename → absolute URL
         if (url.matches("^[A-Za-z]:\\\\.*") || url.startsWith("\\\\")) {
             String filename = new java.io.File(url).getName();
             return buildRelativePublicUrl(filename);
         }
-        // 其余按原样返回（可为完整 URL）
+        // Return others as-is (may already be a full URL)
         return url;
     }
 

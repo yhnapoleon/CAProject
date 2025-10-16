@@ -1,63 +1,69 @@
 package sg.nusiss.t6.caproject.util;
 
 /**
- * 地址格式标准化工具类
- * 用于统一前后端地址数据格式
+ * Address formatting utility.
+ * Used to standardize address format between frontend and backend.
  */
 public class AddressFormatUtil {
-    
+
     /**
-     * 标准地址格式: "街道, 建筑, 邮编, 城市"
+     * Standard address format: "street, building, postal, city"
      */
     public static final String ADDRESS_FORMAT = "%s, %s, %s, %s";
-    
+
     /**
-     * 格式化地址文本（将分离的地址字段合并为标准格式）
-     * @param street 街道
-     * @param building 建筑
-     * @param postal 邮编
-     * @param city 城市
-     * @return 标准格式的地址文本
+     * Format address text (combine split fields into standardized format)
+     * 
+     * @param street   street
+     * @param building building
+     * @param postal   postal code
+     * @param city     city
+     * @return standardized address text
      */
     public static String formatAddressText(String street, String building, String postal, String city) {
-        if (street == null) street = "";
-        if (building == null) building = "";
-        if (postal == null) postal = "";
-        if (city == null) city = "";
-        
+        if (street == null)
+            street = "";
+        if (building == null)
+            building = "";
+        if (postal == null)
+            postal = "";
+        if (city == null)
+            city = "";
+
         return String.format(ADDRESS_FORMAT, street.trim(), building.trim(), postal.trim(), city.trim());
     }
-    
+
     /**
-     * 解析地址文本（将标准格式的地址文本分离为各个字段）
-     * @param locationText 标准格式的地址文本
-     * @return AddressComponents 包含各个地址组件的对象
+     * Parse address text (split standardized text into components)
+     * 
+     * @param locationText standardized address text
+     * @return AddressComponents containing the split fields
      */
     public static AddressComponents parseAddressText(String locationText) {
         if (locationText == null || locationText.trim().isEmpty()) {
             return new AddressComponents("", "", "", "");
         }
-        
+
         String[] parts = locationText.split(",");
-        
-        // 确保至少有4个部分，不足的用空字符串填充
+
+        // Ensure at least 4 parts; fill missing ones with empty strings
         String[] normalizedParts = new String[4];
         for (int i = 0; i < 4; i++) {
             normalizedParts[i] = (i < parts.length) ? parts[i].trim() : "";
         }
-        
+
         return new AddressComponents(
-            normalizedParts[0],
-            normalizedParts[1], 
-            normalizedParts[2],
-            normalizedParts[3]
-        );
+                normalizedParts[0],
+                normalizedParts[1],
+                normalizedParts[2],
+                normalizedParts[3]);
     }
-    
+
     /**
-     * 验证邮编格式
-     * @param postal 邮编字符串
-     * @return 是否为有效的6位数字邮编
+     * Validate postal code format
+     * 
+     * @param postal postal code as string
+     * @return whether it is a valid 6-digit postal code
      */
     public static boolean isValidPostal(String postal) {
         if (postal == null || postal.trim().isEmpty()) {
@@ -65,11 +71,12 @@ public class AddressFormatUtil {
         }
         return postal.trim().matches("\\d{6}");
     }
-    
+
     /**
-     * 验证邮编格式（Integer版本）
-     * @param postal 邮编数字
-     * @return 是否为有效的6位数字邮编
+     * Validate postal code format (Integer version)
+     * 
+     * @param postal postal code as integer
+     * @return whether it is a valid 6-digit postal code
      */
     public static boolean isValidPostal(Integer postal) {
         if (postal == null) {
@@ -77,11 +84,12 @@ public class AddressFormatUtil {
         }
         return postal.toString().matches("\\d{6}");
     }
-    
+
     /**
-     * 验证地址文本长度
-     * @param locationText 地址文本
-     * @return 是否在有效长度范围内
+     * Validate address text length
+     * 
+     * @param locationText address text
+     * @return whether it is within the valid length range
      */
     public static boolean isValidAddressLength(String locationText) {
         if (locationText == null) {
@@ -89,35 +97,43 @@ public class AddressFormatUtil {
         }
         return locationText.length() <= 255;
     }
-    
+
     /**
-     * 地址组件类
+     * Address components wrapper class
      */
     public static class AddressComponents {
         private final String street;
         private final String building;
         private final String postal;
         private final String city;
-        
+
         public AddressComponents(String street, String building, String postal, String city) {
             this.street = street;
             this.building = building;
             this.postal = postal;
             this.city = city;
         }
-        
-        public String getStreet() { return street; }
-        public String getBuilding() { return building; }
-        public String getPostal() { return postal; }
-        public String getCity() { return city; }
-        
+
+        public String getStreet() {
+            return street;
+        }
+
+        public String getBuilding() {
+            return building;
+        }
+
+        public String getPostal() {
+            return postal;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
         @Override
         public String toString() {
-            return String.format("AddressComponents{street='%s', building='%s', postal='%s', city='%s'}", 
-                street, building, postal, city);
+            return String.format("AddressComponents{street='%s', building='%s', postal='%s', city='%s'}",
+                    street, building, postal, city);
         }
     }
 }
-
-
-

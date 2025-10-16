@@ -1,3 +1,5 @@
+//By Ying Hao
+
 package sg.nusiss.t6.caproject.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ public class ReviewController {
     }
 
     /**
-     * 删除评论（根据评论ID）
+     * Delete a review by its ID
      * DELETE /api/reviews/{reviewId}
      */
     @DeleteMapping("deleteReview/{reviewId}")

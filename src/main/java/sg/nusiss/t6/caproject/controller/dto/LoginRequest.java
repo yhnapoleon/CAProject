@@ -1,18 +1,30 @@
 package sg.nusiss.t6.caproject.controller.dto;
 
 /**
- * 用户登录和注册请求的 DTO。
+ * DTO for user login and registration requests.
  */
 public class LoginRequest {
     private String username;
     private String password;
 
-    // 必须有默认构造函数
-    public LoginRequest() {}
+    // Must have a default constructor
+    public LoginRequest() {
+    }
 
-    // Getter 和 Setter (Jackson 库需要它们来反序列化 JSON)
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    // Getters and setters (required by Jackson for JSON deserialization)
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

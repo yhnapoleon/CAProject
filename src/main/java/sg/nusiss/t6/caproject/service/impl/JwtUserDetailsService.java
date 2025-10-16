@@ -13,8 +13,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 实现了 UserDetailsService 接口，用于 Spring Security 框架从数据库加载用户信息。
- * 它是登录认证流程的第一步。
+ * Implements UserDetailsService for Spring Security to load user info from DB.
+ * This is the first step in the login authentication flow.
  */
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
@@ -26,28 +26,29 @@ public class JwtUserDetailsService implements UserDetailsService {
     }
 
     /**
-     * 根据用户名加载用户。这是 Spring Security 进行身份验证时的关键方法。
-     * @param username 用户在登录时提交的用户名
-     * @return 包含用户详细信息（如加密密码、角色）的 UserDetails 对象
-     * @throws UsernameNotFoundException 如果用户不存在
+     * Load user by username. Key method used by Spring Security for authentication.
+     * 
+     * @param username username submitted at login
+     * @return UserDetails containing encrypted password and roles
+     * @throws UsernameNotFoundException if user does not exist
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // 1. 从数据库查找用户实体
-        User user = userRepository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        // 1. Find user entity from database
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        // 2. 将 User 实体转换为 Spring Security 要求的 UserDetails
-        // 创建权限列表。注意：权限/角色必须以 "ROLE_" 开头
+        // 2. Convert User entity to Spring Security's UserDetails
+        // Create authorities; note: roles must start with "ROLE_"
         String role = user.getUserType() == 0 ? "ADMIN" : "USER";
         List<GrantedAuthority> authorities = Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + role)
-        );
+                new SimpleGrantedAuthority("ROLE_" + role));
 
-        // 3. 返回 Spring Security 内部的 UserDetails 对象
+        // 3. Return Spring Security internal UserDetails object
         return new org.springframework.security.core.userdetails.User(
-                user.getUserName(),      // 用户名
-                user.getUserPassword(),      // 数据库中存储的加密后的密码
-                authorities              // 用户权限（ROLE_USER 或 ROLE_ADMIN）
+                user.getUserName(), // username
+                user.getUserPassword(), // encrypted password stored in DB
+                authorities // authorities (ROLE_USER or ROLE_ADMIN)
         );
     }
 }

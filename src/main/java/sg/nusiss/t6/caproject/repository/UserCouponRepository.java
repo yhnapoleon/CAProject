@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Integer> {
 
-    // 根据用户ID查找所有用户优惠券
+    // Find all user coupons by user ID
     List<UserCoupon> findByUserUserId(Integer userId);
 }

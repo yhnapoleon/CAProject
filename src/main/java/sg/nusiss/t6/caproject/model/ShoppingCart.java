@@ -18,13 +18,13 @@ public class ShoppingCart {
     @Column(name = "shopping_cart_id")
     private Integer shoppingCartId;
 
-    // 一个购物车项属于一个用户 (多对一)
+    // A cart item belongs to one user (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private User user;
 
-    // 一个购物车项对应一个商品 (多对一)
+    // A cart item corresponds to one product (many-to-one)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     @JsonBackReference
