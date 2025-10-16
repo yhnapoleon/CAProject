@@ -96,30 +96,22 @@ public class AdminProductController {
 
     // 新增：更新商品图片（使用商品ID命名并覆盖原图）
     @PostMapping(value = "/updateImage/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Optional<Product>> updateImage(@PathVariable Integer id,
+    public ResponseEntity<?> updateImage(@PathVariable Integer id,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @RequestPart(value = "picture", required = false) MultipartFile picture) {
 
-        MultipartFile actual = image != null && !image.isEmpty() ? image
+        MultipartFile actualFile = image != null && !image.isEmpty() ? image
                 : file != null && !file.isEmpty() ? file
                         : picture;
-        if (actual == null || actual.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+
+        if (actualFile == null || actualFile.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Image file is required."));
         }
-        // 用 ID 作为文件名（保留扩展名）
-        String original = actual.getOriginalFilename() != null ? actual.getOriginalFilename() : "";
-        String ext = "";
-        int idx = original.lastIndexOf('.');
-        if (idx >= 0)
-            ext = original.substring(idx);
-        String filename = id + ext;
-        fileStorageService.storeProductImageWithName(actual, filename);
-        String publicUrl = buildRelativePublicUrl(filename);
-        Optional<Product> updated = productService.updateProductImage(id, publicUrl);
-        if (updated.isEmpty())
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updated);
+
+        Optional<Product> updatedProduct = productService.updateProductImage(id, actualFile);
+        return updatedProduct.<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // 新增：仅上传图片，返回自动生成的文件名与本地绝对路径

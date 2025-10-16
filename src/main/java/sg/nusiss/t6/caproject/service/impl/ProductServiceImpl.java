@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import sg.nusiss.t6.caproject.model.Product;
@@ -16,6 +17,7 @@ import sg.nusiss.t6.caproject.repository.ProductRepository;
 import sg.nusiss.t6.caproject.repository.ReviewRepository;
 import sg.nusiss.t6.caproject.repository.UserRepository;
 import sg.nusiss.t6.caproject.service.ProductService;
+import sg.nusiss.t6.caproject.service.FileStorageService;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,13 +28,15 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final FileStorageService fileStorageService;
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository, ReviewRepository reviewRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository, FileStorageService fileStorageService) {
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     // --- 用户侧功能实现 ---
@@ -178,6 +182,27 @@ public class ProductServiceImpl implements ProductService {
     public Optional<Product> updateProductImage(Integer id, String absolutePath) {
         return productRepository.findById(id).map(product -> {
             product.setImageUrl(absolutePath);
+            return productRepository.save(product);
+        });
+    }
+
+    /**
+     * 保存新图片并更新数据库记录：使用商品ID作为文件名（保留扩展名），并覆盖旧图。
+     */
+    @Override
+    @Transactional
+    public Optional<Product> updateProductImage(Integer id, MultipartFile file) {
+        return productRepository.findById(id).map(product -> {
+            String original = file.getOriginalFilename() != null ? file.getOriginalFilename() : "";
+            String ext = "";
+            int idx = original.lastIndexOf('.');
+            if (idx >= 0) {
+                ext = original.substring(idx);
+            }
+            String filename = id + ext;
+            fileStorageService.storeProductImageWithName(file, filename);
+            String publicUrl = "/images/" + filename;
+            product.setImageUrl(publicUrl);
             return productRepository.save(product);
         });
     }
