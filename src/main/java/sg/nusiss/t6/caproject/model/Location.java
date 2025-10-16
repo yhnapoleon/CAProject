@@ -76,4 +76,12 @@ public class Location {
     public void setDefaultAddress(String defaultAddress) {
         this.defaultAddress = defaultAddress;
     }
+
+    public Integer getPostal() {
+        return postal;
+    }
+
+    public void setPostal(Integer postal) {
+        this.postal = postal;
+    }
 }
