@@ -16,12 +16,9 @@ import java.util.UUID;
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
-    // 默认保存到 Windows 本机目录 D:\\CAimages\\images（可通过 app.upload.dir 覆盖）
-    @Value("${app.upload.dir:D:\\CAimages\\images}")
+    // 与静态映射保持一致：使用 app.image-path（例如 E:/images/）作为物理保存目录
+    @Value("${app.image-path}")
     private String uploadDir;
-
-    @Value("${app.upload.public-prefix:/uploads}")
-    private String publicPrefix;
 
     @Override
     public String storeProductImage(MultipartFile file) {
@@ -66,5 +63,3 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 }
-
-
