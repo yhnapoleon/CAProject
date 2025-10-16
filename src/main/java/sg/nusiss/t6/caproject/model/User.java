@@ -1,3 +1,5 @@
+//By Xu Wenzhe
+
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
@@ -50,10 +52,11 @@ public class User {
     @Column(name = "user_birthday")
     private LocalDate userBirthday;
 
+    @Getter
     @Column(name = "user_introduce", columnDefinition = "TEXT")
     private String userIntroduce;
 
-    @Column(name = "user_profile_url", length = 255)
+    @Column(name = "user_profile_url")
     private String userProfileUrl;
 
     @Column(name = "wallet", nullable = false, precision = 10, scale = 2)
@@ -98,108 +101,4 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Location> locations;
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public String getUserPhone() {
-        return userPhone;
-    }
-
-    public void setUserPhone(String userPhone) {
-        this.userPhone = userPhone;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-    }
-
-    public String getUserPassword() {
-        return userPassword;
-    }
-
-    public void setUserPassword(String userPassword) {
-        this.userPassword = userPassword;
-    }
-
-    public Integer getUserType() {
-        return userType;
-    }
-
-    public void setUserType(Integer userType) {
-        this.userType = userType;
-    }
-
-    public LocalDateTime getUserRegisterTime() {
-        return userRegisterTime;
-    }
-
-    public void setUserRegisterTime(LocalDateTime userRegisterTime) {
-        this.userRegisterTime = userRegisterTime;
-    }
-
-    public LocalDateTime getUserLastLoginTime() {
-        return userLastLoginTime;
-    }
-
-    public void setUserLastLoginTime(LocalDateTime userLastLoginTime) {
-        this.userLastLoginTime = userLastLoginTime;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getUserGender() {
-        return userGender;
-    }
-
-    public void setUserGender(String userGender) {
-        this.userGender = userGender;
-    }
-
-    public LocalDate getUserBirthday() {
-        return userBirthday;
-    }
-
-    public void setUserBirthday(LocalDate userBirthday) {
-        this.userBirthday = userBirthday;
-    }
-
-    public String getUserIntroduce() {
-        return userIntroduce;
-    }
-
-    public void setUserIntroduce(String userIntroduce) {
-        this.userIntroduce = userIntroduce;
-    }
-
-    public String getUserProfileUrl() {
-        return userProfileUrl;
-    }
-
-    public void setUserProfileUrl(String userProfileUrl) {
-        this.userProfileUrl = userProfileUrl;
-    }
-
-    public BigDecimal getWallet() {
-        return wallet;
-    }
-
-    public void setWallet(BigDecimal wallet) {
-        this.wallet = wallet;
-    }
 }

@@ -1,9 +1,17 @@
+//By Xu Wenzhe
+
 package sg.nusiss.t6.caproject.controller.dto;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * DTO for user login and registration requests.
  */
+@Setter
+@Getter
 public class LoginRequest {
+    // Getters and setters (required by Jackson for JSON deserialization)
     private String username;
     private String password;
 
@@ -11,20 +19,4 @@ public class LoginRequest {
     public LoginRequest() {
     }
 
-    // Getters and setters (required by Jackson for JSON deserialization)
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

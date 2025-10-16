@@ -1,3 +1,6 @@
+//By Zhao Jiayi
+//This feature has not been implemented yet.
+
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
@@ -32,36 +35,4 @@ public class UserCoupon {
     @JoinColumn(name = "coupon_id", nullable = false)
     @JsonBackReference
     private Coupon coupon;
-
-    public Integer getUserCouponId() {
-        return userCouponId;
-    }
-
-    public void setUserCouponId(Integer userCouponId) {
-        this.userCouponId = userCouponId;
-    }
-
-    public Integer getCouponStatus() {
-        return couponStatus;
-    }
-
-    public void setCouponStatus(Integer couponStatus) {
-        this.couponStatus = couponStatus;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Coupon getCoupon() {
-        return coupon;
-    }
-
-    public void setCoupon(Coupon coupon) {
-        this.coupon = coupon;
-    }
 }

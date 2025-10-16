@@ -1,6 +1,7 @@
+//By Zhao Jiayi
+
 package sg.nusiss.t6.caproject.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.nusiss.t6.caproject.controller.dto.OrderRequestDTO;
 import sg.nusiss.t6.caproject.model.*;
@@ -14,25 +15,26 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import sg.nusiss.t6.caproject.util.Code;
-import sg.nusiss.t6.caproject.util.DataResult;
 
 @Service
 public class OrderServiceImpl implements OrderService {
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private DiscountRepository discountRepository;
+    private final DiscountRepository discountRepository;
 
-    @Autowired
-    private CouponRepository couponRepository;
+    private final CouponRepository couponRepository;
+
+    public OrderServiceImpl(OrderRepository orderRepository, ProductRepository productRepository, UserRepository userRepository, DiscountRepository discountRepository, CouponRepository couponRepository) {
+        this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+        this.discountRepository = discountRepository;
+        this.couponRepository = couponRepository;
+    }
 
     @Override
     public List<Order> getOrdersByUserId(Integer userId) {

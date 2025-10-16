@@ -1,5 +1,12 @@
+//By Zhao Jiayi
+
 package sg.nusiss.t6.caproject.util;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class DataResult implements Code{
     private int code;
     private Object data;
@@ -14,27 +21,4 @@ public class DataResult implements Code{
         this.message = message;
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public Object getData() {
-        return data;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }

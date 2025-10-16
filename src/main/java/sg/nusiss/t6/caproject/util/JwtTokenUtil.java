@@ -1,3 +1,5 @@
+//By Xu Wenzhe
+
 package sg.nusiss.t6.caproject.util;
 
 import io.jsonwebtoken.Claims;
@@ -33,20 +35,16 @@ public class JwtTokenUtil implements Serializable {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // --- 1. Generate Token ---
-    /**
-     * Generate JWT token based on user details
-     */
+    //Generate JWT token based on user details
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        // 1. Get authorities and convert to a list of strings (ROLE_ADMIN, ROLE_USER,
-        // etc.)
+        //Get authorities and convert to a list of strings (ROLE_ADMIN, ROLE_USER, etc.)
         final List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        // 2. Put roles into claims with key "roles"
+        //Put roles into claims with key "roles"
         claims.put("roles", roles);
 
         return doGenerateToken(claims, userDetails.getUsername());
@@ -63,16 +61,11 @@ public class JwtTokenUtil implements Serializable {
                 .compact(); // Compact to string
     }
 
-    // --- 2. Validate Token ---
-    /**
-     * Validate token: not expired and username matches
-     */
+    //Validate token: not expired and username matches
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-
-    // --- 3. Parse Token helpers ---
 
     // Extract username from token
     public String getUsernameFromToken(String token) {

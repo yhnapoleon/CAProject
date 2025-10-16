@@ -1,3 +1,5 @@
+//By Zhao Jiayi
+
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
@@ -49,61 +51,5 @@ public class Review {
         if (this.reviewCreateTime == null) {
             this.reviewCreateTime = LocalDateTime.now();
         }
-    }
-
-    public Integer getReviewId() {
-        return reviewId;
-    }
-
-    public void setReviewId(Integer reviewId) {
-        this.reviewId = reviewId;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public LocalDateTime getReviewCreateTime() {
-        return reviewCreateTime;
-    }
-
-    public void setReviewCreateTime(LocalDateTime reviewCreateTime) {
-        this.reviewCreateTime = reviewCreateTime;
-    }
-
-    public Integer getReviewRank() {
-        return reviewRank;
-    }
-
-    public void setReviewRank(Integer reviewRank) {
-        this.reviewRank = reviewRank;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 }

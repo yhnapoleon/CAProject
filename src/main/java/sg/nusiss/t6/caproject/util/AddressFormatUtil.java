@@ -1,4 +1,8 @@
+//By Xu Wenzhe
+
 package sg.nusiss.t6.caproject.util;
+
+import lombok.Getter;
 
 /**
  * Address formatting utility.
@@ -6,20 +10,9 @@ package sg.nusiss.t6.caproject.util;
  */
 public class AddressFormatUtil {
 
-    /**
-     * Standard address format: "street, building, postal, city"
-     */
+    //Standard address format: "street, building, postal, city"
     public static final String ADDRESS_FORMAT = "%s, %s, %s, %s";
 
-    /**
-     * Format address text (combine split fields into standardized format)
-     * 
-     * @param street   street
-     * @param building building
-     * @param postal   postal code
-     * @param city     city
-     * @return standardized address text
-     */
     public static String formatAddressText(String street, String building, String postal, String city) {
         if (street == null)
             street = "";
@@ -33,12 +26,7 @@ public class AddressFormatUtil {
         return String.format(ADDRESS_FORMAT, street.trim(), building.trim(), postal.trim(), city.trim());
     }
 
-    /**
-     * Parse address text (split standardized text into components)
-     * 
-     * @param locationText standardized address text
-     * @return AddressComponents containing the split fields
-     */
+    //Parse address text (split standardized text into components)
     public static AddressComponents parseAddressText(String locationText) {
         if (locationText == null || locationText.trim().isEmpty()) {
             return new AddressComponents("", "", "", "");
@@ -59,12 +47,7 @@ public class AddressFormatUtil {
                 normalizedParts[3]);
     }
 
-    /**
-     * Validate postal code format
-     * 
-     * @param postal postal code as string
-     * @return whether it is a valid 6-digit postal code
-     */
+    //Validate postal code format
     public static boolean isValidPostal(String postal) {
         if (postal == null || postal.trim().isEmpty()) {
             return false;
@@ -72,12 +55,7 @@ public class AddressFormatUtil {
         return postal.trim().matches("\\d{6}");
     }
 
-    /**
-     * Validate postal code format (Integer version)
-     * 
-     * @param postal postal code as integer
-     * @return whether it is a valid 6-digit postal code
-     */
+    //Validate postal code format (Integer version)
     public static boolean isValidPostal(Integer postal) {
         if (postal == null) {
             return false;
@@ -85,12 +63,7 @@ public class AddressFormatUtil {
         return postal.toString().matches("\\d{6}");
     }
 
-    /**
-     * Validate address text length
-     * 
-     * @param locationText address text
-     * @return whether it is within the valid length range
-     */
+    //Validate address text length
     public static boolean isValidAddressLength(String locationText) {
         if (locationText == null) {
             return false;
@@ -98,9 +71,8 @@ public class AddressFormatUtil {
         return locationText.length() <= 255;
     }
 
-    /**
-     * Address components wrapper class
-     */
+    //Address components wrapper class
+    @Getter
     public static class AddressComponents {
         private final String street;
         private final String building;
@@ -112,22 +84,6 @@ public class AddressFormatUtil {
             this.building = building;
             this.postal = postal;
             this.city = city;
-        }
-
-        public String getStreet() {
-            return street;
-        }
-
-        public String getBuilding() {
-            return building;
-        }
-
-        public String getPostal() {
-            return postal;
-        }
-
-        public String getCity() {
-            return city;
         }
 
         @Override

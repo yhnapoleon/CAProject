@@ -1,8 +1,14 @@
+//By Ying Hao
+
 package sg.nusiss.t6.caproject.controller.dto;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
+@Getter
+@Setter
 public class ReviewRequestDTO {
 
   private String title;
@@ -11,27 +17,4 @@ public class ReviewRequestDTO {
 
   private Integer reviewRank;
 
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getComment() {
-    return comment;
-  }
-
-  public void setComment(String comment) {
-    this.comment = comment;
-  }
-
-  public Integer getReviewRank() {
-    return reviewRank;
-  }
-
-  public void setReviewRank(Integer reviewRank) {
-    this.reviewRank = reviewRank;
-  }
 }

@@ -1,6 +1,7 @@
+//By Zhao Jiayi
+
 package sg.nusiss.t6.caproject.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sg.nusiss.t6.caproject.model.ShoppingCart;
@@ -17,14 +18,17 @@ import java.util.Optional;
 @Service
 @Transactional
 public class CartServiceImpl implements CartService {
-    @Autowired
-    private CartRepository cartRepository;
+    private final CartRepository cartRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public CartServiceImpl(CartRepository cartRepository, ProductRepository productRepository, UserRepository userRepository) {
+        this.cartRepository = cartRepository;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public List<ShoppingCart> getCartItemByUserId(Integer userId) {

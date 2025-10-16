@@ -1,8 +1,7 @@
-// LocationServiceImpl.java
+//By Xu Wenzhe
 
 package sg.nusiss.t6.caproject.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // newly added import
 import sg.nusiss.t6.caproject.model.Location;
@@ -20,11 +19,14 @@ import java.util.Optional;
 @Service
 public class LocationServiceImpl implements LocationService {
 
-    @Autowired
-    private LocationRepository locationRepository;
+    private final LocationRepository locationRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public LocationServiceImpl(LocationRepository locationRepository, UserRepository userRepository) {
+        this.locationRepository = locationRepository;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public List<Location> getLocationsByUserId(Integer userId) {

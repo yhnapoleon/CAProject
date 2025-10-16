@@ -1,3 +1,5 @@
+//By Xu Wenzhe and Ying Hao
+
 package sg.nusiss.t6.caproject.config;
 
 import org.springframework.context.annotation.Bean;
@@ -5,12 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-// Import the new class: provides AuthenticationManager configuration
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity // Enable Spring Security web security features
-@EnableMethodSecurity(prePostEnabled = true) // Enable method-level security annotations (e.g., @PreAuthorize)
+@EnableMethodSecurity() // Enable method-level security annotations (e.g., @PreAuthorize)
 public class WebSecurityConfig {
 
     private final UserDetailsService jwtUserDetailsService;
@@ -61,7 +62,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // Disable CSRF
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
 
                 // Allow public endpoints and docs; restrict /api/admin/** to ADMIN role
                 .authorizeHttpRequests(auth -> auth

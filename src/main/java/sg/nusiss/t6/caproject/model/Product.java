@@ -40,7 +40,7 @@ public class Product {
     @Column(nullable = false)
     private Integer isVisible; // Corresponds to DB int type; not using boolean
 
-    @Column(length = 255)
+    @Column()
     private String imageUrl;
 
     @Column(name = "product_brand", length = 50)
@@ -48,70 +48,6 @@ public class Product {
 
     @Column(name = "product_sku", length = 50)
     private String productSku; // New field: SKU
-
-    public String getProductBrand() {
-        return productBrand;
-    }
-
-    public void setProductBrand(String productBrand) {
-        this.productBrand = productBrand;
-    }
-
-    public String getProductSku() {
-        return productSku;
-    }
-
-    public void setProductSku(String productSku) {
-        this.productSku = productSku;
-    }
-
-    public BigDecimal getProductWeight() {
-        return productWeight;
-    }
-
-    public void setProductWeight(BigDecimal productWeight) {
-        this.productWeight = productWeight;
-    }
-
-    public String getProductDimensions() {
-        return productDimensions;
-    }
-
-    public void setProductDimensions(String productDimensions) {
-        this.productDimensions = productDimensions;
-    }
-
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
-    }
-
-    public List<ShoppingCart> getShoppingCarts() {
-        return shoppingCarts;
-    }
-
-    public void setShoppingCarts(List<ShoppingCart> shoppingCarts) {
-        this.shoppingCarts = shoppingCarts;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     @Column(name = "product_weight", precision = 10, scale = 2)
     private BigDecimal productWeight; // New field: weight (use BigDecimal for precision)
@@ -135,68 +71,4 @@ public class Product {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private User user;
-
-    public Integer getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Integer productId) {
-        this.productId = productId;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getProductDescription() {
-        return productDescription;
-    }
-
-    public void setProductDescription(String productDescription) {
-        this.productDescription = productDescription;
-    }
-
-    public BigDecimal getProductPrice() {
-        return productPrice;
-    }
-
-    public void setProductPrice(BigDecimal productPrice) {
-        this.productPrice = productPrice;
-    }
-
-    public Integer getProductStockQuantity() {
-        return productStockQuantity;
-    }
-
-    public void setProductStockQuantity(Integer productStockQuantity) {
-        this.productStockQuantity = productStockQuantity;
-    }
-
-    public String getProductCategory() {
-        return productCategory;
-    }
-
-    public void setProductCategory(String productCategory) {
-        this.productCategory = productCategory;
-    }
-
-    public Integer getIsVisible() {
-        return isVisible;
-    }
-
-    public void setIsVisible(Integer isVisible) {
-        this.isVisible = isVisible;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 }

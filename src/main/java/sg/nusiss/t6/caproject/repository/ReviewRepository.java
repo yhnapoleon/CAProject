@@ -1,3 +1,5 @@
+//By Zhao Jiayi
+
 package sg.nusiss.t6.caproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +15,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
 
     List<Review> findByProductProductId(Long productId);
-    
+
 
     @Query("SELECT r FROM Review r JOIN FETCH r.user WHERE r.product.productId = :productId")
     List<Review> findByProductProductIdWithUser(@Param("productId") Long productId);

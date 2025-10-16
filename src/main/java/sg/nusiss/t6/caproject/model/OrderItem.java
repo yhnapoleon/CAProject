@@ -1,3 +1,5 @@
+//By Zhao Jiayi
+
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
@@ -35,44 +37,4 @@ public class OrderItem {
 
     @Column(name = "unit_price", nullable = false)
     private Integer unitPrice;
-
-    public Integer getOrderItemId() {
-        return orderItemId;
-    }
-
-    public void setOrderItemId(Integer orderItemId) {
-        this.orderItemId = orderItemId;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public Integer getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(Integer unitPrice) {
-        this.unitPrice = unitPrice;
-    }
 }

@@ -1,3 +1,5 @@
+//By Xu Wenzhe
+
 package sg.nusiss.t6.caproject.controller;
 
 import lombok.Getter;
@@ -11,7 +13,6 @@ import sg.nusiss.t6.caproject.model.User;
 import sg.nusiss.t6.caproject.repository.UserRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RestController
@@ -145,78 +146,6 @@ public class UserController {
         private LocalDate userBirthday;
         private String userIntroduce;
         private String userProfileUrl;
-
-        public String getUserPhone() {
-            return userPhone;
-        }
-
-        public void setUserPhone(String userPhone) {
-            this.userPhone = userPhone;
-        }
-
-        public String getUserEmail() {
-            return userEmail;
-        }
-
-        public void setUserEmail(String userEmail) {
-            this.userEmail = userEmail;
-        }
-
-        public String getUserPassword() {
-            return userPassword;
-        }
-
-        public void setUserPassword(String userPassword) {
-            this.userPassword = userPassword;
-        }
-
-        public LocalDateTime getUserLastLoginTime() {
-            return userLastLoginTime;
-        }
-
-        public void setUserLastLoginTime(LocalDateTime userLastLoginTime) {
-            this.userLastLoginTime = userLastLoginTime;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
-
-        public String getUserGender() {
-            return userGender;
-        }
-
-        public void setUserGender(String userGender) {
-            this.userGender = userGender;
-        }
-
-        public LocalDate getUserBirthday() {
-            return userBirthday;
-        }
-
-        public void setUserBirthday(LocalDate userBirthday) {
-            this.userBirthday = userBirthday;
-        }
-
-        public String getUserIntroduce() {
-            return userIntroduce;
-        }
-
-        public void setUserIntroduce(String userIntroduce) {
-            this.userIntroduce = userIntroduce;
-        }
-
-        public String getUserProfileUrl() {
-            return userProfileUrl;
-        }
-
-        public void setUserProfileUrl(String userProfileUrl) {
-            this.userProfileUrl = userProfileUrl;
-        }
     }
 
     @Setter
@@ -224,22 +153,6 @@ public class UserController {
     public static class AvatarUpdateRequest {
         private String avatarUrl; // Pass full URL directly (CDN/Object Storage/Static resource)
         private String filename; // Or pass filename under backend static dir, e.g., avatars/avatar_01.png
-
-        public String getAvatarUrl() {
-            return avatarUrl;
-        }
-
-        public void setAvatarUrl(String avatarUrl) {
-            this.avatarUrl = avatarUrl;
-        }
-
-        public String getFilename() {
-            return filename;
-        }
-
-        public void setFilename(String filename) {
-            this.filename = filename;
-        }
     }
 
 }

@@ -1,3 +1,5 @@
+//By Zhao Jiayi
+
 package sg.nusiss.t6.caproject.util;
 
 public interface Code {

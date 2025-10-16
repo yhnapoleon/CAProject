@@ -1,3 +1,5 @@
+//By Xu Wenzhe
+
 package sg.nusiss.t6.caproject.config;
 
 import sg.nusiss.t6.caproject.service.impl.JwtUserDetailsService;
@@ -66,7 +68,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      * Skip JWT checks for public endpoints (e.g., login and register).
      */
     @Override
-    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         String path = request.getServletPath();
 
         // Skip filtering if the path starts with /api/auth/login, /api/auth/register,

@@ -1,3 +1,6 @@
+//By Zhao Jiayi
+//This feature has not been implemented yet.
+
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
@@ -52,77 +55,4 @@ public class Coupon {
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<UserCoupon> userCoupons;
-
-    public Integer getCouponId() {
-        return couponId;
-    }
-
-    public void setCouponId(Integer couponId) {
-        this.couponId = couponId;
-    }
-
-    public String getCouponNumber() {
-        return couponNumber;
-    }
-
-    public void setCouponNumber(String couponNumber) {
-        this.couponNumber = couponNumber;
-    }
-
-    public Integer getCouponValue() {
-        return couponValue;
-    }
-
-    public void setCouponValue(Integer couponValue) {
-        this.couponValue = couponValue;
-    }
-
-    public LocalDateTime getCouponStartTime() {
-        return couponStartTime;
-    }
-
-    public void setCouponStartTime(LocalDateTime couponStartTime) {
-        this.couponStartTime = couponStartTime;
-    }
-
-    public LocalDateTime getCouponEndTime() {
-        return couponEndTime;
-    }
-
-    public void setCouponEndTime(LocalDateTime couponEndTime) {
-        this.couponEndTime = couponEndTime;
-    }
-
-    public String getCouponName() {
-        return couponName;
-    }
-
-    public void setCouponName(String couponName) {
-        this.couponName = couponName;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<UserCoupon> getUserCoupons() {
-        return userCoupons;
-    }
-
-    public void setUserCoupons(List<UserCoupon> userCoupons) {
-        this.userCoupons = userCoupons;
-    }
-
 }

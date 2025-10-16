@@ -1,3 +1,5 @@
+//By Zhao Jiayi
+
 package sg.nusiss.t6.caproject.model;
 
 import jakarta.persistence.*;
@@ -18,7 +20,7 @@ public class Location {
     @Column(name = "location_id")
     private Integer locationId;
 
-    @Column(name = "location_text", length = 255, nullable = false)
+    @Column(name = "location_text", nullable = false)
     private String locationText;
 
     @Column(name = "user_id", nullable = false)
@@ -35,53 +37,4 @@ public class Location {
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     @JsonBackReference
     private User user;
-
-    // Getters and Setters
-    public Integer getLocationId() {
-        return locationId;
-    }
-
-    public void setLocationId(Integer locationId) {
-        this.locationId = locationId;
-    }
-
-    public String getLocationText() {
-        return locationText;
-    }
-
-    public void setLocationText(String locationText) {
-        this.locationText = locationText;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getDefaultAddress() {
-        return defaultAddress;
-    }
-
-    public void setDefaultAddress(String defaultAddress) {
-        this.defaultAddress = defaultAddress;
-    }
-
-    public Integer getPostal() {
-        return postal;
-    }
-
-    public void setPostal(Integer postal) {
-        this.postal = postal;
-    }
 }
